@@ -1,0 +1,6 @@
+Package: micro-glmm
+Type: Package
+Title: Microbiome GLMM
+Version: 0.0.1.0
+RoxygenNote: 7.2.3
+Encoding: UTF-8
