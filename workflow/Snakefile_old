@@ -1,0 +1,40 @@
+#SAMPLES = [100022,  100251,  100262,  101302,  101346,  102321,  102396,  102478,  102492,  102528,  102545,  103937, 100038,  100142,  100258,  101292,  101338,  101380,  102272,  102395,  102506,  103694,  104158]
+samples = [100022,  100251]#,  100262,  101302,  101346,  102321,  102396,  102478,  102492,  102528,  103937, 100038,  100142,  100258,  101292,  101338,  101380,  102272,  102395,  102506,  103694,  104158]
+workdir: "/pollard/data/projects/mwas-projects/"
+#rule all:
+ #   input: "{marker_data_stem}.summary_file.csv"
+rule calc_distance:
+    input:
+        "/pollard/data/projects/mwas-projects/merge_snps_20230925/{sample}/snps/{sample}/{sample}.snps_freqs.tsv.lz4"
+    output:
+        "/pollard/data/projects/mwas-projects/distance_output/distance.{sample}.tsv"
+    shell:
+        "Rscript --vanilla /pollard/home/mgoldman/MGWAS/2023-02-02-QP/calc_qp.R  -s {wildcards.sample} -o /pollard/data/projects/mwas-projects/distance_output -d '/pollard/data/projects/mwas-projects/merge_snps_20230925/{wildcards.sample}/snps/' -p '/pollard/data/projects/mwas-projects/dbs/midasdb_uhgg/pangenomes/' "
+rule make_copy_number_df:
+    input:
+        "/pollard/data/projects/mwas-projects/distance_output/distance.{sample}.tsv"
+    output:
+        "/pollard/data/projects/mwas-projects/glmm_output/{sample}.notbinarized.modeling_data.csv"
+    shell:
+        "Rscript --vanilla /pollard/home/mgoldman/MGWAS/2023-05-03-run_model/make_modeling_file.R -s {wildcards.sample}"
+#rule make_binary_copy_number:
+ #   input:
+  #      "distance.{sample}.tsv"
+   # output:
+    #    "{sample}.binarized.modeling_data.csv"
+    #shell:
+     #   "Rscript --vanilla ./2023-05-03-run_model/make_modeling_file.R -s {wildcards.sample}"
+rule make_marker_test_file:
+    input:
+        "/pollard/data/projects/mwas-projects/glmm_output/{sample}.notbinarized.modeling_data.csv"
+    output:
+        "/pollard/data/projects/mwas-projects/glmm_output/{sample}.notbinarized.markertest.csv"
+    shell:
+        "Rscript -e 'rmarkdown::render(./2023-07-07_type_1_error/Micromix_type_1_error.Rmd)'"
+rule make_summary:
+    input:
+         expand("/pollard/data/projects/mwas-projects/glmm_output/{sample}.notbinarized.markertest.csv",sample=samples)
+    output:
+        "notbinarized.summary_file.csv"
+    shell:
+        "Rscript --vanilla /pollard/home/mgoldman/MGWAS/2023-07-07_type_1_error/summarize_marker_test.R {input}"
