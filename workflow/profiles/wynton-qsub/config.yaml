@@ -1,0 +1,35 @@
+rerun-triggers: ['mtime', 'params', 'input', 'software-env', 'code']
+notemp: true
+local-cores: 6
+latency-wait: 180
+max-jobs-per-second: 10
+keep-going: true
+printshellcmds: true
+resources: 'network_connections=3'
+default-resources:
+  - 'mem_mb=4096'
+  - 'disk=8'
+  - 'walltime_hr=00'
+  - 'walltime_min=30'
+  - 'walltime_sec=00'
+  - 'outdir="log/"'
+use-conda: true
+conda-frontend: 'conda'
+use-singularity: false
+jobscript: 'profiles/wynton-qsub/jobscript.sh'
+cluster: "qsub -cwd \
+        -V \
+        -pe smp {threads} \
+        -l mem_free={resources.mem_mb}M \
+        -l arch=lx-amd64 \
+        -l scratch={resources.disk}G \
+        -l h_rt={resources.walltime_hr}:{resources.walltime_min}:{resources.walltime_sec} \
+        -j yes \
+        -terse \
+        -o {resources.outdir} \
+        "
+cluster-cancel: '/opt/sge/bin/lx-amd64/qdel'
+jobname: '{name}.{jobid}.snkjb.sh'
+config:
+  - 'USE_CUDA=0'
+  - 'MAX_THREADS=24'
