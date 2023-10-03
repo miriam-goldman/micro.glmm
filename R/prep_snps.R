@@ -73,7 +73,7 @@ jaccardFuncPtr <- cppXPtr(
 
 option_list = list(
   make_option(c("-s", "--species_id"), type="character", default="s_id", 
-              help="dataset file name", metavar="character"),
+              help="species id for labeling output file names (optional)", metavar="character"),
   make_option(c("-v", "--verbose"), type="logical", default=TRUE, 
               help="verbose, TRUE or FALSE"),
   make_option(c("-o", "--out_folder"), type="character", default=NULL,
@@ -84,20 +84,18 @@ option_list = list(
               help="snps freq file name and path", metavar="character"),
   make_option(c("-d", "--snps_depth_file"), type="character", default=NULL,
               help="snps depth file name and path", metavar="character"),
-  make_option(c("-r", "--run_pangeome"), type="logical", default=FALSE,
-              help="option to run pangenome info or not"),
   make_option(c("-c", "--centroid_to_repgenes_file"), type="character", default=NULL,
-              help="pangenome centroid to repgenes file", metavar="character"),
+              help="pangenome centroid to repgenes file (optional)", metavar="character"),
   make_option(c("-p", "--centroid_prevalence_file"), type="character", default=NULL,
-              help="centriod prevalence file" , metavar="character"),
+              help="centriod prevalence file (optional)" , metavar="character"),
   make_option(c("--centroid_prevalence_cutoff"), type="numeric", default=.7,
-              help="centriod prevalence file" ),
-  make_option(c("-q", "--run_qp"), type="logical", default=FALSE,
-              help="option to run QP, TRUE or FALSE"),
+              help="centriod prevalence file (optional)" ),
+  make_option(c("-q", "--run_qp"), type="logical", default=FALSE, 
+              help="option to run qp or not (optional)"),
   make_option(c("-u", "--median_upper_filter"), type="integer", default=3,
-              help="upper limit on median filter num of times median value of depth to let pass for each sample for QP"),
+              help="upper limit on median filter num of times median value of depth to let pass for each sample for QP (optional)"),
   make_option(c("-l", "--median_lower_filter"), type="numeric", default=.3,
-              help="lower limit on median filter num of times median value of depth to let pass for each sample for QP"),
+              help="lower limit on median filter num of times median value of depth to let pass for each sample for QP (optional)"),
   make_option(c("-a", "--abosulte_filter"), type="numeric", default=3,
               help="lowest depth to all to pass filters"),
   make_option(c("-m", "--sample_median_depth_filter"), type="integer", default=10,
@@ -145,11 +143,9 @@ if(file_test("-f",opt$snps_depth_file)){
 if(verbose){
   message("SNP files read in")
 }
-print(is.logical(opt$run_pangeome))
-if(is.logical(opt$run_pangeome)){
-  run_pangeome=opt$run_pangeome
-  print("checking pangenome")
-  if(run_pangeome){
+
+run_pangenome<-isTRUE(!is.na(opt$centroid_to_repgenes) & !is.na(opt$centroid_prevalence))
+if(run_pangenome){
     if(verbose){
       message("running pangeome step")
     }
@@ -172,10 +168,9 @@ if(is.logical(opt$run_pangeome)){
   }else{
     print("not running pangenome")
     snp_info$core<-snp_info$locus_type=="CDS"
-    message("core labeled by coding region")
+    message("using snps in coding region")
   }
   
-}
 
 if(verbose){
   snp_info %>% dplyr::count(snp_type, locus_type, site_type) %>% 
