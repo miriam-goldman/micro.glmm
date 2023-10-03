@@ -21,4 +21,17 @@
  ```
  still to do: make sure qp and pangeomne run (waiting on new pangeome)
  
- Next update: prep genes
+ ### 2023-10-03: updated function prep-genes; example of how to run
+```
+ Rscript prep_genes.R
+--species_id 104158
+-v TRUE
+ -o "~/Projects/micro-glmm/test_output"
+-c "/Users/miriamgoldman/Projects/IBD_folder/midas2_data/merge/genes/104158/104158.genes_copynum.tsv"
+ -d "/Users/miriamgoldman/Projects/IBD_folder/midas2_data/merge/genes/104158/104158.genes_depth.tsv"
+-m 5 -n 5 --genes_summary /Users/miriamgoldman/Projects/IBD_folder/midas2_data/merge/genes/genes_summary.tsv
+--GRM /Users/miriamgoldman/Projects/micro-glmm/test_output/104158.GRM.tsv
+--metadata ~/Projects/micro-glmm/IBD_metadata.tsv
+ ```
+
+All cases checked; tomorrow/Thursday working on small script for running both structure test and micro-glmm with various outputs 
