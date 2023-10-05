@@ -63,7 +63,7 @@ GetTrace<-function(Sigma_iX, X, GRM,W, tau, cov){
     Sigma_GRM= solve(Sigma,GRM) 
     Sigma_iXt=t(Sigma_iX)
     P_GRM= Sigma_GRM- Sigma_iX %*% cov %*% (Sigma_iXt %*% GRM)
-    print(paste("sd of the projection GRM",sd(diag(P_GRM))))
+    cat(paste("sd of the projection GRM",sd(diag(P_GRM))))
   tra=sum(diag(P_GRM))
   return(tra)
 }
@@ -77,7 +77,7 @@ GetTrace_2<-function(X, GRM,W, tau){
   Sigma_GRM= solve(Sigma,GRM) 
   Sigma_iXt=t(Sigma_iX)
   P_GRM= Sigma_GRM- Sigma_iX %*% (cov %*% (Sigma_iXt %*% GRM))
-  print(paste("sd of the projection GRM",sd(diag(P_GRM))))
+  cat(paste("sd of the projection GRM",sd(diag(P_GRM))))
   tra=sum(diag(P_GRM%*%P_GRM))
   return(tra)
 }
@@ -128,20 +128,20 @@ fitglmmaiRPCG<-function(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov,to
     tauVec[which(tauVec < tol)]=0
   }
   if(verbose) {
-    print(paste("YPAPY",YPAPY))
-    print(paste("Trace",Trace))
-    print(paste("score1",score1))
-    print(paste("AI",AI1))
-    print(paste("Dtau",Dtau))
+    cat(paste("YPAPY",YPAPY))
+    cat(paste("Trace",Trace))
+    cat(paste("score1",score1))
+    cat(paste("AI",AI1))
+    cat(paste("Dtau",Dtau))
     
   }
   
   return(list("tau" = tauVec))
 }
 
-#' micro_glmmSNP
+#' pop_structure_test
 #' 
-#' Fit the base model for SNP structure 
+#' Fit the base model for SNP structure
 #' 
 #' @param glm_fit0 glm model. Model output with no sample relatedness accounted for
 #' @param GRM Genetic Relatedness Matrix (from scripts or user) NxN matrix of sample relatedness
@@ -150,7 +150,7 @@ fitglmmaiRPCG<-function(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov,to
 #' @param verbose whether outputting messages in the process of model fitting
 #' @return model output for the baseline structure glmm 
 #' @export
-micro_glmmSNP = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, verbose = TRUE,tol=.0001) {
+pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, verbose = TRUE,tol=.0001) {
   #Fits the null generalized linear mixed model for a binary trait
   #Args:
   #  glm_fit0: glm model. Logistic model output (with no sample relatedness accounted for) 
@@ -163,8 +163,8 @@ micro_glmmSNP = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, verbo
   
   t_begin = proc.time()
   if(verbose){
-    print("begining time")
-    print(t_begin)	
+    cat("begining time")
+    cat(t_begin)	
     
   }
   y = glm_fit0$y
@@ -202,13 +202,13 @@ micro_glmmSNP = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, verbo
   
   if(verbose) {
     cat("Variance component estimates:\n")
-    print(tau)
+    cat(tau)
   }
   
 
   for(i in seq_len(maxiter)){
     if(verbose) {
-    print(paste("i",i))
+      cat(paste("i",i))
     }
     if(verbose) cat("\nIteration ", i, "tau is ", tau, ":\n")
     alpha0 = re.coef$alpha
@@ -222,14 +222,14 @@ micro_glmmSNP = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, verbo
     t_end_Get_Coef =  proc.time()
     if(verbose) {
     cat("t_end_Get_Coef - t_begin_Get_Coef\n")
-    print(t_end_Get_Coef - t_begin_Get_Coef)
+    cat(t_end_Get_Coef - t_begin_Get_Coef)
     }
     ##update tau
     fit = fitglmmaiRPCG(re.coef$Y, X, GRM, re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov,tol=tol,verbose=verbose)
     t_end_fitglmmaiRPCG= proc.time()
     if(verbose) {
     cat("t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG\n")
-    print(t_end_fitglmmaiRPCG - t_end_Get_Coef)
+    cat(t_end_fitglmmaiRPCG - t_end_Get_Coef)
     }
     tau = as.numeric(fit$tau)
     cov = re.coef$cov
@@ -239,7 +239,7 @@ micro_glmmSNP = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, verbo
     mu = re.coef$mu
     res = y - mu
      if(verbose) {
-    print(paste("change in tau",abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)))
+       cat(paste("change in tau",abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)))
     cat("tau: ", tau, "\n")
     cat("tau0: ", tau0, "\n")
     }
@@ -250,8 +250,8 @@ micro_glmmSNP = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, verbo
     rss=sum(res^2)
     rss_condition=rss_0-rss
     if(verbose){
-      print(paste("res",rss))
-      print(paste("rss change",rss_condition))
+      cat(paste("res",rss))
+      cat(paste("rss change",rss_condition))
     }
     
     abs_condition=sum(res^2)
@@ -265,7 +265,7 @@ micro_glmmSNP = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, verbo
   if(verbose) cat("iter break at ",i)
   if(verbose) cat("\nFinal " ,tau, ":\n")
   if(max(tau) > tol^(-2)){
-    print("Model not converged")
+    cat("Model not converged")
     return(glm_fit0)
   }
   re.coef = Get_Coef(y, X, tau, GRM,family, alpha, eta,  offset,verbose=verbose, maxiter=maxiter,tol.coef = tol)
@@ -311,7 +311,7 @@ micro_glmmSNP = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, verbo
   t_end_null = proc.time()
   if(verbose) {
   cat("t_end_null - t_begin, fitting the NULL model without LOCO took\n")
-  print(t_end_null - t_begin)
+  cat(t_end_null - t_begin)
   }
   
   return(glmmSNPResult)
@@ -334,9 +334,9 @@ Get_Coef = function(y, X, tau, GRM,family, alpha0, eta0,  offset, verbose=FALSE,
     
     if(verbose) {
       cat("Tau:\n")
-      print(tau)
+      cat(tau)
       cat("Fixed-effect coefficients:\n")
-      print(alpha)
+      cat(alpha)
     }
     mu = family$linkinv(eta)
     mu.eta = family$mu.eta(eta)
@@ -354,11 +354,22 @@ Get_Coef = function(y, X, tau, GRM,family, alpha0, eta0,  offset, verbose=FALSE,
   re = list(Y=Y, alpha=alpha, eta=eta, W=W, cov=re.coef$cov, sqrtW=sqrtW, Sigma_iY = re.coef$Sigma_iY, Sigma_iX = re.coef$Sigma_iX, mu=mu,eta_2=re.coef$eta_2,b=re.coef$b)
 }
 
-
-
-run_marker_test = function(obj.glmm.snp,
-                           obj.glm.snp,GRM,
-                           copy_number_df,N,SPA=FALSE,scale_g=TRUE,log_g=TRUE){
+#' micro_glmm
+#' 
+#' Fit the CNV model with the random effects
+#' 
+#' @param obj.pop.strut output of pop_structure_test; GLMM of species with GRM accounted for
+#' @param glm_fit0 glm model. Model output with no sample relatedness accounted for
+#' @param GRM Genetic Relatedness Matrix (from scripts or user) NxN matrix of sample relatedness
+#' @param copy_number_df data frame with, gene_id, sample_name, and copy_number 
+#' @param SPA whether to run Saddle point approximation for pvalues (will slow down output) 
+#' @param scale_g whether to scale CNVs after log transform if using
+#' @param log_g whether to log transform CNVs 
+#' @return model output for the baseline structure glmm 
+#' @export
+micro_glmm = function(obj.pop.strut,
+                    glm_fit0,GRM,
+                           copy_number_df,SPA=FALSE,scale_g=TRUE,log_g=TRUE){
   ## inputs: full null fitted model
   ## null model no random effect
   # GRM is kinship
@@ -366,46 +377,40 @@ run_marker_test = function(obj.glmm.snp,
   ## copy_number_df must have column for sample; column for gene_id; column for copy_number
   ## returns list of values for each gene examined
   list_vec<-NULL
-  obj.noK = obj.glmm.snp$obj.noK
-  family = obj.glm.snp$family
+  obj.noK = obj.pop.strut$obj.noK
+  family = glm_fit0$family
   
-  eta = obj.glmm.snp$linear.predictors
-  mu = obj.glmm.snp$fitted.values
+  eta = obj.pop.strut$linear.predictors
+  mu = obj.pop.strut$fitted.values
   mu.eta = family$mu.eta(eta)
-  sqrtW = mu.eta/sqrt(obj.glm.snp$family$variance(mu))
+  sqrtW = mu.eta/sqrt(glm_fit0$family$variance(mu))
   W1 = sqrtW^2   ##(mu*(1-mu) for binary) theses are the same
-  tauVecNew = obj.glmm.snp$tau
-  X = obj.glmm.snp$X
+  tauVecNew = obj.pop.strut$tau
+  X = obj.pop.strut$X
   
   Sigma=gen_sp_Sigma(W1,tauVecNew,GRM)
-  obj.glmm.snp$Sigma<-Sigma
+  obj.pop.strut$Sigma<-Sigma
   Sigma_iX<-solve(Sigma,X)
-  obj.glmm.snp$Sigma_iX<-Sigma_iX
-  Sigma_iY<-solve(Sigma,obj.glmm.snp$Y)
-  obj.glmm.snp$Sigma_iY<-Sigma_iY
-  sample_lookup<-data.frame(sampleID=obj.glmm.snp$sampleID,index=seq(1,length(obj.glmm.snp$sampleID)))
-  if(N=="all"){
-    N=length(unique(copy_number_df$gene_id))
-    sample_genes<-unique(copy_number_df$gene_id)
-  }else{
-    sample_genes<-sample(unique(copy_number_df$gene_id),N)
-  }
-  
+  obj.pop.strut$Sigma_iX<-Sigma_iX
+  Sigma_iY<-solve(Sigma,obj.pop.strut$Y)
+  obj.pop.strut$Sigma_iY<-Sigma_iY
+  sample_lookup<-data.frame(sampleID=obj.pop.strut$sampleID,index=seq(1,length(obj.pop.strut$sampleID)))
+  sample_genes<-unique(copy_number_df$gene_id)
   
   ##randomize the marker orders to be tested
   
   for(k in sample_genes){
     iter=which(sample_genes==k)
     if(iter %% 1000 == 0){
-      print(paste("number of genes done ",iter))
+      cat(paste("number of genes done ",iter))
     }
     one_gene<-copy_number_df %>% ungroup %>% filter(gene_id==k)
     #one_gene_indexs<-sample_lookup %>% inner_join(one_gene,by=c("sampleID"="sample_name")) %>% select(sampleID,index)
     
     one_gene<-one_gene %>% inner_join(sample_lookup,by=c("sample_name"="sampleID"))
     ## filter obj to samples present in gene copy number
-    filtered_obj.glmm.snp<-filter_null_obj(obj.glmm.snp,one_gene)
-    if(length(unique(filtered_obj.glmm.snp$y))==2){
+    filtered_obj.pop.strut<-filter_null_obj(obj.pop.strut,one_gene)
+    if(length(unique(filtered_obj.pop.strut$y))==2){
     empty_mat<-matrix(0,nrow(one_gene),nrow(one_gene))
     # log and scale copy_number
     if(log_g==TRUE){
@@ -417,44 +422,44 @@ run_marker_test = function(obj.glmm.snp,
       G0<-scale(G0)
     }
    
-    G_tilde = G0  -  filtered_obj.glmm.snp$obj.noK$XXVX_inv %*%  (filtered_obj.glmm.snp$obj.noK$XV %*% G0) # G1 is X adjusted
-    res=filtered_obj.glmm.snp$residuals
-    eta = filtered_obj.glmm.snp$linear.predictors
+    G_tilde = G0  -  filtered_obj.pop.strut$obj.noK$XXVX_inv %*%  (filtered_obj.pop.strut$obj.noK$XV %*% G0) # G1 is X adjusted
+    res=filtered_obj.pop.strut$residuals
+    eta = filtered_obj.pop.strut$linear.predictors
     
-    mu = filtered_obj.glmm.snp$fitted.values
+    mu = filtered_obj.pop.strut$fitted.values
     mu.eta = family$mu.eta(eta)
-    sqrtW = mu.eta/sqrt(obj.glm.snp$family$variance(mu))
+    sqrtW = mu.eta/sqrt(glm_fit0$family$variance(mu))
     W=sqrtW^2#mu*(1-mu)
-    Sigma_iG = solve(filtered_obj.glmm.snp$Sigma,G_tilde)
-    PG_tilde<-Sigma_iG-filtered_obj.glmm.snp$Sigma_iX%*%(solve(t(filtered_obj.glmm.snp$X)%*%filtered_obj.glmm.snp$Sigma_iX))%*%t(filtered_obj.glmm.snp$X)%*%Sigma_iG
-    Y = eta  + (filtered_obj.glmm.snp$y - mu)/mu.eta
+    Sigma_iG = solve(filtered_obj.pop.strut$Sigma,G_tilde)
+    PG_tilde<-Sigma_iG-filtered_obj.pop.strut$Sigma_iX%*%(solve(t(filtered_obj.pop.strut$X)%*%filtered_obj.pop.strut$Sigma_iX))%*%t(filtered_obj.pop.strut$X)%*%Sigma_iG
+    Y = eta  + (filtered_obj.pop.strut$y - mu)/mu.eta
     
     
-    t_score=t(PG_tilde)%*%(Y) #t_score_2=t(G_tilde)%*%(filtered_obj.glmm.snp$y - mu)
+    t_score=t(PG_tilde)%*%(Y) #t_score_2=t(G_tilde)%*%(filtered_obj.pop.strut$y - mu)
     m1 = t(G_tilde) %*% mu
-    #qtilde=t(G_tilde)%*%filtered_obj.glmm.snp$y
-    var1 = t(G_tilde)%*%PG_tilde ## same as  t(G)%*%Sigma_iG - t(G)%*%filtered_obj.glmm.snp$Sigma_iX%*%(solve(t(filtered_obj.glmm.snp$X)%*%filtered_obj.glmm.snp$Sigma_iX))%*%t(filtered_obj.glmm.snp$X)%*%Sigma_iG
+    #qtilde=t(G_tilde)%*%filtered_obj.pop.strut$y
+    var1 = t(G_tilde)%*%PG_tilde ## same as  t(G)%*%Sigma_iG - t(G)%*%filtered_obj.pop.strut$Sigma_iX%*%(solve(t(filtered_obj.pop.strut$X)%*%filtered_obj.pop.strut$Sigma_iX))%*%t(filtered_obj.pop.strut$X)%*%Sigma_iG
     t_adj=t_score/sqrt(var1)
     t_adj_2=t_score^2/var1
     beta=t_score/var1
     pval=(pchisq(t_adj_2,lower.tail = FALSE,df=1,log.p=FALSE))
     z=(qnorm(pval/2, log.p=F, lower.tail = F))
     se_beta=abs(beta)/sqrt(abs(z))
-    new_eta=beta[1,1]*G0+filtered_obj.glmm.snp$b+filtered_obj.glmm.snp$X %*% filtered_obj.glmm.snp$coe
+    new_eta=beta[1,1]*G0+filtered_obj.pop.strut$b+filtered_obj.pop.strut$X %*% filtered_obj.pop.strut$coe
     new_mu=family$linkinv(new_eta)
     qtilde=t_score+m1
     if(SPA){
     out1 = Saddle_Prob(q=qtilde, mu = mu, g = G_tilde, var1,Cutoff = 2,log.p=FALSE)
-    list_vec=rbind(list_vec,data.frame("species_id"=obj.glmm.snp$species_id,tau=obj.glmm.snp$tau[2],"gene"=k,"cor"=cor(G0,filtered_obj.glmm.snp$y),"z"=z,"var1"=var1,"beta"=beta,"se beta"=se_beta,"pvalue"=pval,
-                                       "t_adj"=t_adj,"num_control"=sum(filtered_obj.glmm.snp$y==0),
-                                       "num_total"=length(G0),"auc_beta_G_b"=auc(filtered_obj.glmm.snp$y,new_mu),
-                                       auc_b=auc(filtered_obj.glmm.snp$y,mu),corbeta_G_y=cor(beta[1,1]*G0,filtered_obj.glmm.snp$y),
+    list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=beta,"se beta"=se_beta,"pvalue"=pval,
+                                       "t_adj"=t_adj,"num_control"=sum(filtered_obj.pop.strut$y==0),
+                                       "num_total"=length(G0),"auc_beta_G_b"=auc(filtered_obj.pop.strut$y,new_mu),
+                                       auc_b=auc(filtered_obj.pop.strut$y,mu),corbeta_G_y=cor(beta[1,1]*G0,filtered_obj.pop.strut$y),
                                        SPA_pvalue=out1$p.value,spa_score=out1$Score,pvalue_noadj=out1$p.value.NA))
     }else{
-      list_vec=rbind(list_vec,data.frame("species_id"=obj.glmm.snp$species_id,tau=obj.glmm.snp$tau[2],"gene"=k,"cor"=cor(G0,filtered_obj.glmm.snp$y),"z"=z,"var1"=var1,"beta"=beta,"se beta"=se_beta,"pvalue"=pval,
-                                         "t_adj"=t_adj,"num_control"=sum(filtered_obj.glmm.snp$y==0),
-                                         "num_total"=length(G0),"auc_beta_G_b"=auc(filtered_obj.glmm.snp$y,new_mu),
-                                         auc_b=auc(filtered_obj.glmm.snp$y,mu),corbeta_G_y=cor(beta[1,1]*G0,filtered_obj.glmm.snp$y)))
+      list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=beta,"se beta"=se_beta,"pvalue"=pval,
+                                         "t_adj"=t_adj,"num_control"=sum(filtered_obj.pop.strut$y==0),
+                                         "num_total"=length(G0),"auc_beta_G_b"=auc(filtered_obj.pop.strut$y,new_mu),
+                                         auc_b=auc(filtered_obj.pop.strut$y,mu),corbeta_G_y=cor(beta[1,1]*G0,filtered_obj.pop.strut$y)))
       
     }
     }
@@ -462,37 +467,37 @@ run_marker_test = function(obj.glmm.snp,
   return(list_vec)
 }
 
-filter_null_obj<-function(obj.glmm.snp,sample_indexs){
-  obj.glmm.snp$residuals<-obj.glmm.snp$residuals[sample_indexs$index]
-  obj.glmm.snp$b<-obj.glmm.snp$b[sample_indexs$index]
-  obj.glmm.snp$linear.predictors<-obj.glmm.snp$linear.predictors[sample_indexs$index]
-  obj.glmm.snp$fitted.values<-obj.glmm.snp$fitted.values[sample_indexs$index]
-  obj.glmm.snp$obj.noK$XXVX_inv<-obj.glmm.snp$obj.noK$XXVX_inv[sample_indexs$index,]
-  obj.glmm.snp$obj.noK$XV<-obj.glmm.snp$obj.noK$XV[,sample_indexs$index]
-  obj.glmm.snp$Sigma<- obj.glmm.snp$Sigma[sample_indexs$index,sample_indexs$index]
-  obj.glmm.snp$X<-obj.glmm.snp$X[sample_indexs$index,]
-  obj.glmm.snp$y<-obj.glmm.snp$y[sample_indexs$index]
-  obj.glmm.snp$Sigma_iX<-obj.glmm.snp$Sigma_iX[sample_indexs$index,]
-  obj.glmm.snp$Sigma_iY<-obj.glmm.snp$Sigma_iY[sample_indexs$index]
-  return(obj.glmm.snp)
+filter_null_obj<-function(obj.pop.strut,sample_indexs){
+  obj.pop.strut$residuals<-obj.pop.strut$residuals[sample_indexs$index]
+  obj.pop.strut$b<-obj.pop.strut$b[sample_indexs$index]
+  obj.pop.strut$linear.predictors<-obj.pop.strut$linear.predictors[sample_indexs$index]
+  obj.pop.strut$fitted.values<-obj.pop.strut$fitted.values[sample_indexs$index]
+  obj.pop.strut$obj.noK$XXVX_inv<-obj.pop.strut$obj.noK$XXVX_inv[sample_indexs$index,]
+  obj.pop.strut$obj.noK$XV<-obj.pop.strut$obj.noK$XV[,sample_indexs$index]
+  obj.pop.strut$Sigma<- obj.pop.strut$Sigma[sample_indexs$index,sample_indexs$index]
+  obj.pop.strut$X<-obj.pop.strut$X[sample_indexs$index,]
+  obj.pop.strut$y<-obj.pop.strut$y[sample_indexs$index]
+  obj.pop.strut$Sigma_iX<-obj.pop.strut$Sigma_iX[sample_indexs$index,]
+  obj.pop.strut$Sigma_iY<-obj.pop.strut$Sigma_iY[sample_indexs$index]
+  return(obj.pop.strut)
 }
 
-simulate_CNV_inner<-function(obj.glmm.snp,obj.glm.snp,GRM,n_CNV=5000,alpha_value=.05,mean_sim=0,spread_sim=1,plot_qq=TRUE,SPA,sim_num){
+simulate_CNV_inner<-function(obj.pop.strut,glm_fit0,GRM,n_CNV=5000,alpha_value=.05,mean_sim=0,spread_sim=1,plot_qq=TRUE,SPA,sim_num){
   n_samples<-nrow(GRM)
   fake_copy_number_data<-data.frame(gene_id=
                                       unlist(lapply(paste0("gene",seq(1,n_CNV)),function(x) rep(x,n_samples))),
-                                    sample_name=rep(obj.glmm.snp$sampleID,n_CNV),
+                                    sample_name=rep(obj.pop.strut$sampleID,n_CNV),
                                     copy_number=c(rnorm(n_samples*n_CNV,mean_sim,spread_sim)))
-  fake_data<-run_marker_test(obj.glmm.snp,obj.glm.snp,GRM,fake_copy_number_data,N="all",SPA=SPA,scale_g=FALSE,log_g=FALSE)
+  fake_data<-micro_glmm(obj.pop.strut,glm_fit0,GRM,fake_copy_number_data,N="all",SPA=SPA,scale_g=FALSE,log_g=FALSE)
   if(SPA){
     pvalues=fake_data$SPA_pvalue
   }else{
     pvalues=fake_data$pvalue
   }
   if(plot_qq){
-    print(sim_num)
+    cat(sim_num)
     
-    simpleQQPlot(pvalues,obj.glmm.snp$tau,alpha_value,n_CNV,obj.glmm.snp)
+    simpleQQPlot(pvalues,obj.pop.strut$tau,alpha_value,n_CNV,obj.pop.strut)
   }
   return(fake_data)
   #return(fake_data)
@@ -504,36 +509,36 @@ simulate_one_CNV<-function(sample_names,y,mean_sim,spread_sim,beta=1){
   return(new_y)
 }
 
-simulate_CNV_inner<-function(obj.glmm.snp,obj.glm.snp,GRM,n_CNV=5000,alpha_value=.05,mean_sim=0,spread_sim=1,plot_qq=TRUE,SPA,sim_num){
+simulate_CNV_inner<-function(obj.pop.strut,glm_fit0,GRM,n_CNV=5000,alpha_value=.05,mean_sim=0,spread_sim=1,plot_qq=TRUE,SPA,sim_num){
   n_samples<-nrow(GRM)
   fake_copy_number_data<-data.frame(gene_id=
                                       unlist(lapply(paste0("gene",seq(1,n_CNV)),function(x) rep(x,n_samples))),
-                                    sample_name=rep(obj.glmm.snp$sampleID,n_CNV),
+                                    sample_name=rep(obj.pop.strut$sampleID,n_CNV),
                                     copy_number=c(rnorm(n_samples*n_CNV,mean_sim,spread_sim)))
-  fake_data<-run_marker_test(obj.glmm.snp,obj.glm.snp,GRM,fake_copy_number_data,N="all",SPA=SPA,scale_g=FALSE,log_g=FALSE)
+  fake_data<-micro_glmm(obj.pop.strut,glm_fit0,GRM,fake_copy_number_data,N="all",SPA=SPA,scale_g=FALSE,log_g=FALSE)
   if(SPA){
     pvalues=fake_data$SPA_pvalue
   }else{
     pvalues=fake_data$pvalue
   }
   if(plot_qq){
-    print(sim_num)
+    cat(sim_num)
     
-    simpleQQPlot(pvalues,obj.glmm.snp$tau,alpha_value,n_CNV,obj.glmm.snp)
+    simpleQQPlot(pvalues,obj.pop.strut$tau,alpha_value,n_CNV,obj.pop.strut)
   }
   return(fake_data)
   #return(fake_data)
 }
 
-simulate_power<-function(obj.glmm.snp,obj.glm.snp,GRM,alpha_value=.05,mean_sim=0,spread_sim=1,plot_qq=TRUE,SPA,sim_num){
+simulate_power<-function(obj.pop.strut,glm_fit0,GRM,alpha_value=.05,mean_sim=0,spread_sim=1,plot_qq=TRUE,SPA,sim_num){
   n_samples<-nrow(GRM)
   CNV_list=data.frame(beta=c(rep(0,90),.1,.2,.3,.4,.5,.6,.7,8,.9,1,2))
   n_CNV=nrow(CNV_list)
   fake_copy_number_data<-data.frame(gene_id=
                                       unlist(lapply(paste0("gene",seq(1,n_CNV)),function(x) rep(x,n_samples))),
-                                    sample_name=rep(obj.glmm.snp$sampleID,n_CNV),
-                                    copy_number=c(apply(CNV_list,1,function(x) simulate_one_CNV(obj.glmm.snp$sampleID,obj.glmm.snp$y,mean_sim,spread_sim,beta=x[1]))))
-  fake_data<-run_marker_test(obj.glmm.snp,obj.glm.snp,GRM,fake_copy_number_data,N="all",SPA=FALSE,scale_g=TRUE,log_g=FALSE)
+                                    sample_name=rep(obj.pop.strut$sampleID,n_CNV),
+                                    copy_number=c(apply(CNV_list,1,function(x) simulate_one_CNV(obj.pop.strut$sampleID,obj.pop.strut$y,mean_sim,spread_sim,beta=x[1]))))
+  fake_data<-micro_glmm(obj.pop.strut,glm_fit0,GRM,fake_copy_number_data,N="all",SPA=FALSE,scale_g=TRUE,log_g=FALSE)
   fake_data %>% arrange(gene)
   if(SPA){
     pvalues=fake_data$SPA_pvalue
@@ -541,9 +546,9 @@ simulate_power<-function(obj.glmm.snp,obj.glm.snp,GRM,alpha_value=.05,mean_sim=0
     pvalues=fake_data$pvalue
   }
   if(plot_qq){
-    print(sim_num)
+    cat(sim_num)
     
-    simpleQQPlot(pvalues,obj.glmm.snp$tau,alpha_value,n_CNV,obj.glmm.snp)
+    simpleQQPlot(pvalues,obj.pop.strut$tau,alpha_value,n_CNV,obj.pop.strut)
   }
   return(fake_data)
   #return(fake_data)
@@ -551,16 +556,11 @@ simulate_power<-function(obj.glmm.snp,obj.glm.snp,GRM,alpha_value=.05,mean_sim=0
 
 
 
-simulate_CNV_outer<-function(n_simulations,obj.glmm.snp,obj.glm.snp,GRM,n_CNV,alpha_value,mean_sim=0,spread_sim=1,plot_qq=TRUE,SPA=FALSE){
-  list_of_error_rate<-cbind(sapply(seq(1,n_simulations),function(x) simulate_CNV_inner(obj.glmm.snp,obj.glm.snp,GRM,n_CNV,alpha_value,mean_sim,spread_sim,plot_qq,sim_num=x,SPA)))
-  return(list_of_error_rate)
-  #return(list_of_error_rate)
-}
 simulate_tau_inner<-function(data.new,GRM,species_id=s_id){
   formula.new="disease_status~1+Age"
   data.new<-data.new[shuffle(data.new),]
   fit_logistic = glm(formula.new, data = data.new, family = "binomial")
-  fit_glmm_snp<-micro_glmmSNP(fit_logistic,GRM,tau=c(1,1),verbose = FALSE,species_id=s_id)
+  fit_glmm_snp<-obj.pop.strut(fit_logistic,GRM,tau=c(1,1),verbose = FALSE,species_id=s_id)
   LRT_value<-LRT_score(fit_glmm_snp,fit_logistic,GRM)
   return(data.frame("tau"=fit_glmm_snp$tau[2],LRT_value))
 }
@@ -571,27 +571,27 @@ simulate_tau_outer<-function(data.new,GRM,n_tau,species_id=s_id){
   return(df_of_tau)
 }
 
-LRT_score<-function(obj.glmm.snp,obj.glm.snp,GRM){
-  obj.noK = obj.glmm.snp$obj.noK
-  family = obj.glm.snp$family
+LRT_score<-function(obj.pop.strut,glm_fit0,GRM){
+  obj.noK = obj.pop.strut$obj.noK
+  family = glm_fit0$family
   
-  eta = obj.glmm.snp$linear.predictors
-  mu = obj.glmm.snp$fitted.values
-  mu_mean=mean(obj.glmm.snp$fitted.values)
-  y=obj.glmm.snp$y
+  eta = obj.pop.strut$linear.predictors
+  mu = obj.pop.strut$fitted.values
+  mu_mean=mean(obj.pop.strut$fitted.values)
+  y=obj.pop.strut$y
   mu.eta = mean(family$mu.eta(eta))
-  sqrtW = mu.eta/sqrt(obj.glm.snp$family$variance(mu))
+  sqrtW = mu.eta/sqrt(glm_fit0$family$variance(mu))
   W = (mu*(1-mu))   ##(mu*(1-mu) for binary) theses are the same
   N=length(W)
   W_mat_a<-diag(N)
   diag(W_mat_a)=1/(mu*(1-mu))
-  tauVecNew = obj.glmm.snp$tau
-  X = obj.glmm.snp$X
+  tauVecNew = obj.pop.strut$tau
+  X = obj.pop.strut$X
   #Sigma=forceSymmetric(gen_sp_Sigma(W,tauVecNew,GRM))
   Sigma=(tauVecNew[2]*GRM+W_mat_a)
-  print(isSymmetric(Sigma))
+  cat(isSymmetric(Sigma))
   det_sigma<-det(Sigma)
-  alpha=obj.glmm.snp$coefficients
+  alpha=obj.pop.strut$coefficients
   Y_hat<-eta + (y-mu)/W#
   new_cov=t(X)%*%solve(Sigma)%*%X
   Sigma_mat<-diag(N)
@@ -608,17 +608,17 @@ LRT_score<-function(obj.glmm.snp,obj.glm.snp,GRM){
     log_det_W=0
   }
   liklyhood_tau_a=-(1/2)*(log_det_tau+Y_hat_X_alpha_cov+log(det(new_cov)))
-  mu_0 = obj.glm.snp$fitted.values
+  mu_0 = glm_fit0$fitted.values
   mu_0_mean=mean(mu_0)
-  eta_2 = obj.glm.snp$linear.predictors
+  eta_2 = glm_fit0$linear.predictors
   mu.eta_2 = family$mu.eta(eta_2)
-  sqrtW_0 = mu.eta_2/sqrt(obj.glm.snp$family$variance(mu_0))
+  sqrtW_0 = mu.eta_2/sqrt(glm_fit0$family$variance(mu_0))
   tau_0_W=(mu_0*(1-mu_0))
   W_mat<-diag(N)
   diag(W_mat)=1/(mu_0*(1-mu_0))
   det_W<-det(W_mat)
-  res=obj.glm.snp$y-obj.glm.snp$fitted.values
-  y_hat_0=obj.glm.snp$linear.predictors+res/tau_0_W#1/tau_0_W#(y-obj.glm.snp$fitted.values)+#+res#
+  res=glm_fit0$y-glm_fit0$fitted.values
+  y_hat_0=glm_fit0$linear.predictors+res/tau_0_W#1/tau_0_W#(y-glm_fit0$fitted.values)+#+res#
 
   cov_0=t(X)%*%solve(W_mat)%*%X
   alpha_hat_0=solve(cov_0)%*%(t(X)%*%solve(W_mat)%*%y_hat_0)
@@ -627,7 +627,7 @@ LRT_score<-function(obj.glmm.snp,obj.glm.snp,GRM){
   liklyhood_tau_0=-(1/2)*(log(det(W_mat))+cov_hat_0+log(det(cov_0)))
 
   T=2*(liklyhood_tau_a-liklyhood_tau_0)
-  t_2=mean(obj.glmm.snp$b^2)
+  t_2=mean(obj.pop.strut$b^2)
   return(list("T"=T[1],"liklyhood_tau_a"=liklyhood_tau_a[1],"liklyhood_tau_0"=liklyhood_tau_0[1],
               "det_w"=log(det(W_mat)),det_w_a=log(det(W_mat_a)),det_sigma=log_det_tau,
               cov_det_0=log(det(cov_0)),cov_det_a=log(det(new_cov)),
@@ -637,17 +637,13 @@ LRT_score<-function(obj.glmm.snp,obj.glm.snp,GRM){
          ))
 }
 
-plot_LRT_and_tau<-function(obj.glmm.snp,obj.glm.snp,GRM,simulated_test){
-  
-}
 
-
-simpleQQPlot = function (observedPValues,tau,alpha_value,n_CNV,obj.glmm.snp) {
+simpleQQPlot = function (observedPValues,tau,alpha_value,n_CNV,obj.pop.strut) {
   error_rate=sum(observedPValues<alpha_value)/n_CNV
   expeded_pvalues=-log10(1:length(observedPValues)/length(observedPValues))
   observed_pvalues_tranformed=-log10(sort(observedPValues))
   pvalue_df<-data.frame(expeded_pvalues,observed_pvalues_tranformed)
-  print(ggplot(pvalue_df,aes(expeded_pvalues,observed_pvalues_tranformed))+geom_point()+geom_abline(color="red")+labs(title=paste("qqplot for species,",obj.glmm.snp$species_id, "tau:",round(tau[2],2),"error_rate < ",alpha_value,":",error_rate),x="-log10(expected P values)",y="-log10(observed p values)"))
+  print(ggplot(pvalue_df,aes(expeded_pvalues,observed_pvalues_tranformed))+geom_point()+geom_abline(color="red")+labs(title=paste("qqplot for species,",obj.pop.strut$species_id, "tau:",round(tau[2],2),"error_rate < ",alpha_value,":",error_rate),x="-log10(expected P values)",y="-log10(observed p values)"))
 }
 
 #### taken from SPA
@@ -715,7 +711,7 @@ Saddle_Prob<-function(q, mu, g, var1,Cutoff=2,alpha,output="P",nodes.fixed,nodes
       }
       Is.converge=TRUE
     } else {
-      print("Error_Converge")
+      cat("Error_Converge")
       pval<-pval.noadj
       Is.converge=FALSE	
     }				
