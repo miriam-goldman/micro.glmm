@@ -34,4 +34,7 @@
 --metadata ~/Projects/micro-glmm/IBD_metadata.tsv
  ```
 
-All cases checked; tomorrow/Thursday working on small script for running both structure test and micro-glmm with various outputs 
+## 2023-10-04: prep_genes split into two functions with a command line call
+## 2023-10-05: prep_snps split into two functions with a command line call
+## 2023-10-05: also added log file output for both functions
+Today+ tomorrow add structure test function
