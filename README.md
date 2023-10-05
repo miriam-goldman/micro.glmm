@@ -1,5 +1,7 @@
 # micro-glmm
 ## Purpose to Make an deploy Micro-glmm R package and files to run it
+<img width="985" alt="image" src="https://github.com/miriam-goldman/micro-glmm/assets/46382670/7f1fde4b-7439-4c0c-a99d-bcba26fbe5f3">
+
 ### 2023-09-27: Made Repository
 ### 2023-10-02: updated function prep-snps; example of how to run
 ```
