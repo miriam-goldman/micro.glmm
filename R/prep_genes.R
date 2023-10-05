@@ -59,6 +59,7 @@ validate_genes_input<-function(opt){
       centroid_prevalence_file<-fread(opt$centroid_prevalence_file)
       pangenome_used=TRUE
       centroid_prevalence_cutoff=opt$centroid_prevalence_cutoff
+      colnames(centroid_prevalence_file)<-c("rep_gene_id","centroid_prevalence",	"centroid_ength")
       put(paste("pangenome used and read in centriod cutoff at",centroid_prevalence_cutoff),console = verbose)
     }else{
       centroid_prevalence_cutoff<-NA
@@ -136,12 +137,12 @@ validate_genes_input<-function(opt){
     put(paste("starting with:", start_genes,"samples and genes:", length(unique(gcopynumber$gene_id))),console = verbose)
     
   
-  prep_genes_run<-list(gcopynumber=gcopynumber,gdepth=gdepth,depth_cutoff=depth_cutoff,
-                       samples_per_copynumber=samples_per_copynumber,verbose=verbose,make_plots=opt$make_plots,write_csv=opt$write_csv,
-                       output_dir=output_dir,s_id=s_id,pangenome_used=pangenome_used,
-                       centroid_prevalence_file=centroid_prevalence_file,centroid_prevalence_cutoff=centroid_prevalence_cutoff,GRM_used=GRM_used,
-                       GRM=GRM,genes_summary_used=genes_summary_used,genes_summary=genes_summary,
-                                      metadata_used=metadata_used,metadata=metadata,min_num_control=min_num_control,min_num_case=min_num_case)
+  prep_genes_run<-list(gcopynumber,gdepth,depth_cutoff,
+                       samples_per_copynumber,verbose,opt$make_plots,opt$write_csv,
+                       output_dir,s_id,pangenome_used,
+                       centroid_prevalence_file,centroid_prevalence_cutoff,GRM_used,
+                       GRM,genes_summary_used,genes_summary,
+                        metadata_used,metadata,min_num_control,min_num_case)
     
 
   
@@ -195,7 +196,7 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
   
   byGene %<>% filter(sample_counts >= samples_per_copynumber)
   if(pangenome_used){
-    byGene<-left_join(byGene,centroid_prevalence_file,by=c("gene_id"="centroid_95"))
+    byGene<-left_join(byGene,centroid_prevalence_file,by=c("gene_id"="rep_gene_id"))
     byGene %<>% mutate(isCore = ifelse(centroid_prevalence >= centroid_prevalence_cutoff, "core", "accessory"))
     if(make_plots){
       byGene %>% ggplot(aes(x=sample_freq,y=centroid_prevalence))+  stat_bin_hex(bins=50)+labs(title=paste("For Species",s_id,"sample_freq verse centriod prevalence"))

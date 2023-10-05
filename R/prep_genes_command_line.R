@@ -50,7 +50,7 @@ opt = parse_args(opt_parser)
 verbose<-opt$verbose
 output_dir<-test_dir(opt$out_folder,verbose)
 s_id<-opt$species_id
-tmp <- file.path(output_dir, paste0(s_id,".genes.log"))
+tmp <- file.path(output_dir, paste0(s_id,".prep_genes.log"))
 
 lf <- log_open(tmp,show_notes=FALSE)
 put("running validate genes command is",console = verbose)
