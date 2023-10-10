@@ -39,4 +39,15 @@
 ## 2023-10-04: prep_genes split into two functions with a command line call
 ## 2023-10-05: prep_snps split into two functions with a command line call
 ## 2023-10-05: also added log file output for both functions
-Today+ tomorrow add structure test function
+## 2023-10-10: updated function and added output file for structure test example of pop structre test 
+```
+Rscript pop_structure_test_command_line.R 
+--species_id 104158 
+-v FALSE 
+-o "~/Projects/micro-glmm/test_output" 
+--GRM /Users/miriamgoldman/Projects/micro-glmm/test_output/104158.GRM.tsv 
+--metadata ~/Projects/micro-glmm/IBD_metadata.tsv 
+--tau 1 
+--n_tau 10
+
+```
