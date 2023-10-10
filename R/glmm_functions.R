@@ -1,3 +1,4 @@
+library(pROC)
 ### functions needed to run GLMM for MWAS
 getCoefficients<-function(Y, X, W, tau, GRM){
   # Y is working vector Y=alpha X + b
@@ -63,7 +64,6 @@ GetTrace<-function(Sigma_iX, X, GRM,W, tau, cov){
     Sigma_GRM= solve(Sigma,GRM) 
     Sigma_iXt=t(Sigma_iX)
     P_GRM= Sigma_GRM- Sigma_iX %*% cov %*% (Sigma_iXt %*% GRM)
-    cat(paste("sd of the projection GRM",sd(diag(P_GRM))))
   tra=sum(diag(P_GRM))
   return(tra)
 }
@@ -101,7 +101,7 @@ ScoreTest_NULL_Model = function(mu, y, X){
 
 
 
-fitglmmaiRPCG<-function(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov,tol,verbose){
+fitglmmaiRPCG<-function(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov,tol,verbose,write_log){
   re.AI = get_AI_score(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov)
   
   YPAPY = re.AI$YPAPY
@@ -135,6 +135,14 @@ fitglmmaiRPCG<-function(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov,to
     cat(paste("Dtau",Dtau))
     
   }
+  if(write_log) {
+    put(paste("YPAPY",YPAPY))
+    put(paste("Trace",Trace))
+    put(paste("score1",score1))
+    put(paste("AI",AI1))
+    put(paste("Dtau",Dtau))
+    
+  }
   
   return(list("tau" = tauVec))
 }
@@ -148,9 +156,10 @@ fitglmmaiRPCG<-function(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov,to
 #' @param tau vector for initial values for the variance component parameter estimates 
 #' @param maxiter maximum iterations to fit the glmm model
 #' @param verbose whether outputting messages in the process of model fitting
+#' @param log_file log file to write to
 #' @return model output for the baseline structure glmm 
 #' @export
-pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, verbose = TRUE,tol=.0001) {
+pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, verbose = TRUE,tol=.0001,log_file=NA) {
   #Fits the null generalized linear mixed model for a binary trait
   #Args:
   #  glm_fit0: glm model. Logistic model output (with no sample relatedness accounted for) 
@@ -160,12 +169,16 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
   #  verbose: whether outputting messages in the process of model fitting
   #Returns:
   #  model output for the null glmm
-  
+  write_log=!is.na(log_file)
   t_begin = proc.time()
   if(verbose){
     cat("begining time")
     cat(t_begin)	
     
+  }
+  if(write_log){
+    put("begining time")
+    put(t_begin)
   }
   y = glm_fit0$y
   n = length(y)
@@ -190,12 +203,13 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
   }
 
   if(verbose) cat("inital tau is ", tau,"\n")
+  if(write_log) put(paste("inital tau is ", tau))
   tau0=tau
   sqrtW_0 = mu.eta/sqrt(family$variance(mu))
   
   W_0 = sqrtW_0^2
   Sigma_0=gen_sp_Sigma(W_0,tau0,GRM)
-  re.coef = Get_Coef(y, X, tau, GRM,family, alpha0, eta0,  offset, maxiter=maxiter,verbose,tol.coef = tol)
+  re.coef = Get_Coef(y, X, tau, GRM,family, alpha0, eta0,  offset, maxiter=maxiter,verbose=verbose,tol.coef = tol,write_log=write_log)
   re = get_AI_score(re.coef$Y, X, GRM,re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov)
   
   tau[2] = max(0, as.numeric(tau0[2] + tau0[2]^2 * ((re$YPAPY - re$Trace)/2)/n)) #tau + Dtau dumb way
@@ -211,6 +225,7 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
       cat(paste("i",i))
     }
     if(verbose) cat("\nIteration ", i, "tau is ", tau, ":\n")
+    if(write_log) put(paste("Iteration ", i, "tau is ", tau, ":"))
     alpha0 = re.coef$alpha
     tau0 = tau
     #cat("tau0_v1: ", tau0, "\n")
@@ -218,18 +233,26 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
     rss_0=sum((y-mu)^2)
     # use Get_Coef before getAIScore       
     t_begin_Get_Coef = proc.time()
-    re.coef = Get_Coef(y, X, tau, GRM,family, alpha0, eta0,  offset,verbose=verbose,maxiter=maxiter,tol.coef = tol)
+    re.coef = Get_Coef(y, X, tau, GRM,family, alpha0, eta0,  offset,verbose=verbose,maxiter=maxiter,tol.coef = tol,write_log=write_log)
     t_end_Get_Coef =  proc.time()
     if(verbose) {
     cat("t_end_Get_Coef - t_begin_Get_Coef\n")
     cat(t_end_Get_Coef - t_begin_Get_Coef)
     }
+    if(write_log) {
+      put("t_end_Get_Coef - t_begin_Get_Coef")
+      put(t_end_Get_Coef - t_begin_Get_Coef)
+    }
     ##update tau
-    fit = fitglmmaiRPCG(re.coef$Y, X, GRM, re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov,tol=tol,verbose=verbose)
+    fit = fitglmmaiRPCG(re.coef$Y, X, GRM, re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov,tol=tol,verbose=verbose,write_log=write_log)
     t_end_fitglmmaiRPCG= proc.time()
     if(verbose) {
     cat("t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG\n")
     cat(t_end_fitglmmaiRPCG - t_end_Get_Coef)
+    }
+    if(write_log) {
+      put("t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG")
+      put(t_end_fitglmmaiRPCG - t_end_Get_Coef)
     }
     tau = as.numeric(fit$tau)
     cov = re.coef$cov
@@ -242,6 +265,11 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
        cat(paste("change in tau",abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)))
     cat("tau: ", tau, "\n")
     cat("tau0: ", tau0, "\n")
+     }
+    if(write_log) {
+      put(paste("change in tau",abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)))
+      put("tau: ", tau)
+      put("tau0: ", tau0)
     }
     
     if(tau[2] == 0) break
@@ -252,6 +280,10 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
     if(verbose){
       cat(paste("res",rss))
       cat(paste("rss change",rss_condition))
+    }
+    if(write_log){
+      put(paste("res",rss))
+      put(paste("rss change",rss_condition))
     }
     
     abs_condition=sum(res^2)
@@ -264,11 +296,17 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
   }
   if(verbose) cat("iter break at ",i)
   if(verbose) cat("\nFinal " ,tau, ":\n")
+  if(write_log) put(paste("iter break at ",i))
+  if(write_log) put(paste("Final " ,tau, ":"))
   if(max(tau) > tol^(-2)){
     cat("Model not converged")
+    if(write_log){
+      put("Model not converged")
+    }
     return(glm_fit0)
   }
-  re.coef = Get_Coef(y, X, tau, GRM,family, alpha, eta,  offset,verbose=verbose, maxiter=maxiter,tol.coef = tol)
+  
+  re.coef = Get_Coef(y, X, tau, GRM,family, alpha, eta,  offset,verbose=verbose, maxiter=maxiter,tol.coef = tol,write_log=write_log)
   re_final = get_AI_score(re.coef$Y, X, GRM,re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov)
   
   cov = re.coef$cov
@@ -296,29 +334,40 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
   var_error=var(res)
   #https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/j.2041-210x.2012.00261.x
   model_metrics=list("S"=sd(res),"R-sq"=(1-rss/ss),"R-sq(marginal)"=var_fixed/(var_fixed+var_random+var_error),"r-sq(conditional)"=(var_fixed+var_random)/(var_fixed+var_random+var_error))
+  call=paste("pop_structure_test formula=",glm_fit0$formula,"family=",glm_fit0$family)
+  Coefficients=paste("Coefficents:",alpha)
+  ###make another option for qaunt
+  AUC=paste("AUC",auc(glm_fit0$y,as.vector(mu)))
+  tau_script=paste("tau is:",tau[2],"t value is",sum(re.coef$b^2))
+  summary_text=paste(call,Coefficients,AUC,tau_script,sep="\n")
   glmmSNPResult = list(tau=tau,
-                    coefficients=alpha, b=re.coef$b,
+                    coefficients=alpha, b=re.coef$b,t=sum(re.coef$b^2),
                     linear.predictors=eta, linear_model=Xorig%*%alpha+re.coef$b, 
                     fitted.values=mu, var_mu=mu2,Y=Y, residuals=res, 
                     cov=cov, converged=converged,
                     sampleID = sample_ids, 
                     obj.noK=obj.noK, 
                     y = y, X = Xorig, 
-                    traitType="binary",
+                    traitType=glm_fit0$family,
                     iter_finised=i,
-                    model_metrics=model_metrics,species_id=species_id)
+                    model_metrics=model_metrics,species_id=species_id,summary_text=summary_text)
   
   t_end_null = proc.time()
   if(verbose) {
-  cat("t_end_null - t_begin, fitting the NULL model without LOCO took\n")
+  cat("t_end_null - t_begin,  fitting the structure model took\n")
   cat(t_end_null - t_begin)
+  }
+  
+  if(write_log) {
+    put("t_end_null - t_begin, fitting the structure model took")
+    put(t_end_null - t_begin)
   }
   
   return(glmmSNPResult)
 }
 
 
-Get_Coef = function(y, X, tau, GRM,family, alpha0, eta0,  offset, verbose=FALSE,maxiter,tol.coef=tol){
+Get_Coef = function(y, X, tau, GRM,family, alpha0, eta0,  offset, verbose=FALSE,maxiter,tol.coef=tol,write_log=FALSE){
   mu = family$linkinv(eta0)
   mu.eta = family$mu.eta(eta0)
   Y = eta0 - offset + (y - mu)/mu.eta
@@ -337,6 +386,9 @@ Get_Coef = function(y, X, tau, GRM,family, alpha0, eta0,  offset, verbose=FALSE,
       cat(tau)
       cat("Fixed-effect coefficients:\n")
       cat(alpha)
+    }
+    if(write_log) {
+      put(paste("Tau:",tau,"Fixed-effect coefficients:",alpha))
     }
     mu = family$linkinv(eta)
     mu.eta = family$mu.eta(eta)
@@ -556,17 +608,20 @@ simulate_power<-function(obj.pop.strut,glm_fit0,GRM,alpha_value=.05,mean_sim=0,s
 
 
 
-simulate_tau_inner<-function(data.new,GRM,species_id=s_id){
-  formula.new="disease_status~1+Age"
-  data.new<-data.new[shuffle(data.new),]
-  fit_logistic = glm(formula.new, data = data.new, family = "binomial")
-  fit_glmm_snp<-obj.pop.strut(fit_logistic,GRM,tau=c(1,1),verbose = FALSE,species_id=s_id)
-  LRT_value<-LRT_score(fit_glmm_snp,fit_logistic,GRM)
-  return(data.frame("tau"=fit_glmm_snp$tau[2],LRT_value))
+simulate_tau_inner<-function(glm_fit0,GRM,species_id=s_id,tau0,phi0){
+  family_to_fit<-glm_fit0$family
+  data.new<-glm_fit0$data
+  formulate_to_fit<-glm_fit0$formula
+  data.new_shuffled<-data.new[sample(1:nrow(data.new),nrow(data.new)),]
+
+  fit_logistic = glm(formulate_to_fit, data = data.new_shuffled, family = family_to_fit)
+  fit_glmm_snp<-pop_structure_test(fit_logistic,GRM,tau=c(phi0,tau0),verbose = FALSE,species_id=s_id)
+  t=sum(fit_glmm_snp$b^2)
+  return(data.frame("tau"=fit_glmm_snp$tau[2],t))
 }
 
-simulate_tau_outer<-function(data.new,GRM,n_tau,species_id=s_id){
-  list_of_tau<-lapply(seq(1,n_tau),function(x) simulate_tau_inner(data.new,GRM,species_id=s_id))
+simulate_tau_outer<-function(glm_fit0,GRM,n_tau,species_id=s_id,tau0,phi0){
+  list_of_tau<-lapply(seq(1,n_tau),function(x) simulate_tau_inner(glm_fit0,GRM,species_id=s_id,tau0,phi0))
   df_of_tau<-do.call(rbind, list_of_tau)
   return(df_of_tau)
 }
@@ -589,7 +644,6 @@ LRT_score<-function(obj.pop.strut,glm_fit0,GRM){
   X = obj.pop.strut$X
   #Sigma=forceSymmetric(gen_sp_Sigma(W,tauVecNew,GRM))
   Sigma=(tauVecNew[2]*GRM+W_mat_a)
-  cat(isSymmetric(Sigma))
   det_sigma<-det(Sigma)
   alpha=obj.pop.strut$coefficients
   Y_hat<-eta + (y-mu)/W#
