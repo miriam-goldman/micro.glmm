@@ -5,12 +5,12 @@ source("glmm_functions.R")
 library("optparse")
 suppressPackageStartupMessages(library(tidyverse))
 source("helper_functions.R")
-library(logr)
-library(data.table)
-library(Matrix)
-library(generics)
-library(plotROC)
-library(pheatmap)
+suppressPackageStartupMessages(library(logr))
+suppressPackageStartupMessages(library(data.table))
+suppressPackageStartupMessages(library(Matrix))
+suppressPackageStartupMessages(library(generics))
+suppressPackageStartupMessages(library(plotROC))
+suppressPackageStartupMessages(library(pheatmap))
 option_list = list(
   make_option(c("-s", "--species_id"), type="character", default="s_id", 
               help="species id for labeling output file names (optional)", metavar="character"),

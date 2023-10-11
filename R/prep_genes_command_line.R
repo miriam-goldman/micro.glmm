@@ -60,5 +60,6 @@ commad_message<-paste(unlist(command_arg_list),collapse = " ")
 put(paste("Rscript prep_genes_command_line.R",commad_message),console = verbose)
 validate_genes_output=validate_genes_input(opt)#parse_genes list
 do.call(prep_genes_function_R,validate_genes_output)
+
 # Close log
 log_close()

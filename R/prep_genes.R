@@ -85,10 +85,14 @@ validate_genes_input<-function(opt){
         put(paste("using metadata to filter, filtering controls at",min_num_control,"per gene"),console = verbose)
       }
     }else{
+      min_num_control=opt$min_num_control
+      min_num_case=opt$min_num_case
       metadata=NULL
       metadata_used=FALSE
     }
   }else{
+    min_num_control=opt$min_num_control
+    min_num_case=opt$min_num_case
     metadata=NULL
     metadata_used=FALSE
     if(verbose){
@@ -248,7 +252,7 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
   
   df$s_id<-s_id
   if(write_csv){
-    write.csv(copy_number_for_model,file.path(output_dir,paste0(s_id,".modeling_data.csv")))
+    write.csv(copy_number_for_model,file.path(output_dir,paste0(s_id,".copynumber_data.csv")))
   }else{
     return(copy_number_for_model)
   }
