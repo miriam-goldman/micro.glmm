@@ -1,0 +1,96 @@
+========================================================================= 
+Log Path: ../example_output/log/exp_species.pop_structure_test.log 
+Program Path: /Users/miriamgoldman/Projects/micro-glmm/R/pop_structure_test_command_line.R 
+Working Directory: /Users/miriamgoldman/Projects/micro-glmm/R 
+User Name: miriamgoldman 
+R Version: 4.2.3 (2023-03-15) 
+Machine: Miriam x86_64 
+Operating System: Darwin 20.6.0 Darwin Kernel Version 20.6.0: Tue Jun 21 20:50:28 PDT 2022; root:xnu-7195.141.32~1/RELEASE_X86_64 
+Base Packages: stats graphics grDevices utils datasets methods base Other Packages: pheatmap_1.0.12 plotROC_2.3.1 generics_0.1.3 data.table_1.14.8 logr_1.3.3 forcats_1.0.0 stringr_1.5.0 dplyr_1.1.3 purrr_1.0.2 readr_2.1.4 tidyr_1.3.0 tibble_3.2.1 ggplot2_3.4.3 tidyverse_1.3.2 optparse_1.7.3 Matrix_1.6-1.1 pROC_1.18.4 
+Log Start Time: 2023-10-11 14:56:00 
+========================================================================= 
+
+running validate genes command is 
+
+Rscript pop_structure_test_command_line.R --species_id exp_species -v FALSE -o ../example_output --GRM ../example_output/exp_species.GRM.tsv --metadata ../example_data/IBD_metadata.tsv --tau 1 --n_tau 10 
+
+GRM read in 
+
+metadata read in 
+
+begining time 
+
+   user  system elapsed 
+  3.079   0.276   3.703 
+
+[1] "inital tau is  1" "inital tau is  1"
+
+[1] "Tau: 1 Fixed-effect coefficients: 0.1597611408406"
+[2] "Tau: 1 Fixed-effect coefficients: 0.1597611408406"
+
+[1] "Tau: 1 Fixed-effect coefficients: 0.160248977579651"
+[2] "Tau: 1 Fixed-effect coefficients: 0.160248977579651"
+
+[1] "Tau: 1 Fixed-effect coefficients: 0.16024901295684"
+[2] "Tau: 1 Fixed-effect coefficients: 0.16024901295684"
+
+[1] "Iteration  1 tau is  1 :"                
+[2] "Iteration  1 tau is  0.980072198758022 :"
+
+[1] "Tau: 1 Fixed-effect coefficients: 0.157438193705187"                
+[2] "Tau: 0.980072198758022 Fixed-effect coefficients: 0.157438193705187"
+
+[1] "Tau: 1 Fixed-effect coefficients: 0.15790623514375"                
+[2] "Tau: 0.980072198758022 Fixed-effect coefficients: 0.15790623514375"
+
+[1] "Tau: 1 Fixed-effect coefficients: 0.157906267265138"                
+[2] "Tau: 0.980072198758022 Fixed-effect coefficients: 0.157906267265138"
+
+t_end_Get_Coef - t_begin_Get_Coef 
+
+   user  system elapsed 
+  0.071   0.007   0.011 
+
+YPAPY 0.490662625497776 
+
+Trace 1.76946581124021 
+
+score1 -1.27880318574244 
+
+AI 0.245262146818612 
+
+Dtau -5.21402589975777 
+
+t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG 
+
+   user  system elapsed 
+  0.278   0.029   0.062 
+
+[1] "change in tau 0"                 "change in tau 0.999897977110423"
+
+tau: 
+
+tau0: 
+
+iter break at 1 
+
+[1] "Final  1 :" "Final  0 :"
+
+[1] "Tau: 1 Fixed-effect coefficients: -0.000250751366877375"
+[2] "Tau: 0 Fixed-effect coefficients: -0.000250751366877375"
+
+[1] "Tau: 1 Fixed-effect coefficients: 2.62733046123639e-12"
+[2] "Tau: 0 Fixed-effect coefficients: 2.62733046123639e-12"
+
+[1] "Tau: 1 Fixed-effect coefficients: 6.73594340448919e-16"
+[2] "Tau: 0 Fixed-effect coefficients: 6.73594340448919e-16"
+
+t_end_null - t_begin, fitting the structure model took 
+
+   user  system elapsed 
+  0.704   0.069   0.255 
+
+========================================================================= 
+Log End Time: 2023-10-11 14:56:02 
+Log Elapsed Time: 0 00:00:02 
+========================================================================= 
