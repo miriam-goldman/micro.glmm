@@ -1,8 +1,8 @@
-library("optparse")
+suppressPackageStartupMessages(library("optparse"))
 suppressPackageStartupMessages(library(tidyverse))
 source("helper_functions.R")
-library(logr)
-library(data.table)
+suppressPackageStartupMessages(library(logr))
+suppressPackageStartupMessages(library(data.table))
 source("glmm_functions.R")
 option_list = list(
   make_option(c("-s", "--species_id"), type="character", default="s_id", 
@@ -45,6 +45,6 @@ validate_marker_test(opt)
 
 output_dir<-test_dir(opt$out_folder,verbose)
 marker_test_df<-micro_glmm(glmm_fit,glm_fit0,GRM,copy_number_df,SPA=spa_opt,scale_g=scale_copynumber_opt,log_g=log_copynumber_opt)
-write.csv2(marker_test_df,file.path(output_dir, paste0(s_id,".marker_test.tsv")),sep="\t")
+write.table(marker_test_df,file.path(output_dir, paste0(s_id,".marker_test.tsv")),sep="\t")
 
 log_close()
