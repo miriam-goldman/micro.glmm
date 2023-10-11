@@ -51,3 +51,17 @@ Rscript pop_structure_test_command_line.R
 --n_tau 10
 
 ```
+
+## 2023-10-11: added marker_test_command_line example of function below:
+```
+ Rscript marker_test_command_line.R 
+--species_id 104158 
+-v TRUE 
+-o "~/Projects/micro-glmm/test_output" 
+--Rdata "/Users/miriamgoldman/Projects/micro-glmm/test_output/104158.model_obj.Rdata" 
+--copy_number "/Users/miriamgoldman/Projects/micro-glmm/test_output/104158.modeling_data.csv" 
+--SPA FALSE 
+--scale_copynumber TRUE 
+--log_copynumber TRUE
+
+```
