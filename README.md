@@ -3,37 +3,15 @@
 <img width="985" alt="image" src="https://github.com/miriam-goldman/micro-glmm/assets/46382670/7f1fde4b-7439-4c0c-a99d-bcba26fbe5f3">
 
 ### 2023-09-27: Made Repository
-### 2023-10-02: updated function prep-snps; example of how to run
+### 2023-10-02: updated function prep-snps; example of how to run with simplest options
 ```
- Rscript prep_snps.R 
- --species_id 100077
-  -v TRUE 
-  -o "~/Projects/micro-glmm/test_output" 
-  -i "/Users/miriamgoldman/Projects/IBD_folder/midas2_data/merge/snps/100077/100077.snps_info.tsv" 
-  -f "/Users/miriamgoldman/Projects/IBD_folder/midas2_data/merge/snps/100077/100077.snps_freqs.tsv" 
-  -d "/Users/miriamgoldman/Projects/IBD_folder/midas2_data/merge/snps/100077/100077.snps_depth.tsv" 
-  -r FALSE 
-  --centroid_prevalence_cutoff .8 
-  --run_qp FALSE 
-  -u 5 
-  -l .2 
-  -a 3
-   -m 5 
-   -n 5
+Rscript prep_snps_command_line.R  --species_id exp_species -v TRUE  -o "../example_output"   -i "../example_data/exp_species.snps_info.tsv"   -f "../example_data/exp_species.snps_freqs.tsv"  -d "../example_data/exp_species.snps_depth.tsv"   -a 3 -m 5  -n 5   
  ```
  still to do: make sure qp and pangeomne run (waiting on new pangeome)
  
- ### 2023-10-03: updated function prep-genes; example of how to run
+ ### 2023-10-03: updated function prep-genes; example of how to run with simplest options
 ```
- Rscript prep_genes.R
---species_id 104158
--v TRUE
- -o "~/Projects/micro-glmm/test_output"
--c "/Users/miriamgoldman/Projects/IBD_folder/midas2_data/merge/genes/104158/104158.genes_copynum.tsv"
- -d "/Users/miriamgoldman/Projects/IBD_folder/midas2_data/merge/genes/104158/104158.genes_depth.tsv"
--m 5 -n 5 --genes_summary /Users/miriamgoldman/Projects/IBD_folder/midas2_data/merge/genes/genes_summary.tsv
---GRM /Users/miriamgoldman/Projects/micro-glmm/test_output/104158.GRM.tsv
---metadata ~/Projects/micro-glmm/IBD_metadata.tsv
+Rscript prep_genes_command_line.R --species_id exp_species -v TRUE -o "../example_output" -c "../example_data/exp_species.genes_copynum.tsv" -d "../example_data/exp_species.genes_depth.tsv" -m 5 -n 5 --GRM ../example_output/exp_species.GRM.tsv --write_csv TRUE
  ```
 
 ## 2023-10-04: prep_genes split into two functions with a command line call
@@ -41,27 +19,12 @@
 ## 2023-10-05: also added log file output for both functions
 ## 2023-10-10: updated function and added output file for structure test example of pop structre test 
 ```
-Rscript pop_structure_test_command_line.R 
---species_id 104158 
--v FALSE 
--o "~/Projects/micro-glmm/test_output" 
---GRM /Users/miriamgoldman/Projects/micro-glmm/test_output/104158.GRM.tsv 
---metadata ~/Projects/micro-glmm/IBD_metadata.tsv 
---tau 1 
---n_tau 10
+Rscript pop_structure_test_command_line.R --species_id exp_species -v FALSE -o ../example_output --GRM ../example_output/exp_species.GRM.tsv --metadata ../example_data/IBD_metadata.tsv --tau 1 --n_tau 10
 
 ```
 
 ## 2023-10-11: added marker_test_command_line example of function below:
 ```
- Rscript marker_test_command_line.R 
---species_id 104158 
--v TRUE 
--o "~/Projects/micro-glmm/test_output" 
---Rdata "/Users/miriamgoldman/Projects/micro-glmm/test_output/104158.model_obj.Rdata" 
---copy_number "/Users/miriamgoldman/Projects/micro-glmm/test_output/104158.modeling_data.csv" 
---SPA FALSE 
---scale_copynumber TRUE 
---log_copynumber TRUE
+Rscript marker_test_command_line.R --species_id exp_species -v FALSE -o ../example_output --Rdata ../example_output/exp_species.model_obj.Rdata --copy_number ../example_output/exp_species.copynumber_data.csv
 
 ```
