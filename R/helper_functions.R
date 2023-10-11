@@ -28,6 +28,7 @@ test_dir<-function(test_dir,verbose){tryCatch({
 
 
 validate_GRM_metadata<-function(opt){
+  verbose<-opt$verbose
   if(isTRUE(!is.na(opt$GRM))){
     if(file_test("-f",opt$GRM)){
       GRM <- fread(opt$GRM,sep="\t",header=FALSE) 
@@ -107,4 +108,52 @@ validate_GRM_metadata<-function(opt){
     put("formula invalid, must be in this format y~covariates",console = verbose)
     stop()
   }
+}
+
+
+validate_marker_test<-function(opt){
+  
+  if(isTRUE(!is.na(opt$Rdata))){
+    if(file_test("-f",opt$Rdata) & grepl(".Rdata",opt$Rdata)){
+        load(opt$Rdata, .GlobalEnv)
+        put("Rdata loaded",console = verbose)
+      }else{
+        put("Rdata invalid",console = verbose)
+        stop()
+      }
+    }else{
+      put("Rdata invalid",console = verbose)
+      stop()
+    }
+  
+  if(isTRUE(!is.na(opt$copy_number))){
+    if(file_test("-f",opt$copy_number)){
+      copy_number_df<<-fread(opt$copy_number)
+      if(all(c("gene_id","sample_name","copy_number") %in% colnames(copy_number_df))){
+        put("copy_number loaded",console = verbose)
+      }else{
+        put("copy_number data invalid, check column names",console = verbose)
+        stop()
+      }
+      
+    }else{
+      put("copy_number data invalid",console = verbose)
+      stop()
+    }
+  }else{
+    put("copy_number data invalid",console = verbose)
+    stop()
+  }
+  
+  if(is.logical(opt$SPA)){
+    spa_opt<<-opt$SPA
+  }
+  
+  if(is.logical(opt$scale_copynumber)){
+    scale_copynumber_opt<<-opt$scale_copynumber
+  }
+  if(is.logical(opt$log_copynumber)){
+    log_copynumber_opt<<-opt$log_copynumber
+  }
+  put("data read in",console = verbose)
 }

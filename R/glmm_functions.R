@@ -1,4 +1,5 @@
 library(pROC)
+library(Matrix)
 ### functions needed to run GLMM for MWAS
 getCoefficients<-function(Y, X, W, tau, GRM){
   # Y is working vector Y=alpha X + b
@@ -337,7 +338,7 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
   call=paste("pop_structure_test formula=",glm_fit0$formula,"family=",glm_fit0$family)
   Coefficients=paste("Coefficents:",alpha)
   ###make another option for qaunt
-  AUC=paste("AUC",auc(glm_fit0$y,as.vector(mu)))
+  AUC=paste("AUC",suppressMessages(suppressWarnings(auc(glm_fit0$y,as.vector(mu)))))
   tau_script=paste("tau is:",tau[2],"t value is",sum(re.coef$b^2))
   summary_text=paste(call,Coefficients,AUC,tau_script,sep="\n")
   glmmSNPResult = list(tau=tau,
@@ -429,6 +430,9 @@ micro_glmm = function(obj.pop.strut,
   ## copy_number_df must have column for sample; column for gene_id; column for copy_number
   ## returns list of values for each gene examined
   list_vec<-NULL
+  t_begin = proc.time()
+
+  
   obj.noK = obj.pop.strut$obj.noK
   family = glm_fit0$family
   
@@ -439,7 +443,6 @@ micro_glmm = function(obj.pop.strut,
   W1 = sqrtW^2   ##(mu*(1-mu) for binary) theses are the same
   tauVecNew = obj.pop.strut$tau
   X = obj.pop.strut$X
-  
   Sigma=gen_sp_Sigma(W1,tauVecNew,GRM)
   obj.pop.strut$Sigma<-Sigma
   Sigma_iX<-solve(Sigma,X)
@@ -454,7 +457,11 @@ micro_glmm = function(obj.pop.strut,
   for(k in sample_genes){
     iter=which(sample_genes==k)
     if(iter %% 1000 == 0){
-      cat(paste("number of genes done ",iter))
+      cat(paste("number of genes done ",iter,"\n"))
+      cat("time past:")
+      t_now = proc.time()
+      cat(t_now-t_begin)	
+      cat("\n")
     }
     one_gene<-copy_number_df %>% ungroup %>% filter(gene_id==k)
     #one_gene_indexs<-sample_lookup %>% inner_join(one_gene,by=c("sampleID"="sample_name")) %>% select(sampleID,index)
@@ -504,18 +511,19 @@ micro_glmm = function(obj.pop.strut,
     out1 = Saddle_Prob(q=qtilde, mu = mu, g = G_tilde, var1,Cutoff = 2,log.p=FALSE)
     list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=beta,"se beta"=se_beta,"pvalue"=pval,
                                        "t_adj"=t_adj,"num_control"=sum(filtered_obj.pop.strut$y==0),
-                                       "num_total"=length(G0),"auc_beta_G_b"=auc(filtered_obj.pop.strut$y,new_mu),
-                                       auc_b=auc(filtered_obj.pop.strut$y,mu),corbeta_G_y=cor(beta[1,1]*G0,filtered_obj.pop.strut$y),
+                                       "num_total"=length(G0),
                                        SPA_pvalue=out1$p.value,spa_score=out1$Score,pvalue_noadj=out1$p.value.NA))
     }else{
       list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=beta,"se beta"=se_beta,"pvalue"=pval,
                                          "t_adj"=t_adj,"num_control"=sum(filtered_obj.pop.strut$y==0),
-                                         "num_total"=length(G0),"auc_beta_G_b"=auc(filtered_obj.pop.strut$y,new_mu),
-                                         auc_b=auc(filtered_obj.pop.strut$y,mu),corbeta_G_y=cor(beta[1,1]*G0,filtered_obj.pop.strut$y)))
+                                         "num_total"=length(G0)))
       
     }
     }
   }
+  cat("total time past:")
+  t_end = proc.time()
+  cat(t_end-t_begin)	
   return(list_vec)
 }
 
