@@ -65,3 +65,4 @@ Rscript pop_structure_test_command_line.R --species_id exp_species -v FALSE -o .
 Rscript marker_test_command_line.R --species_id exp_species -v FALSE -o ../example_output --Rdata ../example_output/exp_species.model_obj.Rdata --copy_number ../example_output/exp_species.copynumber_data.csv
 
 ```
+## 2023-10-13: added conda install and reconfigured folder to work better with r library
