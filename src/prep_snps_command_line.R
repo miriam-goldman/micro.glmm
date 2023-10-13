@@ -1,13 +1,15 @@
 library("optparse",quietly=TRUE)
-source("prep_snps.R")
+source("../R/prep_snps.R")
+#library(devtools)
+#install_github("miriam-goldman/micro-glmm")
 suppressPackageStartupMessages(library(tidyverse,quietly=TRUE,warn.conflicts=FALSE,verbose=FALSE))
 option_list = list(
   make_option(c("-s", "--species_id"), type="character", default="s_id", 
               help="species id for labeling output file names (optional)", metavar="character"),
   make_option(c("-v", "--verbose"), type="logical", default=TRUE, 
-              help="verbose, TRUE or FALSE"),
+              help="verbose, TRUE or FALSE", metavar="logical"),
   make_option(c("--make_plots"), type="logical", default=TRUE, 
-              help="make plots, TRUE or FALSE"),
+              help="make plots, TRUE or FALSE", metavar="logical"),
   make_option(c("-o", "--out_folder"), type="character", default=NULL,
               help="output folder name", metavar="character"),
   make_option(c("-i", "--snps_info_file"), type="character", default=NULL,
@@ -21,19 +23,19 @@ option_list = list(
   make_option(c("-p", "--centroid_prevalence_file"), type="character", default=NULL,
               help="centriod prevalence file (optional)" , metavar="character"),
   make_option(c("--centroid_prevalence_cutoff"), type="numeric", default=.7,
-              help="centriod prevalence file (optional)" ),
+              help="centriod prevalence file (optional)" ,metavar="numeric"),
   make_option(c("-q", "--run_qp"), type="logical", default=FALSE, 
-              help="option to run qp or not (optional)"),
+              help="option to run qp or not (optional)",metavar="logical"),
   make_option(c("-u", "--median_upper_filter"), type="integer", default=3,
-              help="upper limit on median filter num of times median value of depth to let pass for each sample for QP (optional)"),
+              help="upper limit on median filter num of times median value of depth to let pass for each sample for QP (optional)",metavar="numeric"),
   make_option(c("-l", "--median_lower_filter"), type="numeric", default=.3,
-              help="lower limit on median filter num of times median value of depth to let pass for each sample for QP (optional)"),
+              help="lower limit on median filter num of times median value of depth to let pass for each sample for QP (optional)",metavar="numeric"),
   make_option(c("-a", "--abosulte_filter"), type="numeric", default=3,
-              help="lowest depth to all to pass filters"),
+              help="lowest depth to all to pass filters",metavar="integer"),
   make_option(c("-m", "--sample_median_depth_filter"), type="integer", default=10,
-              help="median depth needed for sample to be considered to have the species"),
+              help="median depth needed for sample to be considered to have the species",metavar="integer"),
   make_option(c("-n","--number_of_samples_for_sites"), type="integer", default=5,
-              help="number of samples needed for site to be considered to have the species")
+              help="number of samples needed for site to be considered to have the species",metavar="integer")
   
 )
 

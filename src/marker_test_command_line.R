@@ -1,26 +1,26 @@
 suppressPackageStartupMessages(library("optparse"))
 suppressPackageStartupMessages(library(tidyverse))
-source("helper_functions.R")
+source("../R/helper_functions.R")
 suppressPackageStartupMessages(library(logr))
 suppressPackageStartupMessages(library(data.table))
-source("glmm_functions.R")
+source("../R/glmm_functions.R")
 option_list = list(
   make_option(c("-s", "--species_id"), type="character", default="s_id", 
               help="species id for labeling output file names (optional)", metavar="character"),
   make_option(c("-v", "--verbose"), type="logical", default=TRUE, 
-              help="verbose, TRUE or FALSE"),
+              help="verbose, TRUE or FALSE", metavar="logical"),
   make_option(c("-o", "--out_folder"), type="character", default=NULL,
               help="output folder name", metavar="character"),
   make_option(c("--Rdata"), type="character", default=NULL,
-              help="Rdata made by pop_structure_test_command_line.R" ),
+              help="file location of Rdata made by pop_structure_test_command_line.R",metavar="character"),
   make_option(c("--copy_number"), type="character", default=NULL,
-              help=".tsv file with gene_id, sample_name, and copynumber for CNV data"),
+              help=".tsv file with gene_id, sample_name, and copynumber for CNV data",metavar="character"),
   make_option(c("--SPA"), type="logical", default=FALSE,
-              help="whether to use SPA for pvalues, will slow down output (optional)"),
+              help="whether to use SPA for pvalues, will slow down output (optional)", metavar="logical"),
   make_option(c("--scale_copynumber"), type="logical", default=FALSE,
-              help="whether to scale the copynumber data for each gene (optional)"),
+              help="whether to scale the copynumber data for each gene (optional)", metavar="logical"),
   make_option(c("--log_copynumber"), type="logical", default=FALSE,
-              help="whether to log the copynumber data for each gene (optional)")
+              help="whether to log the copynumber data for each gene (optional)", metavar="logical")
   
 )
 
