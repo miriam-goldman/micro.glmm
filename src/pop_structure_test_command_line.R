@@ -1,10 +1,10 @@
 ###Run structue test
 #after prep_snps
 
-source("glmm_functions.R")
+source("../R/glmm_functions.R")
 library("optparse")
 suppressPackageStartupMessages(library(tidyverse))
-source("helper_functions.R")
+source("../R/helper_functions.R")
 suppressPackageStartupMessages(library(logr))
 suppressPackageStartupMessages(library(data.table))
 suppressPackageStartupMessages(library(Matrix))
@@ -17,25 +17,25 @@ option_list = list(
   make_option(c("-m", "--metadata"), type="character", default="s_id", 
               help="file path to metadata", metavar="character"),
   make_option(c("-v", "--verbose"), type="logical", default=TRUE, 
-              help="verbose, TRUE or FALSE"),
+              help="verbose, TRUE or FALSE", metavar="logical"),
   make_option(c("-o", "--out_folder"), type="character", default=NULL,
               help="output folder name", metavar="character"),
   make_option(c("--GRM"), type="character", default=NULL,
-              help="GRM used to check sample list (optional)" ),
+              help="GRM used to check sample list (optional)",metavar="character" ),
   make_option(c("--tau"), type="numeric", default=0,
-              help="initail values of tau (optional)"),
+              help="initail values of tau (optional)",metavar="numeric"),
   make_option(c("--phi"), type="numeric", default=1,
-              help="initail values of phi (optional), only for quantitative data" ),
+              help="initail values of phi (optional), only for quantitative data",metavar="numeric" ),
   make_option(c("--maxiter"), type="numeric", default=100,
-              help="max iteration of fitting parameters (optional)" ),
+              help="max iteration of fitting parameters (optional)",metavar="numeric" ),
   make_option(c("--tol"), type="numeric", default=.0001,
-              help="tolerance for parameters (optional)" ),
+              help="tolerance for parameters (optional)",metavar="numeric" ),
   make_option(c("--family"),type="character",default="binomial",
-              help="family to fit for the generalized linear model and generalized linear mixed model"),
+              help="family to fit for the generalized linear model and generalized linear mixed model",metavar="character"),
   make_option(c("--formula_to_fit"), type="character", default="y~1",
-              help="formula used to fit population structure; the phenotype and any covariates in the metadata file that are to be used" ),
+              help="formula used to fit population structure; the phenotype and any covariates in the metadata file that are to be used",metavar="character" ),
   make_option(c("--n_tau"), type="numeric", default=0,
-              help="number of permuations to test for significance of tau, if 0 no test run" )
+              help="number of permuations to test for significance of tau, if 0 no test run",metavar="numeric" )
  
 )
 

@@ -1,14 +1,14 @@
 library("optparse")
-source("prep_genes.R")
+source("../R/prep_genes.R")
 option_list = list(
   make_option(c("-s", "--species_id"), type="character", default="s_id", 
               help="species id for labeling output file names (optional)", metavar="character"),
   make_option(c("-v", "--verbose"), type="logical", default=TRUE, 
-              help="verbose, TRUE or FALSE"),
+              help="verbose, TRUE or FALSE", metavar="logical"),
   make_option(c("--make_plots"), type="logical", default=FALSE, 
-              help="make_plots, TRUE or FALSE"),
+              help="make_plots, TRUE or FALSE", metavar="logical"),
   make_option(c("--write_csv"), type="logical", default=FALSE, 
-              help="write_csv, TRUE or FALSE"),
+              help="write_csv, TRUE or FALSE", metavar="logical"),
   make_option(c("-o", "--out_folder"), type="character", default=NULL,
               help="output folder name", metavar="character"),
   make_option(c("-c", "--genes_copynumber_file"), type="character", default=NULL,
@@ -18,21 +18,21 @@ option_list = list(
   make_option(c("-p", "--centroid_prevalence_file"), type="character", default=NULL,
               help="centriod prevalence file (optional)" , metavar="character"),
   make_option(c("--centroid_prevalence_cutoff"), type="numeric", default=.7,
-              help="centriod prevalence file (optional)" ),
+              help="centriod prevalence file (optional)",metavar="numeric"),
   make_option(c("--genes_summary"), type="character", default=NULL,
-              help="genes summary from MIDAS2 output used to filter sample list (optional)" ),
+              help="genes summary from MIDAS2 output used to filter sample list (optional)",metavar="character" ),
   make_option(c("--metadata"), type="character", default=NULL,
-              help="metadata for samples; controls coded as 0s if using to filter (optional)" ),
+              help="metadata for samples; controls coded as 0s if using to filter (optional)",metavar="character" ),
   make_option(c("--min_num_control"), type="numeric", default=5,
-              help="min number of samples that are controls to use gene (optional)" ),
+              help="min number of samples that are controls to use gene (optional)",metavar="numeric" ),
   make_option(c("--min_num_case"), type="numeric", default=5,
-              help="min number of samples that are case to use gene (optional)" ),
+              help="min number of samples that are case to use gene (optional)",metavar="numeric" ),
   make_option(c("--GRM"), type="character", default=NULL,
-              help="GRM used to check sample list (optional)" ),
+              help="GRM used to check sample list location of tsv(optional)",metavar="character" ),
   make_option(c("-n","--number_of_samples_for_copynumber"), type="integer", default=5,
-              help="number of samples needed for gene to be considered"),
+              help="number of samples needed for gene to be considered",metavar="integer"),
   make_option(c("-m","--depth_cutoff"), type="integer", default=5,
-              help="depth needed for gene to be included")
+              help="depth needed for gene to be included",metavar="integer")
 )
 
 #' Rscript prep_genes.R 

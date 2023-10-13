@@ -1,7 +1,16 @@
 library(logr)
 suppressPackageStartupMessages(library(tidyverse))
 library(data.table,quietly=TRUE,warn.conflicts=FALSE)
-source("helper_functions.R")
+
+wd<-getwd()
+
+if(basename(wd)=="micro-glmm"){
+  script_folder=file.path(wd,"R")
+}
+if(basename(dirname(wd))=="micro-glmm"){
+  script_folder=file.path(dirname(wd),"R")
+}
+source(file.path(script_folder,"helper_functions.R"))
 library(magrittr,quietly=TRUE,warn.conflicts=FALSE)
 
 #validate input argument
