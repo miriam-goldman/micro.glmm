@@ -11,7 +11,7 @@ conda activate microglmm
 ### Move into R folder
 
 ```
-cd R
+cd src
 ```
 ### run prep snps
 ```
