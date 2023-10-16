@@ -33,7 +33,7 @@ def read_species_tsv(species_file):
             list_of_rep.append("GUT_GENOME"+line.rstrip().split('\t')[2][10:16])
     return dict(zip(list_of_species,list_of_rep))
 
-def read_genelen(glen_file):
+def read_genelen(glen_file,rep_genome):
     glen_dict = defaultdict(int)
     all_glen_dict = defaultdict(int)
     with open(glen_file) as instream:
