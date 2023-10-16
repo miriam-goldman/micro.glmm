@@ -60,8 +60,8 @@ def read_geneinfo(ginfo_file, list_of_genes, by_col, rep_genome):
             gene_id = line[0]
             centroid_id = line[index_col]
             genome_id = gene_id.split("_")[1]
+            print(genome_id)
             if gene_id in list_of_genes:
-                print(centroid_id)
                 centroid_counter[centroid_id].append(genome_id)
 
             # The FULL map for gene from representative genome to centroid_95
