@@ -1,5 +1,6 @@
 # Parge MIDASDB gene_info.txt to extract core/accessory gene
 # Chunyu Zhao 2023-02-16
+# updated by Miriam 2023-10-16
 
 import os
 import sys
@@ -29,33 +30,16 @@ def read_species_tsv(species_file):
     with open(species_file) as instream:
         for line in instream:
             list_of_species.append(line.rstrip().split('\t')[1])
-            list_of_rep.append("UHGG"+line.rstrip().split('\t')[2][10:16])
+            list_of_rep.append("GUT_GENOME"+line.rstrip().split('\t')[2][10:16])
     return dict(zip(list_of_species,list_of_rep))
 
-# Read the Table of Content from UHGG (genomes.tsv) in the future
-toc = {
-        "102478": "UHGG143505",
-        "102528": "UHGG147149",
-        "102492": "UHGG143712",
-        "101300": "UHGG095967"
-    }
-
-
-def read_genomes(genomes_file):
-    list_of_genomes = list()
-    with open(genomes_file) as instream:
-        for line in instream:
-            list_of_genomes.append(line.rstrip().split('\t')[0])
-    return list_of_genomes
-
-
-def read_genelen(glen_file, list_of_genomes):
+def read_genelen(glen_file):
     glen_dict = defaultdict(int)
     all_glen_dict = defaultdict(int)
     with open(glen_file) as instream:
         for line in instream:
             gene_id, genome_id, gene_len = line.rstrip().split('\t')
-            if genome_id in list_of_genomes:
+            if genome_id not rep_genome:
                 glen_dict[gene_id] = gene_len
             all_glen_dict[gene_id] = gene_len
     return glen_dict, all_glen_dict
@@ -142,11 +126,7 @@ def main():
     args = p.parse_args()
     by_col = args.by_col
     ginfo_file = f"{args.pandb_dir}/{args.species_id}/gene_info.txt"
-    genome_file = f"{args.pandb_dir}/{args.species_id}/list_of_genomes"
     glen_file = f"{args.pandb_dir}/{args.species_id}/genes.len"
-
-    print("Note: the provided list_of_genomes doesn't include the representative genomes!")
-
     out_file = f"{args.pandb_dir}/{args.species_id}/centroid_prevalence.tsv"
     mat_file = f"{args.pandb_dir}/{args.species_id}/centroid_matrix.tsv"
     rep_file = f"{args.pandb_dir}/{args.species_id}/centroid_to_repgenes.tsv"
