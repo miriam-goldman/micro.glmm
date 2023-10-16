@@ -17,7 +17,6 @@ Input:
     UHGG (genomes.tsv)
     output folder
 Output: per-species gene_occurrence.tsv file
---core_cutoff
 --by_col
 Methods:
     Given a list of genomes for given species, we first extracted all the
@@ -143,7 +142,6 @@ def main():
     rep_file = f"{args.out_dir}/{args.species_id}.centroid_to_repgenes.tsv"
     toc=read_species_tsv(args.genome_info_file)
     rep_genome = toc[args.species_id]
-    core_cutoff = args.core_cutoff
     print(f"The representative genome is {rep_genome}")
 
 
