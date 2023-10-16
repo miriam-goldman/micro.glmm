@@ -59,7 +59,7 @@ def read_geneinfo(ginfo_file, list_of_genes, by_col, rep_genome):
 
             gene_id = line[0]
             centroid_id = line[index_col]
-            genome_id = gene_id.split("_")[0]
+            genome_id = gene_id.split("_")[1]
             if gene_id in list_of_genes:
                 centroid_counter[centroid_id].append(genome_id)
 
