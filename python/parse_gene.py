@@ -131,7 +131,6 @@ def main():
     ginfo_file = f"{args.pandb_dir}/{args.species_id}/gene_info.txt"
     glen_file = f"{args.pandb_dir}/{args.species_id}/genes.len"
     out_file = f"{args.out_dir}/{args.species_id}.{by_col}.centroid_prevalence.tsv"
-    mat_file = f"{args.out_dir}/{args.species_id}.{by_col}.centroid_matrix.tsv"
     rep_file = f"{args.out_dir}/{args.species_id}.{by_col}.centroid_to_repgenes.tsv"
     toc=read_species_tsv(args.genome_info_file)
     rep_genome = toc[args.species_id]
@@ -148,7 +147,7 @@ def main():
     print(f"Total number of pan genes: {total_genes}")
 
     centroid_counter, centroid_to_rep = read_geneinfo(ginfo_file, list_of_genes, by_col, rep_genome)
-    centroid_occurence, centroid_matrix = compute_prevalence(centroid_counter, total_genomes, all_glen_dict, core_cutoff)
+    centroid_occurence, centroid_matrix = compute_prevalence(centroid_counter, total_genomes, all_glen_dict)
 
 
     write_tofile(out_file, centroid_occurence, by_col)
