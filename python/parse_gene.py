@@ -10,9 +10,12 @@ from collections import defaultdict
 
 """
 Input:
-    s3://microbiome-pollardlab/uhgg_v1/pangenomes/{species_id}/gene_info.txt.lz4: one gene_id per row
-    s3://microbiome-pollardlab/uhgg_v1/pangenomes/{species_id}/genes.len.lz4: one gene_id per row; gene_id, genome_id, gene_len
+    species_id: id of species
+    pangenome folder: from UHGG
+        gene_info.txt: one gene_id per row
+        genes.len: one gene_id per row; gene_id, genome_id, gene_len
     UHGG (genomes.tsv)
+    output folder
 Output: per-species gene_occurrence.tsv file
 Methods:
     Given a list of genomes for given species, we first extracted all the
@@ -60,13 +63,11 @@ def read_geneinfo(ginfo_file, list_of_genes, by_col, rep_genome):
             gene_id = line[0]
             centroid_id = line[index_col]
             genome_id = gene_id.split("_")[0]+'_'+gene_id.split("_")[1]
-            print(genome_id)
             if gene_id in list_of_genes:
                 centroid_counter[centroid_id].append(genome_id)
 
             # The FULL map for gene from representative genome to centroid_95
             if genome_id == rep_genome:
-                print("centriod is rep")
                 centroid_to_rep[gene_id] = centroid_id
     return centroid_counter, centroid_to_rep
 
