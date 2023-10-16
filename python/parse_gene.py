@@ -135,11 +135,8 @@ def main():
     core_cutoff = args.core_cutoff
     print(f"The representative genome is {rep_genome}")
 
-    list_of_genomes = read_genomes(genome_file)
-    total_genomes = len(set(list_of_genomes))
-    print(f"Total number of genomes: {total_genomes}")
 
-    glen_dict, all_glen_dict = read_genelen(glen_file, list_of_genomes)
+    glen_dict, all_glen_dict = read_genelen(glen_file)
     # We only care about genes from the specified list of genomes
     list_of_genes = set(glen_dict.keys())
     total_genes = len(list_of_genes)
