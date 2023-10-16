@@ -36,13 +36,17 @@ def read_species_tsv(species_file):
 def read_genelen(glen_file,rep_genome):
     glen_dict = defaultdict(int)
     all_glen_dict = defaultdict(int)
+    genome_dict=defaultdict(int)
+    genome_dict(rep_genome)=1
     with open(glen_file) as instream:
         for line in instream:
             gene_id, genome_id, gene_len = line.rstrip().split('\t')
+           
             if genome_id not rep_genome:
+                genome_dict(genome_id)=0
                 glen_dict[gene_id] = gene_len
             all_glen_dict[gene_id] = gene_len
-    return glen_dict, all_glen_dict
+    return glen_dict, all_glen_dict,genome_dict
 
 
 def read_geneinfo(ginfo_file, list_of_genes, by_col, rep_genome):
@@ -136,8 +140,11 @@ def main():
     print(f"The representative genome is {rep_genome}")
 
 
-    glen_dict, all_glen_dict = read_genelen(glen_file,rep_genome)
+    glen_dict, all_glen_dict, genome_dict = read_genelen(glen_file,rep_genome)
     # We only care about genes from the specified list of genomes
+    list_of_genomes = set(genome_dict.keys())
+    total_genomes = len(list_of_genomes)
+     print(f"Total number of genomes: {total_genomes}")
     list_of_genes = set(glen_dict.keys())
     total_genes = len(list_of_genes)
     print(f"Total number of pan genes: {total_genes}")
