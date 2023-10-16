@@ -118,6 +118,9 @@ def main():
         "--pandb_dir", required=True,
         help="Path to MIDASDB pangenome base directory")
     p.add_argument(
+        "--out_dir", required=True,
+        help="Path to output base directory")
+    p.add_argument(
         '--by_col', type=str, default="centroid_95",
         help=f"the centroid column to aggregate occurrence on.")
     p.add_argument(
@@ -130,9 +133,9 @@ def main():
     by_col = args.by_col
     ginfo_file = f"{args.pandb_dir}/{args.species_id}/gene_info.txt"
     glen_file = f"{args.pandb_dir}/{args.species_id}/genes.len"
-    out_file = f"{args.pandb_dir}/{args.species_id}/centroid_prevalence.tsv"
-    mat_file = f"{args.pandb_dir}/{args.species_id}/centroid_matrix.tsv"
-    rep_file = f"{args.pandb_dir}/{args.species_id}/centroid_to_repgenes.tsv"
+    out_file = f"{args.out_dir}/{args.species_id}.centroid_prevalence.tsv"
+    mat_file = f"{args.out_dir}/{args.species_id}.centroid_matrix.tsv"
+    rep_file = f"{args.out_dir}/{args.species_id}.centroid_to_repgenes.tsv"
     toc=read_species_tsv(args.genome_info_file)
     rep_genome = toc[args.species_id]
     core_cutoff = args.core_cutoff
