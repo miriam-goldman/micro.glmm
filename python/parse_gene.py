@@ -136,7 +136,7 @@ def main():
     print(f"The representative genome is {rep_genome}")
 
 
-    glen_dict, all_glen_dict = read_genelen(glen_file)
+    glen_dict, all_glen_dict = read_genelen(glen_file,rep_genome)
     # We only care about genes from the specified list of genomes
     list_of_genes = set(glen_dict.keys())
     total_genes = len(list_of_genes)
