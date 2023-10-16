@@ -17,6 +17,8 @@ Input:
     UHGG (genomes.tsv)
     output folder
 Output: per-species gene_occurrence.tsv file
+--core_cutoff
+--by_col
 Methods:
     Given a list of genomes for given species, we first extracted all the
     genes from those genomes; Then counted the corresponding
