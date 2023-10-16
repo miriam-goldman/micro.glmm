@@ -66,3 +66,6 @@ Rscript marker_test_command_line.R --species_id exp_species -v FALSE -o ../examp
 
 ```
 ## 2023-10-13: added conda install and reconfigured folder to work better with r library
+
+## 2023-10-16 updated parse genes to work on new samples 
+next up finish snakemake
