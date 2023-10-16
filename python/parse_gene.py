@@ -147,7 +147,7 @@ def main():
     print(f"Total number of pan genes: {total_genes}")
 
     centroid_counter, centroid_to_rep = read_geneinfo(ginfo_file, list_of_genes, by_col, rep_genome)
-    centroid_occurence, centroid_matrix = compute_prevalence(centroid_counter, total_genomes, all_glen_dict)
+    centroid_occurence = compute_prevalence(centroid_counter, total_genomes, all_glen_dict)
 
 
     write_tofile(out_file, centroid_occurence, by_col)
