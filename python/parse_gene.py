@@ -128,18 +128,15 @@ def main():
         '--by_col', type=str, default="centroid_95",
         help=f"the centroid column to aggregate occurrence on.")
     p.add_argument(
-        '--core_cutoff', type=float, default="0.9",
-        help=f"The cutoff for define core gene based on prevalence.")
-    p.add_argument(
         '--genome_info_file', type=str,
         help=f"File that contains the reference noted for each species")
     args = p.parse_args()
     by_col = args.by_col
     ginfo_file = f"{args.pandb_dir}/{args.species_id}/gene_info.txt"
     glen_file = f"{args.pandb_dir}/{args.species_id}/genes.len"
-    out_file = f"{args.out_dir}/{args.species_id}.centroid_prevalence.tsv"
-    mat_file = f"{args.out_dir}/{args.species_id}.centroid_matrix.tsv"
-    rep_file = f"{args.out_dir}/{args.species_id}.centroid_to_repgenes.tsv"
+    out_file = f"{args.out_dir}/{args.species_id}.{by_col}.centroid_prevalence.tsv"
+    mat_file = f"{args.out_dir}/{args.species_id}.{by_col}.centroid_matrix.tsv"
+    rep_file = f"{args.out_dir}/{args.species_id}.{by_col}.centroid_to_repgenes.tsv"
     toc=read_species_tsv(args.genome_info_file)
     rep_genome = toc[args.species_id]
     print(f"The representative genome is {rep_genome}")
