@@ -73,7 +73,7 @@ def read_geneinfo(ginfo_file, list_of_genes, by_col, rep_genome):
     return centroid_counter, centroid_to_rep
 
 
-def compute_prevalence(centroid_counter, total_genomes, all_glen_dict, cutoff):
+def compute_prevalence(centroid_counter, total_genomes, all_glen_dict):
     centroid_occurence = defaultdict(dict)
     #centroid_matrix = defaultdict(lambda: defaultdict(int))
     centroid_matrix = defaultdict(dict)
@@ -82,11 +82,7 @@ def compute_prevalence(centroid_counter, total_genomes, all_glen_dict, cutoff):
         centroid_occurence[cg]["gene_occurence"] = prev
         centroid_occurence[cg]["gene_length"] = all_glen_dict[cg]
         # Only write strictly non-core genes to martrix
-        if prev < cutoff:
-            set_of_genomes = set(cl)
-            for _ in set_of_genomes:
-                centroid_matrix[cg][_] = 1
-    return centroid_occurence, centroid_matrix
+    return centroid_occurence
 
 
 def write_tofile(out_file, centroid_occurence, by_col):
@@ -156,7 +152,6 @@ def main():
 
 
     write_tofile(out_file, centroid_occurence, by_col)
-    write_matfile(mat_file, centroid_matrix, by_col)
     write_repgene(rep_file, centroid_to_rep, by_col)
 
 main()
