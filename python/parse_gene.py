@@ -143,7 +143,7 @@ def main():
     # We only care about genes from the specified list of genomes
     list_of_genomes = set(genome_dict.keys())
     total_genomes = len(list_of_genomes)
-     print(f"Total number of genomes: {total_genomes}")
+    print(f"Total number of genomes: {total_genomes}")
     list_of_genes = set(glen_dict.keys())
     total_genes = len(list_of_genes)
     print(f"Total number of pan genes: {total_genes}")
