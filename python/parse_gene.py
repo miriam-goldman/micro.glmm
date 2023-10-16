@@ -39,7 +39,7 @@ def read_genelen(glen_file):
     with open(glen_file) as instream:
         for line in instream:
             gene_id, genome_id, gene_len = line.rstrip().split('\t')
-            if genome_id not rep_genome:
+            if genome_id != rep_genome:
                 glen_dict[gene_id] = gene_len
             all_glen_dict[gene_id] = gene_len
     return glen_dict, all_glen_dict
