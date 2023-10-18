@@ -101,7 +101,7 @@ validate_snps_input<-function(opt){
     stop()
   }
   
-  pangenome_used<-isTRUE(!is.na(opt$centroid_to_repgenes) & !is.na(opt$centroid_prevalence))
+  pangenome_used<-isTRUE(!is.na(opt$centroid_to_repgenes) && !is.na(opt$centroid_prevalence))
   
   if(pangenome_used){
       put("running pangeome step",console = verbose)
