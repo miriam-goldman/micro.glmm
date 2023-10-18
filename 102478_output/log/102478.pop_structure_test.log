@@ -1,0 +1,703 @@
+========================================================================= 
+Log Path: ../102478_output/log/102478.pop_structure_test.log 
+Program Path: /Users/miriamgoldman/Projects/micro-glmm/src/pop_structure_test_command_line.R 
+Working Directory: /Users/miriamgoldman/Projects/micro-glmm/src 
+User Name: miriamgoldman 
+R Version: 4.2.3 (2023-03-15) 
+Machine: Miriam x86_64 
+Operating System: Darwin 20.6.0 Darwin Kernel Version 20.6.0: Tue Jun 21 20:50:28 PDT 2022; root:xnu-7195.141.32~1/RELEASE_X86_64 
+Base Packages: stats graphics grDevices utils datasets methods base Other Packages: pheatmap_1.0.12 plotROC_2.3.1 generics_0.1.3 data.table_1.14.8 logr_1.3.3 forcats_1.0.0 stringr_1.5.0 dplyr_1.1.3 purrr_1.0.2 readr_2.1.4 tidyr_1.3.0 tibble_3.2.1 ggplot2_3.4.3 tidyverse_1.3.2 optparse_1.7.3 Matrix_1.6-1.1 pROC_1.18.4 
+Log Start Time: 2023-10-16 13:47:48 
+========================================================================= 
+
+running validate genes command is 
+
+Rscript pop_structure_test_command_line.R --species_id 102478 -v FALSE -o ../102478_output --GRM ../102478_output/102478.GRM.tsv --metadata ../example_data/IBD_metadata.tsv --tau 1 --n_tau 1000 
+
+GRM read in 
+
+metadata read in 
+
+begining time 
+
+   user  system elapsed 
+  2.857   0.371   3.611 
+
+[1] "inital tau is  1" "inital tau is  1"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.076046547248"
+[2] "Tau: 1 Fixed-effect coefficients: 1.076046547248"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.09713323345639"
+[2] "Tau: 1 Fixed-effect coefficients: 1.09713323345639"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.09729149247507"
+[2] "Tau: 1 Fixed-effect coefficients: 1.09729149247507"
+
+[1] "Iteration  1 tau is  1 :"                
+[2] "Iteration  1 tau is  0.999612843253262 :"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.07597903898122"                
+[2] "Tau: 0.999612843253262 Fixed-effect coefficients: 1.07597903898122"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.09705903824645"                
+[2] "Tau: 0.999612843253262 Fixed-effect coefficients: 1.09705903824645"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.0972171841509"                
+[2] "Tau: 0.999612843253262 Fixed-effect coefficients: 1.0972171841509"
+
+t_end_Get_Coef - t_begin_Get_Coef 
+
+   user  system elapsed 
+  0.119   0.008   0.017 
+
+YPAPY 4.61021687216755 
+
+Trace 4.72702576303182 
+
+score1 -0.116808890864269 
+
+AI 0.722310890761965 
+
+Dtau -0.1617155332395 
+
+t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG 
+
+   user  system elapsed 
+  0.374   0.025   0.061 
+
+[1] "change in tau 0"                  "change in tau 0.0880031779058204"
+
+tau: 
+
+tau0: 
+
+res 30.3697256026025 
+
+rss change 2.37199625170214 
+
+[1] "Iteration  2 tau is  1 :"                
+[2] "Iteration  2 tau is  0.837897310013762 :"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.06459615815066"                
+[2] "Tau: 0.837897310013762 Fixed-effect coefficients: 1.06459615815066"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.06470200808998"                
+[2] "Tau: 0.837897310013762 Fixed-effect coefficients: 1.06470200808998"
+
+t_end_Get_Coef - t_begin_Get_Coef 
+
+   user  system elapsed 
+  0.082   0.006   0.012 
+
+YPAPY 4.84805434944364 
+
+Trace 4.91477745784979 
+
+score1 -0.0667231084061459 
+
+AI 0.898956449785543 
+
+Dtau -0.0742228485284949 
+
+t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG 
+
+   user  system elapsed 
+  0.093   0.004   0.013 
+
+[1] "change in tau 0"                 "change in tau 0.046340860748909"
+
+tau: 
+
+tau0: 
+
+res 30.6600499405338 
+
+rss change -0.290324337931303 
+
+[1] "Iteration  3 tau is  1 :"                
+[2] "Iteration  3 tau is  0.763674461485267 :"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.0486494899223"                
+[2] "Tau: 0.763674461485267 Fixed-effect coefficients: 1.0486494899223"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.04867652014718"                
+[2] "Tau: 0.763674461485267 Fixed-effect coefficients: 1.04867652014718"
+
+t_end_Get_Coef - t_begin_Get_Coef 
+
+   user  system elapsed 
+  0.086   0.008   0.014 
+
+YPAPY 4.97623704396766 
+
+Trace 5.01746983763517 
+
+score1 -0.0412327936675059 
+
+AI 1.01178273639821 
+
+Dtau -0.0407526163317318 
+
+t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG 
+
+   user  system elapsed 
+  0.153   0.009   0.023 
+
+[1] "change in tau 0"                  "change in tau 0.0274115272566106"
+
+tau: 
+
+tau0: 
+
+res 30.7983237259424 
+
+rss change -0.138273785408572 
+
+[1] "Iteration  4 tau is  1 :"                
+[2] "Iteration  4 tau is  0.722921845153535 :"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.0395296755914"                
+[2] "Tau: 0.722921845153535 Fixed-effect coefficients: 1.0395296755914"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.03953871889587"                
+[2] "Tau: 0.722921845153535 Fixed-effect coefficients: 1.03953871889587"
+
+t_end_Get_Coef - t_begin_Get_Coef 
+
+   user  system elapsed 
+  0.055   0.008   0.016 
+
+YPAPY 5.05325455645811 
+
+Trace 5.07960147584502 
+
+score1 -0.0263469193869144 
+
+AI 1.08635831191302 
+
+Dtau -0.0242525132803731 
+
+t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG 
+
+   user  system elapsed 
+  0.085   0.006   0.013 
+
+[1] "change in tau 0"                  "change in tau 0.0170589180493435"
+
+tau: 
+
+tau0: 
+
+res 30.8757352470461 
+
+rss change -0.0774115211037625 
+
+[1] "Iteration  5 tau is  1 :"                
+[2] "Iteration  5 tau is  0.698669331873162 :"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.03397390363402"                
+[2] "Tau: 0.698669331873162 Fixed-effect coefficients: 1.03397390363402"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.03397731294032"                
+[2] "Tau: 0.698669331873162 Fixed-effect coefficients: 1.03397731294032"
+
+t_end_Get_Coef - t_begin_Get_Coef 
+
+   user  system elapsed 
+  0.076   0.003   0.011 
+
+YPAPY 5.10168615104868 
+
+Trace 5.11881457647222 
+
+score1 -0.0171284254235342 
+
+AI 1.13605408693389 
+
+Dtau -0.0150771214333309 
+
+t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG 
+
+   user  system elapsed 
+  0.078   0.008   0.012 
+
+[1] "change in tau 0"                  "change in tau 0.0109067859397359"
+
+tau: 
+
+tau0: 
+
+res 30.922335892362 
+
+rss change -0.0466006453158663 
+
+[1] "Iteration  6 tau is  1 :"                
+[2] "Iteration  6 tau is  0.683592210439831 :"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.03046987444277"                
+[2] "Tau: 0.683592210439831 Fixed-effect coefficients: 1.03046987444277"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.03047124473605"                
+[2] "Tau: 0.683592210439831 Fixed-effect coefficients: 1.03047124473605"
+
+t_end_Get_Coef - t_begin_Get_Coef 
+
+   user  system elapsed 
+  0.079   0.003   0.010 
+
+YPAPY 5.13286678533263 
+
+Trace 5.14411161086116 
+
+score1 -0.0112448255285305 
+
+AI 1.16924093532306 
+
+Dtau -0.00961720137297752 
+
+t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG 
+
+   user  system elapsed 
+  0.083   0.005   0.012 
+
+[1] "change in tau 0"                   "change in tau 0.00708362199130945"
+
+tau: 
+
+tau0: 
+
+res 30.9515135469464 
+
+rss change -0.029177654584398 
+
+[1] "Iteration  7 tau is  1 :"                
+[2] "Iteration  7 tau is  0.673975009066854 :"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.02821415610193"                
+[2] "Tau: 0.673975009066854 Fixed-effect coefficients: 1.02821415610193"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.02821472786007"                
+[2] "Tau: 0.673975009066854 Fixed-effect coefficients: 1.02821472786007"
+
+t_end_Get_Coef - t_begin_Get_Coef 
+
+   user  system elapsed 
+  0.071   0.007   0.013 
+
+YPAPY 5.15321140593677 
+
+Trace 5.16063702160875 
+
+score1 -0.00742561567197964 
+
+AI 1.19141105364891 
+
+Dtau -0.00623262277887831 
+
+t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG 
+
+   user  system elapsed 
+  0.067   0.010   0.015 
+
+[1] "change in tau 0"                   "change in tau 0.00464491129750938"
+
+tau: 
+
+tau0: 
+
+res 30.970209953597 
+
+rss change -0.0186964066505659 
+
+[1] "Iteration  8 tau is  1 :"                
+[2] "Iteration  8 tau is  0.667742386287975 :"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.02674356865768"                
+[2] "Tau: 0.667742386287975 Fixed-effect coefficients: 1.02674356865768"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.02674381276613"                
+[2] "Tau: 0.667742386287975 Fixed-effect coefficients: 1.02674381276613"
+
+t_end_Get_Coef - t_begin_Get_Coef 
+
+   user  system elapsed 
+  0.137   0.012   0.021 
+
+YPAPY 5.16659302823484 
+
+Trace 5.17151447285261 
+
+score1 -0.00492144461777233 
+
+AI 1.20621937165986 
+
+Dtau -0.00408005768552698 
+
+t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG 
+
+   user  system elapsed 
+  0.085   0.005   0.012 
+
+[1] "change in tau 0"                   "change in tau 0.00306424576638676"
+
+tau: 
+
+tau0: 
+
+res 30.9823623946437 
+
+rss change -0.0121524410467799 
+
+[1] "Iteration  9 tau is  1 :"                
+[2] "Iteration  9 tau is  0.663662328602448 :"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.02577712046205"                
+[2] "Tau: 0.663662328602448 Fixed-effect coefficients: 1.02577712046205"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.02577722620609"                
+[2] "Tau: 0.663662328602448 Fixed-effect coefficients: 1.02577722620609"
+
+t_end_Get_Coef - t_begin_Get_Coef 
+
+   user  system elapsed 
+  0.076   0.003   0.010 
+
+YPAPY 5.17543901862937 
+
+Trace 5.17870834321248 
+
+score1 -0.00326932458311013 
+
+AI 1.21610796784714 
+
+Dtau -0.00268835059842408 
+
+t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG 
+
+   user  system elapsed 
+  0.076   0.004   0.011 
+
+[1] "change in tau 0"                   "change in tau 0.00202934771623399"
+
+tau: 
+
+tau0: 
+
+res 30.9903331589903 
+
+rss change -0.00797076434657384 
+
+[1] "Iteration  10 tau is  1 :"                
+[2] "Iteration  10 tau is  0.660973978004024 :"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.02513868975252"                
+[2] "Tau: 0.660973978004024 Fixed-effect coefficients: 1.02513868975252"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.02513873598935"                
+[2] "Tau: 0.660973978004024 Fixed-effect coefficients: 1.02513873598935"
+
+t_end_Get_Coef - t_begin_Get_Coef 
+
+   user  system elapsed 
+  0.074   0.002   0.010 
+
+YPAPY 5.18130544861443 
+
+Trace 5.18348051839832 
+
+score1 -0.00217506978388382 
+
+AI 1.22270979115888 
+
+Dtau -0.00177889291441946 
+
+t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG 
+
+   user  system elapsed 
+  0.077   0.007   0.014 
+
+[1] "change in tau 0"                   "change in tau 0.00134737150490461"
+
+tau: 
+
+tau0: 
+
+res 30.995591807744 
+
+rss change -0.00525864875370274 
+
+[1] "Iteration  11 tau is  1 :"                
+[2] "Iteration  11 tau is  0.659195085089605 :"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.02471551850109"                
+[2] "Tau: 0.659195085089605 Fixed-effect coefficients: 1.02471551850109"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.02471553884179"                
+[2] "Tau: 0.659195085089605 Fixed-effect coefficients: 1.02471553884179"
+
+t_end_Get_Coef - t_begin_Get_Coef 
+
+   user  system elapsed 
+  0.061   0.008   0.014 
+
+YPAPY 5.18520398285024 
+
+Trace 5.18665246359608 
+
+score1 -0.00144848074584747 
+
+AI 1.22711650894684 
+
+Dtau -0.00118039382184713 
+
+t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG 
+
+   user  system elapsed 
+  0.082   0.006   0.012 
+
+[1] "change in tau 0"                   "change in tau 0.00089606396538795"
+
+tau: 
+
+tau0: 
+
+res 30.9990744210797 
+
+rss change -0.00348261333570221 
+
+[1] "Iteration  12 tau is  1 :"                
+[2] "Iteration  12 tau is  0.658014691267758 :"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.02443440386759"                
+[2] "Tau: 0.658014691267758 Fixed-effect coefficients: 1.02443440386759"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.02443441285184"                
+[2] "Tau: 0.658014691267758 Fixed-effect coefficients: 1.02443441285184"
+
+t_end_Get_Coef - t_begin_Get_Coef 
+
+   user  system elapsed 
+  0.075   0.004   0.010 
+
+YPAPY 5.18779826702962 
+
+Trace 5.18876349837196 
+
+score1 -0.000965231342330952 
+
+AI 1.23005760823231 
+
+Dtau -0.000784704176349972 
+
+t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG 
+
+   user  system elapsed 
+  0.143   0.014   0.023 
+
+[1] "change in tau 0"                    "change in tau 0.000596576843515191"
+
+tau: 
+
+tau0: 
+
+res 31.0013866250264 
+
+rss change -0.00231220394671183 
+
+[1] "Iteration  13 tau is  1 :"                
+[2] "Iteration  13 tau is  0.657229987091408 :"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.02424738370968"                
+[2] "Tau: 0.657229987091408 Fixed-effect coefficients: 1.02424738370968"
+
+t_end_Get_Coef - t_begin_Get_Coef 
+
+   user  system elapsed 
+  0.034   0.002   0.005 
+
+YPAPY 5.18948194325828 
+
+Trace 5.1901730229715 
+
+score1 -0.000691079713213583 
+
+AI 1.23194096942131 
+
+Dtau -0.000560968204132547 
+
+t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG 
+
+   user  system elapsed 
+  0.086   0.004   0.011 
+
+[1] "change in tau 0"                    "change in tau 0.000426916764457309"
+
+tau: 
+
+tau0: 
+
+res 31.00292430872 
+
+rss change -0.00153768369354168 
+
+[1] "Iteration  14 tau is  1 :"                
+[2] "Iteration  14 tau is  0.656669018887275 :"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.02411361781716"                
+[2] "Tau: 0.656669018887275 Fixed-effect coefficients: 1.02411361781716"
+
+t_end_Get_Coef - t_begin_Get_Coef 
+
+   user  system elapsed 
+  0.039   0.001   0.006 
+
+YPAPY 5.19073135944393 
+
+Trace 5.19117866537136 
+
+score1 -0.000447305927436581 
+
+AI 1.23337030608556 
+
+Dtau -0.00036266960962943 
+
+t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG 
+
+   user  system elapsed 
+  0.052   0.008   0.013 
+
+[1] "change in tau 0"                    "change in tau 0.000276198623797377"
+
+tau: 
+
+tau0: 
+
+res 31.0040238481996 
+
+rss change -0.00109953947964314 
+
+[1] "Iteration  15 tau is  1 :"                
+[2] "Iteration  15 tau is  0.656306349277646 :"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.02402710721104"                
+[2] "Tau: 0.656306349277646 Fixed-effect coefficients: 1.02402710721104"
+
+t_end_Get_Coef - t_begin_Get_Coef 
+
+   user  system elapsed 
+  0.036   0.005   0.008 
+
+YPAPY 5.19154288593306 
+
+Trace 5.19182919535741 
+
+score1 -0.000286309424351927 
+
+AI 1.23430154374264 
+
+Dtau -0.000231960679141485 
+
+t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG 
+
+   user  system elapsed 
+  0.071   0.009   0.012 
+
+[1] "change in tau 0"                    "change in tau 0.000176734539751645"
+
+tau: 
+
+tau0: 
+
+res 31.0047348325522 
+
+rss change -0.000710984352593869 
+
+[1] "Iteration  16 tau is  1 :"                
+[2] "Iteration  16 tau is  0.656074388598504 :"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.02397176307479"                
+[2] "Tau: 0.656074388598504 Fixed-effect coefficients: 1.02397176307479"
+
+t_end_Get_Coef - t_begin_Get_Coef 
+
+   user  system elapsed 
+  0.028   0.003   0.007 
+
+YPAPY 5.19206245976833 
+
+Trace 5.19224550236923 
+
+score1 -0.000183042600900407 
+
+AI 1.2348982674528 
+
+Dtau -0.000148224842260056 
+
+t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG 
+
+   user  system elapsed 
+  0.073   0.010   0.013 
+
+[1] "change in tau 0"                    "change in tau 0.000112967593828125"
+
+tau: 
+
+tau0: 
+
+res 31.0051896240542 
+
+rss change -0.000454791501972807 
+
+[1] "Iteration  17 tau is  1 :"                
+[2] "Iteration  17 tau is  0.655926163756244 :"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.02393639253166"                
+[2] "Tau: 0.655926163756244 Fixed-effect coefficients: 1.02393639253166"
+
+t_end_Get_Coef - t_begin_Get_Coef 
+
+   user  system elapsed 
+  0.036   0.004   0.006 
+
+YPAPY 5.19239461015519 
+
+Trace 5.19251162727916 
+
+score1 -0.000117017123973717 
+
+AI 1.23527989434704 
+
+Dtau -9.47292387006523e-05 
+
+t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG 
+
+   user  system elapsed 
+  0.072   0.009   0.013 
+
+[1] "change in tau 0"                    "change in tau 7.22100011657788e-05"
+
+tau: 
+
+tau0: 
+
+res 31.0054802606906 
+
+rss change -0.000290636636428587 
+
+iter break at 17 
+
+[1] "Final  1 :"                 "Final  0.655831434517544 :"
+
+[1] "Tau: 1 Fixed-effect coefficients: 1.02391378540495"                
+[2] "Tau: 0.655831434517544 Fixed-effect coefficients: 1.02391378540495"
+
+t_end_null - t_begin, fitting the structure model took 
+
+   user  system elapsed 
+  3.887   0.320   0.698 
+
+========================================================================= 
+Log End Time: 2023-10-16 13:49:32 
+Log Elapsed Time: 0 00:01:44 
+========================================================================= 

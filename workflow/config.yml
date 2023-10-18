@@ -1,30 +1,10 @@
-#
-# Sunbeam configuration file
-#
-# Defining samples:
-#   Run 'sunbeam list_samples <data_dir>' to create a list of samples and
-#   associated fastq.gz files. Samples must be in gzipped fastq format.
-#
-# Paths:
-#   Paths are resolved through the following rules:
-#     1. If the path is absolute, the path is parsed as-is
-#     2. If the path is not absolute, the path at 'root' is appended to it
-#     3. If the path is not 'output_fp', the path is checked to ensure it exists
-#
-# Suffixes:
-#   Each subsection contains a 'suffix' key that defines the folder under
-#   'output_fp' where the results of that section are put.
-#
 
 # General options
 all:
-  root: "/pollard/data/projects/czhao/2023-08-01-QC"
-  output_fp: ""
-  samplelist_fp: "samples.csv"
-  paired_end: true
-
-# Quality control
-qc:
-  suffix: qc
-  adapter_name: "NexteraPE"
-  host_fp: "/pollard/data/projects/czhao/2023-08-01-QC/hosts"
+  root: "/pollard/home/miriam-goldman/micro-glmm"
+  output_fp: "/pollard/data/projects/mwas-projects/"
+  #specieslist_fp: "genomes.csv"
+  pandb_dir: "/pollard/data/midas2-db/midas2db-uhgg-v1.5/pangenomes/"
+  centriod_cutoff: "centroid_75"
+  data_dir_snp: "/pollard/data/projects/mwas-projects/merge_snps_20230925"
+  data_dir_genes: "/pollard/data/projects/mwas-projects/merge_genes_cid.75"
