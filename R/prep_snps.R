@@ -101,18 +101,18 @@ validate_snps_input<-function(opt){
     stop()
   }
   
-  pangenome_used<-isTRUE(!is.na(opt$centroid_to_repgenes) && !is.na(opt$centroid_prevalence))
+  pangenome_used<-isTRUE(!is.na(opt$centroid_to_repgenes_file) && !is.na(opt$centroid_prevalence_file))
   
   if(pangenome_used){
       put("running pangeome step",console = verbose)
-    if(file_test("-f",opt$centroid_to_repgenes)){
-      centroid_to_repgenes<-fread(opt$centroid_to_repgenes)
+    if(file_test("-f",opt$centroid_to_repgenes_file)){
+      centroid_to_repgenes<-fread(opt$centroid_to_repgenes_file)
       colnames(centroid_to_repgenes)<-c("rep_gene_id","centriod_gene_id")
     }else{
       put("centriod to rep gene doesnt exist",console = verbose)
     }
-    if(file_test("-f",opt$centroid_prevalence)){
-      core_label<-fread(opt$centroid_prevalence)
+    if(file_test("-f",opt$centroid_prevalence_file)){
+      core_label<-fread(opt$centroid_prevalence_file)
       colnames(core_label)<-c("centriod_gene_id","centroid_prevalence",	"centroid_ength")
     }else{
       put("centriod prevalence doesnt exist",console = verbose)
