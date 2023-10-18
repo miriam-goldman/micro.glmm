@@ -86,8 +86,8 @@ rule prep_genes:
         """
         cd src
         Rscript prep_genes_command_line.R  --species_id {s_id} \
-        -v TRUE  -o {output_fp}   -i {input.s_info}   \
-        -c {input.g_copy}  -d {input.g_depth} --genes_summary {input.gene_summary} --metadata {input.metadata}  \
+        -v TRUE  -o {output_fp}   \
+        -c {input.g_copy}  -d {input.g_depth}  --metadata {input.metadata}  \
         --GRM {input.GRM} -n 10 -m 3 -p {input.centriod_counts} --centroid_prevalence_cutoff .75 --write_csv TRUE
         """
 

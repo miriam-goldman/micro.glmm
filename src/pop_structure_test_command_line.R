@@ -55,7 +55,7 @@ commad_message<-paste(unlist(command_arg_list),collapse = " ")
 put(paste("Rscript pop_structure_test_command_line.R",commad_message),console = verbose)
 
 validate_GRM_metadata(opt)
-
+print(metadata)
 glm_fit0 = glm(formula_to_fit, data = metadata, family = family_to_fit)
 glmm_fit=pop_structure_test(glm_fit0, GRM,species_id=s_id,tau=c(phi0,tau0),maxiter =maxiter, verbose = verbose,tol=tol,log_file=TRUE)
 b_df=data.frame(b=as.vector(glmm_fit$b),y=as.vector(glmm_fit$y),fitted.values=as.vector(glmm_fit$fitted.values))
