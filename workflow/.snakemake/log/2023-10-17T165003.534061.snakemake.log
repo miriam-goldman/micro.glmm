@@ -1,0 +1,3 @@
+TypeError in file /pollard/home/mgoldman/micro-glmm/workflow/Snakefile_new, line 9:
+unsupported operand type(s) for /: 'str' and 'str'
+  File "/pollard/home/mgoldman/micro-glmm/workflow/Snakefile_new", line 9, in <module>

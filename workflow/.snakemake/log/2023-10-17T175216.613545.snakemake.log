@@ -1,0 +1,44 @@
+Building DAG of jobs...
+File path /pollard/data/projects/mwas-projects//gene_labels/102478.centroid_75.centroid_to_repgenes.tsv contains double '/'. This is likely unintended. It can also lead to inconsistent results of the file-matching approach used by Snakemake.
+File path /pollard/data/projects/mwas-projects//gene_labels/102478.centroid_75.centroid_prevalence.tsv contains double '/'. This is likely unintended. It can also lead to inconsistent results of the file-matching approach used by Snakemake.
+File path /pollard/data/projects/mwas-projects//output/102478.GRM.tsv contains double '/'. This is likely unintended. It can also lead to inconsistent results of the file-matching approach used by Snakemake.
+File path /pollard/data/midas2-db/midas2db-uhgg-v1.5/pangenomes//102478/genes.len contains double '/'. This is likely unintended. It can also lead to inconsistent results of the file-matching approach used by Snakemake.
+File path /pollard/data/midas2-db/midas2db-uhgg-v1.5/pangenomes//102478/gene_info.txt contains double '/'. This is likely unintended. It can also lead to inconsistent results of the file-matching approach used by Snakemake.
+File path /pollard/data/projects/mwas-projects//gene_labels/102478.centroid_75.centroid_to_repgenes.tsv contains double '/'. This is likely unintended. It can also lead to inconsistent results of the file-matching approach used by Snakemake.
+File path /pollard/data/projects/mwas-projects//gene_labels/102478.centroid_75.centroid_prevalence.tsv contains double '/'. This is likely unintended. It can also lead to inconsistent results of the file-matching approach used by Snakemake.
+Using shell: /usr/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job           count
+----------  -------
+prep_snps         1
+unzip_snps        1
+total             2
+
+Select jobs to execute...
+
+[Tue Oct 17 17:52:17 2023]
+rule unzip_snps:
+    input: /pollard/data/projects/mwas-projects/merge_snps_20230925/102478/snps/102478/102478.snps_depth.tsv.lz4, /pollard/data/projects/mwas-projects/merge_snps_20230925/102478/snps/102478/102478.snps_info.tsv.lz4, /pollard/data/projects/mwas-projects/merge_snps_20230925/102478/snps/102478/102478.snps_freqs.tsv.lz4
+    output: /pollard/data/projects/mwas-projects/merge_snps_20230925/102478/snps/102478/102478.snps_depth.tsv, /pollard/data/projects/mwas-projects/merge_snps_20230925/102478/snps/102478/102478.snps_info.tsv, /pollard/data/projects/mwas-projects/merge_snps_20230925/102478/snps/102478/102478.snps_freqs.tsv
+    jobid: 2
+    reason: Missing output files: /pollard/data/projects/mwas-projects/merge_snps_20230925/102478/snps/102478/102478.snps_freqs.tsv, /pollard/data/projects/mwas-projects/merge_snps_20230925/102478/snps/102478/102478.snps_depth.tsv, /pollard/data/projects/mwas-projects/merge_snps_20230925/102478/snps/102478/102478.snps_info.tsv
+    resources: tmpdir=/tmp
+
+[Tue Oct 17 17:52:20 2023]
+Error in rule unzip_snps:
+    jobid: 2
+    input: /pollard/data/projects/mwas-projects/merge_snps_20230925/102478/snps/102478/102478.snps_depth.tsv.lz4, /pollard/data/projects/mwas-projects/merge_snps_20230925/102478/snps/102478/102478.snps_info.tsv.lz4, /pollard/data/projects/mwas-projects/merge_snps_20230925/102478/snps/102478/102478.snps_freqs.tsv.lz4
+    output: /pollard/data/projects/mwas-projects/merge_snps_20230925/102478/snps/102478/102478.snps_depth.tsv, /pollard/data/projects/mwas-projects/merge_snps_20230925/102478/snps/102478/102478.snps_info.tsv, /pollard/data/projects/mwas-projects/merge_snps_20230925/102478/snps/102478/102478.snps_freqs.tsv
+    shell:
+        
+        lz4 -d -m  /pollard/data/projects/mwas-projects/merge_snps_20230925/102478/snps/102478/102478.snps_depth.tsv.lz4         lz4 -d -m  /pollard/data/projects/mwas-projects/merge_snps_20230925/102478/snps/102478/102478.snps_info.tsv.lz4         lz4 -d -m  /pollard/data/projects/mwas-projects/merge_snps_20230925/102478/snps/102478/102478.snps_freqs.tsv.lz4
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Removing output files of failed job unzip_snps since they might be corrupted:
+/pollard/data/projects/mwas-projects/merge_snps_20230925/102478/snps/102478/102478.snps_depth.tsv, /pollard/data/projects/mwas-projects/merge_snps_20230925/102478/snps/102478/102478.snps_info.tsv, /pollard/data/projects/mwas-projects/merge_snps_20230925/102478/snps/102478/102478.snps_freqs.tsv
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2023-10-17T175216.613545.snakemake.log
