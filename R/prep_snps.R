@@ -205,16 +205,17 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
   snp_depth <- snp_depth %>%
     filter(site_id %in% unique(snp_info$site_id))
   nsamples = ncol(snp_depth)-1
+  list_of_samples <- colnames(snp_depth)[-1]
   put(paste("number of samples",nsamples),console = verbose)
   # Site not covered in a certain <sample, species> pair is site-depth = 0, and it should not be included in the computation.
   snp_depth[snp_depth == 0] <- NA
   per_sample_median_depth <- apply(snp_depth[,-1], 2, function(x) median(x, na.rm =T))
   samples_pass_depth <- names(per_sample_median_depth[per_sample_median_depth >= sample_median_depth_filter]) #<-----
-  
-  snp_depth %<>% select(site_id, all_of(samples_pass_depth))
+  list_of_samples<-list_of_samples[which(list_of_samples %in% samples_pass_depth)]
+  snp_depth %<>% select(site_id, all_of(list_of_samples))
   if(genes_summary_used){
     list_of_samples_gs <- genes_summary %>% filter(species_id == s_id) %>% .$sample_name %>% unique()
-    list_of_samples<-samples_pass_depth[which(samples_pass_depth %in% list_of_samples_gs)]
+    list_of_samples<-list_of_samples[which(list_of_samples %in% list_of_samples_gs)]
     snp_depth %<>% select(site_id, all_of(list_of_samples))
   }
   nsamples2 = ncol(snp_depth)-1
@@ -240,7 +241,7 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
   if(run_qp){
     info_for_qp <- snp_info %>% filter(site_type == "4D")
     depth_for_qp<-snp_depth %>% filter(site_id %in% unique(info_for_qp$site_id)) 
-    depth_for_qp %<>% gather(sample_name, site_depth, all_of(samples_pass_depth))
+    depth_for_qp %<>% gather(sample_name, site_depth, all_of(list_of_samples))
     depth_for_qp %<>% 
       left_join(D %>% select(sample_name, median_site_depth)) %>%
       mutate(min_bound =  l* median_site_depth, max_bound = u * median_site_depth)
@@ -341,7 +342,7 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
   
   info_for_distance<-snp_info %>% filter(core==TRUE) %>% filter(snp_type=="bi")
   depth_for_distance<-snp_depth %>% filter(site_id %in% unique(info_for_distance$site_id)) 
-  depth_for_distance %<>% gather(sample_name, site_depth, all_of(samples_pass_depth))
+  depth_for_distance %<>% gather(sample_name, site_depth, all_of(list_of_samples))
   
   depth_for_distance %<>% 
     left_join(D %>% select(sample_name, median_site_depth))
