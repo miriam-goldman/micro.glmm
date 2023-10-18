@@ -129,6 +129,23 @@ validate_snps_input<-function(opt){
     put("using snps in coding region",console = verbose)
   }
   
+  if(isTRUE(!is.na(opt$genes_summary))){
+    if(file_test("-f",opt$genes_summary)){
+      if(verbose){
+        put("reading in genes summary",console = verbose)
+      }
+      genes_summary<<-fread(opt$genes_summary) %>% filter(marker_coverage > 0)
+      genes_summary_used=TRUE
+    }else{
+      genes_summary<-NULL
+      genes_summary_used=FALSE
+      put("genes depth file doesnt exist",console = verbose)
+    }
+  }else{
+    genes_summary<-NULL
+    genes_summary_used=FALSE
+    put("genes depth file doesnt exist",console = verbose)
+  }
   
   
   if(is.numeric(opt$abosulte_filter)){
@@ -159,6 +176,7 @@ validate_snps_input<-function(opt){
   put(paste("abulose depth at",a),console = verbose)
   put(paste("sample median depth filter",sample_median_depth_filter),console = verbose)
   put(paste("pangenome used:",pangenome_used),console = verbose)
+  put(paste("genes summary used:",genes_summary_used),console = verbose)
   if(pangenome_used){
     put(paste("cut off for core genes",centroid_prevalence_cutoff),console = verbose)
     
@@ -177,11 +195,11 @@ validate_snps_input<-function(opt){
   
   
   make_plots=opt$make_plots
-  prep_snps_inputs<-list(snp_freq,snp_depth,snp_info,sample_median_depth_filter,number_of_samples_for_sites,verbose,make_plots,pangenome_used,centroid_prevalence_cutoff,run_qp,l,u,a,start_samples,start_snps)
+  prep_snps_inputs<-list(snp_freq,snp_depth,snp_info,sample_median_depth_filter,number_of_samples_for_sites,verbose,make_plots,pangenome_used,centroid_prevalence_cutoff,run_qp,l,u,a,start_samples,start_snps,genes_summary_used,genes_summary)
   return(prep_snps_inputs)
 }
 
-prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_filter,number_of_samples_for_sites,verbose=FALSE,make_plots=FALSE,pangenome_used=FALSE,centroid_prevalence_cutoff=.8,run_qp=FALSE,l=.3,u=3,a=5,start_samples,start_snps){
+prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_filter,number_of_samples_for_sites,verbose=FALSE,make_plots=FALSE,pangenome_used=FALSE,centroid_prevalence_cutoff=.8,run_qp=FALSE,l=.3,u=3,a=5,start_samples,start_snps,genes_summary_used,genes_summary){
   ######## Filter Samples based on D_median_cds 
   # Compute median site depth for all protein coding genes
   snp_depth <- snp_depth %>%
@@ -192,7 +210,13 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
   snp_depth[snp_depth == 0] <- NA
   per_sample_median_depth <- apply(snp_depth[,-1], 2, function(x) median(x, na.rm =T))
   samples_pass_depth <- names(per_sample_median_depth[per_sample_median_depth >= sample_median_depth_filter]) #<-----
+  
   snp_depth %<>% select(site_id, all_of(samples_pass_depth))
+  if(genes_summary_used){
+    list_of_samples_gs <- genes_summary %>% filter(species_id == s_id) %>% .$sample_name %>% unique()
+    list_of_samples<-list_of_samples[which(list_of_samples %in% list_of_samples_gs)]
+    snp_depth %<>% select(site_id, all_of(list_of_samples))
+  }
   nsamples2 = ncol(snp_depth)-1
   put(paste("number of samples after filter",nsamples2),console = verbose)
   D <- data.frame(sample_name = names(per_sample_median_depth), median_site_depth=per_sample_median_depth, row.names=NULL)
