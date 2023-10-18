@@ -27,6 +27,7 @@ rule prep_snps:
     input:
         rep_genom = output_fp + "/gene_labels/"+s_id+ "." + centriod_cutoff + ".centroid_to_repgenes.tsv",
         centriod_counts=output_fp + "/gene_labels/"+s_id+ "." + centriod_cutoff + ".centroid_prevalence.tsv" ,
+        gene_summary = data_dir_genes+"/"+s_id+"/genes/genes_summary.tsv",
         s_depth=data_dir_snp+"/"+s_id+"/snps/"+s_id+"/"+s_id+".snps_depth.tsv",
         s_info=data_dir_snp+"/"+s_id+"/snps/"+s_id+"/"+s_id+".snps_info.tsv",
         s_freq=data_dir_snp+"/"+s_id+"/snps/"+s_id+"/"+s_id+".snps_freqs.tsv"
@@ -36,8 +37,8 @@ rule prep_snps:
         """
         cd src
         Rscript prep_snps_command_line.R  --species_id {s_id} \
-        -v TRUE  -o {output_fp}  -i {input.s_info}   \
-        -f {input.s_freq}  -d {input.s_depth} -a 3 -m 5  -n 5  \
+        -v TRUE  -o {output_fp}  -i {input.s_info}  --genes_summary {input.gene_summary} \
+        -f {input.s_freq}  -d {input.s_depth} -a 3 -m 5  -n 20  \
         -c {input.rep_genom} -p {input.centriod_counts} --centroid_prevalence_cutoff .75
         """
 
@@ -86,7 +87,7 @@ rule prep_genes:
         """
         cd src
         Rscript prep_genes_command_line.R  --species_id {s_id} \
-        -v TRUE  -o {output_fp}   \
+        -v TRUE  -o {output_fp} --genes_summary {input.gene_summary}  \
         -c {input.g_copy}  -d {input.g_depth}  --metadata {input.metadata}  \
         --GRM {input.GRM} -n 10 -m 3 -p {input.centriod_counts} --centroid_prevalence_cutoff .75 --write_csv TRUE
         """
