@@ -62,10 +62,10 @@ rule unzip_genes:
     input:
         g_copy_zip=data_dir_genes+"/"+s_id+"/genes/"+s_id+"/"+s_id+".genes_copynum.tsv.lz4",
         g_depth_zip=data_dir_genes+"/"+s_id+"/genes/"+s_id+"/"+s_id+"102478.genes_depth.tsv.lz4"
-   output:
+    output:
         g_copy=data_dir_genes+"/"+s_id+"/genes/"+s_id+"/"+s_id+".genes_copynum.tsv",
         g_depth=data_dir_genes+"/"+s_id+"/genes/"+s_id+"/"+s_id+"102478.genes_depth.tsv"
- shell:
+    shell:
         """
         lz4 -d -m  {input.g_copy_zip}
         lz4 -d -m  {input.g_depth_zip}
