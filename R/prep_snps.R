@@ -214,7 +214,7 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
   snp_depth %<>% select(site_id, all_of(samples_pass_depth))
   if(genes_summary_used){
     list_of_samples_gs <- genes_summary %>% filter(species_id == s_id) %>% .$sample_name %>% unique()
-    list_of_samples<-list_of_samples[which(list_of_samples %in% list_of_samples_gs)]
+    list_of_samples<-samples_pass_depth[which(samples_pass_depth %in% list_of_samples_gs)]
     snp_depth %<>% select(site_id, all_of(list_of_samples))
   }
   nsamples2 = ncol(snp_depth)-1
