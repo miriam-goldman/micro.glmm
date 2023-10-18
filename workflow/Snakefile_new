@@ -6,7 +6,7 @@ output_fp=config["all"]["output_fp"]
 centriod_cutoff=config["all"]["centriod_cutoff"]
 data_dir_snp=config["all"]["data_dir_snp"]
 data_dir_genes=config["all"]["data_dir_genes"]
-metadata=config["all"]["metadata"]
+metatdata=config["all"]["metadata"]
 genomes_file=config["all"]["geneome_file"]
 rule parse_genes_input:
     input:
@@ -27,6 +27,7 @@ rule prep_snps:
     input:
         rep_genom = output_fp + "/gene_labels/"+s_id+ "." + centriod_cutoff + ".centroid_to_repgenes.tsv",
         centriod_counts=output_fp + "/gene_labels/"+s_id+ "." + centriod_cutoff + ".centroid_prevalence.tsv" ,
+        gene_summary = data_dir_genes+"/"+s_id+"/genes/gene_summary.tsv",
         s_depth=data_dir_snp+"/"+s_id+"/snps/"+s_id+"/"+s_id+".snps_depth.tsv",
         s_info=data_dir_snp+"/"+s_id+"/snps/"+s_id+"/"+s_id+".snps_info.tsv",
         s_freq=data_dir_snp+"/"+s_id+"/snps/"+s_id+"/"+s_id+".snps_freqs.tsv"
@@ -34,9 +35,9 @@ rule prep_snps:
         GRM=output_fp+"/"+s_id+".GRM.tsv"
     shell:
         """
-        cd src
+        cd ../src
         Rscript prep_snps_command_line.R  --species_id {s_id} \
-        -v TRUE  -o {output_fp}  -i {input.s_info}   \
+        -v TRUE  -o {output_fp}  -i {input.s_info}  --genes_summary {input.gene_summary} \
         -f {input.s_freq}  -d {input.s_depth} -a 3 -m 5  -n 5  \
         -c {input.rep_genom} -p {input.centriod_counts} --centroid_prevalence_cutoff .75
         """
@@ -61,11 +62,11 @@ rule unzip_snps:
 rule unzip_genes:
     input:
         g_copy_zip=data_dir_genes+"/"+s_id+"/genes/"+s_id+"/"+s_id+".genes_copynum.tsv.lz4",
-        g_depth_zip=data_dir_genes+"/"+s_id+"/genes/"+s_id+"/"+s_id+".genes_depth.tsv.lz4"
+        g_depth_zip=data_dir_genes+"/"+s_id+"/genes/"+s_id+"/"+s_id+"102478.genes_depth.tsv.lz4"
     output:
         g_copy=data_dir_genes+"/"+s_id+"/genes/"+s_id+"/"+s_id+".genes_copynum.tsv",
-        g_depth=data_dir_genes+"/"+s_id+"/genes/"+s_id+"/"+s_id+".genes_depth.tsv"
-    shell:
+        g_depth=data_dir_genes+"/"+s_id+"/genes/"+s_id+"/"+s_id+"102478.genes_depth.tsv"
+ shell:
         """
         lz4 -d -m  {input.g_copy_zip}
         lz4 -d -m  {input.g_depth_zip}
@@ -76,46 +77,46 @@ rule prep_genes:
         rep_genom = output_fp + "/gene_labels/"+s_id+ "." + centriod_cutoff + ".centroid_to_repgenes.tsv",
         centriod_counts = output_fp + "/gene_labels/"+s_id+ "." + centriod_cutoff + ".centroid_prevalence.tsv" ,
         g_copy = data_dir_genes+"/"+s_id+"/genes/"+s_id+"/"+s_id+".genes_copynum.tsv",
-        g_depth = data_dir_genes+"/"+s_id+"/genes/"+s_id+"/"+s_id+".genes_depth.tsv",
-        gene_summary = data_dir_genes+"/"+s_id+"/genes/genes_summary.tsv",
-        metadata = metadata,
+        g_depth = data_dir_genes+"/"+s_id+"/genes/"+s_id+"/"+s_id+"102478.genes_depth.tsv",
+        gene_summary = data_dir_genes+"/"+s_id+"/genes/gene_summary.tsv",
+        metadata = metadata
         GRM=output_fp+"/"+s_id+".GRM.tsv"
     output:
-        copynumber_data=output_fp+"/"+s_id+".copynumber_data.csv"
+        copynumber_data=output_fp+"/"+s_id+".copynumber_data.to_csv"
     shell:
         """
-        cd src
+        cd ../src
         Rscript prep_genes_command_line.R  --species_id {s_id} \
-        -v TRUE  -o {output_fp}   \
-        -c {input.g_copy}  -d {input.g_depth}  --metadata {input.metadata}  \
-        --GRM {input.GRM} -n 10 -m 3 -p {input.centriod_counts} --centroid_prevalence_cutoff .75 --write_csv TRUE
+        -v TRUE  -o {output_fp}   -i {input.s_info}   \
+        -c {input.g_copy}  -d {input.g_depth} --genes_summary {input.gene_summary} --metadata {input.metadata}  \
+        --GRM {input.GRM} -n 25 -m 3 -p {input.centriod_counts} --centroid_prevalence_cutoff .75 --write_csv TRUE
         """
 
 
 
 rule run_structure_test:
     input:
-        GRM=output_fp+"/"+s_id+".GRM.tsv",
+        GRM=output_fp+"/"+s_id+".GRM.tsv"
         metadata = metadata
     output:
         Rdata=output_fp+"/"+s_id+".model_obj.Rdata"
     shell:
         """
-        cd src
+        cd ../src
         Rscript pop_structure_test_command_line.R --species_id {s_id} -v TRUE \
         -o {output_fp} --GRM {input.GRM} --metadata {input.metadata} --tau 1 --n_tau 1000 \
-        --formula_to_fit "y~age+1"
+        --formula_to_fit "y~Age+1"
         """
 
 rule run_marker_test:
     input:
-        Rdata=output_fp+"/"+s_id+".model_obj.Rdata",
-        copynumber_data=output_fp+"/"+s_id+".copynumber_data.csv"
+        Rdata=output_fp+"/"+s_id+".model_obj.Rdata"
+        copynumber_data=output_fp+"/"+s_id+".copynumber_data.to_csv"
     output:
         marker_test=output_fp+"/"+s_id+".marker_test.tsv"
     shell:
         """
-        cd src
+        cd ../src
         Rscript marker_test_command_line.R --species_id {s_id} -v TRUE \
         -o {output_fp} --Rdata {input.Rdata} --copy_number {input.copynumber_data} \
         --SPA FALSE --scale_copynumber TRUE --log_copynumber TRUE
