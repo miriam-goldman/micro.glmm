@@ -24,6 +24,8 @@ option_list = list(
               help="centriod prevalence file (optional)" , metavar="character"),
   make_option(c("--centroid_prevalence_cutoff"), type="numeric", default=.7,
               help="centriod prevalence file (optional)" ,metavar="numeric"),
+  make_option(c("--genes_summary"), type="character", default=NULL,
+              help="genes summary from MIDAS2 output used to filter sample list (optional)",metavar="character" ),
   make_option(c("-q", "--run_qp"), type="logical", default=FALSE, 
               help="option to run qp or not (optional)",metavar="logical"),
   make_option(c("-u", "--median_upper_filter"), type="integer", default=3,
