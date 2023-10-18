@@ -1,7 +1,7 @@
 
 # General options
 all:
-  root: "/pollard/home/miriam-goldman/micro-glmm"
+  root: "/pollard/home/mgoldman/micro-glmm"
   output_fp: "/pollard/data/projects/mwas-projects/output"
   #specieslist_fp: "genomes.csv"
   pandb_dir: "/pollard/data/midas2-db/midas2db-uhgg-v1.5/pangenomes"
@@ -9,4 +9,4 @@ all:
   data_dir_snp: "/pollard/data/projects/mwas-projects/merge_snps_20230925"
   data_dir_genes: "/pollard/data/projects/mwas-projects/merge_genes_cid.75"
   geneome_file: "/pollard/data/midas2-db/midas2db-uhgg-v1.5/genomes.tsv"
-  metadata: "/pollard/home/miriam-goldman/micro-glmm/example_data/metadata_IBD_2023_10_18.tsv"
+  metadata: "/pollard/home/mgoldman/micro-glmm/example_data/metadata_IBD_2023_10_18.tsv"
