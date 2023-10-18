@@ -64,6 +64,7 @@ jaccardFuncPtr <- cppXPtr(
 validate_snps_input<-function(opt){
   s_id=opt$species_id
   verbose=opt$verbose
+  print(opt)
   put(paste("species id for out files is:",s_id),console = verbose)
   if(isTRUE(!is.na(opt$snps_info_file))){
     if(file_test("-f",opt$snps_info_file)){
