@@ -25,8 +25,8 @@ rule prep_snps:
         s_depth=data_dir_snp+"/"+s_id+"/snps/"+s_id+"/"+s_id+".snps_depth.tsv",
         s_info=data_dir_snp+"/"+s_id+"/snps/"+s_id+"/"+s_id+".snps_info.tsv",
         s_freq=data_dir_snp+"/"+s_id+"/snps/"+s_id+"/"+s_id+".snps_freqs.tsv"
-
     output:
+        GRM=output_fp+"/output/"+s_id+".GRM.tsv"
     shell:
         """
         cd ../src
@@ -34,4 +34,21 @@ rule prep_snps:
         -v TRUE  -o output_fp+"/output"   -i {input.s_info}   \
         -f {input.s_freq}  -d {input.s_depth} -a 3 -m 5  -n 5  \
         -c {input.rep_genom} -p {input.centriod_counts}
+        """
+
+
+rule unzip_snps:
+    input:
+        s_depth_zip=data_dir_snp+"/"+s_id+"/snps/"+s_id+"/"+s_id+".snps_depth.tsv.lz4",
+        s_info_zip=data_dir_snp+"/"+s_id+"/snps/"+s_id+"/"+s_id+".snps_info.tsv.lz4",
+        s_freq_zip=data_dir_snp+"/"+s_id+"/snps/"+s_id+"/"+s_id+".snps_freqs.tsv.lz4"
+   output:
+        s_depth=data_dir_snp+"/"+s_id+"/snps/"+s_id+"/"+s_id+".snps_depth.tsv",
+        s_info=data_dir_snp+"/"+s_id+"/snps/"+s_id+"/"+s_id+".snps_info.tsv",
+        s_freq=data_dir_snp+"/"+s_id+"/snps/"+s_id+"/"+s_id+".snps_freqs.tsv"
+    shell:
+        """
+        lz4 -d -m  {input.s_depth_zip} \
+        lz4 -d -m  {input.s_info_zip} \
+        lz4 -d -m  {input.s_freq_zip}
         """
