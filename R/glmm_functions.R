@@ -198,7 +198,6 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
   alpha0 = glm_fit0$coef
   eta0 = eta
   sample_ids<-colnames(GRM)
-
   if(family$family %in% c("poisson", "binomial")) {
     tau[1] = 1
   }
