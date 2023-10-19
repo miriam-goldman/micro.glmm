@@ -39,7 +39,7 @@ rule prep_snps:
         Rscript prep_snps_command_line.R  --species_id {s_id} \
         -v TRUE  -o {output_fp}  -i {input.s_info}  --genes_summary {input.gene_summary} \
         -f {input.s_freq}  -d {input.s_depth} -a 3 -m 5  -n 20  \
-        -c {input.rep_genom} -p {input.centriod_counts} --centroid_prevalence_cutoff .75
+        -c {input.rep_genom} -p {input.centriod_counts} --centroid_prevalence_cutoff .9
         """
 
 
@@ -89,7 +89,7 @@ rule prep_genes:
         Rscript prep_genes_command_line.R  --species_id {s_id} \
         -v TRUE  -o {output_fp} --genes_summary {input.gene_summary}  \
         -c {input.g_copy}  -d {input.g_depth}  --metadata {input.metadata}  \
-        --GRM {input.GRM} -n 10 -m 3 -p {input.centriod_counts} --centroid_prevalence_cutoff .75 --write_csv TRUE
+        --GRM {input.GRM} -n 10 -m 3 -p {input.centriod_counts} --centroid_prevalence_cutoff .9 --write_csv TRUE
         """
 
 
