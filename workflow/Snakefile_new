@@ -1,7 +1,8 @@
 # 2023-10-17
 #run micro-glmm from start to finish
 pandb_dir=config["all"]["pandb_dir"]
-s_id="102478"
+#s_id="102478"
+SPECIES_IDs=["102478","101338","101380","102545"]
 output_fp=config["all"]["output_fp"]
 centriod_cutoff=config["all"]["centriod_cutoff"]
 data_dir_snp=config["all"]["data_dir_snp"]
@@ -104,7 +105,7 @@ rule run_structure_test:
         """
         cd src
         Rscript pop_structure_test_command_line.R --species_id {s_id} -v TRUE \
-        -o {output_fp} --GRM {input.GRM} --metadata {input.metadata} --tau 1 --n_tau 0 \
+        -o {output_fp} --GRM {input.GRM} --metadata {input.metadata} --tau 1 --n_tau 0 --n_CNVs 0 \
         --formula_to_fit "y~age+1"
         """
 
@@ -121,3 +122,7 @@ rule run_marker_test:
         -o {output_fp} --Rdata {input.Rdata} --copy_number {input.copynumber_data} \
         --SPA FALSE --scale_copynumber TRUE --log_copynumber TRUE
         """
+
+rule run_all:
+    input:
+        expand("{output_fp}+"/"+{s_ids}+".marker_test.tsv", s_ids=SPECIES_IDs)
