@@ -1,0 +1,26 @@
+========================================================================= 
+Log Path: ../102478_output/log/102478.marker_test.log 
+Program Path: /Users/miriamgoldman/Projects/micro-glmm/src/marker_test_command_line.R 
+Working Directory: /Users/miriamgoldman/Projects/micro-glmm/src 
+User Name: miriamgoldman 
+R Version: 4.2.3 (2023-03-15) 
+Machine: Miriam x86_64 
+Operating System: Darwin 20.6.0 Darwin Kernel Version 20.6.0: Tue Jun 21 20:50:28 PDT 2022; root:xnu-7195.141.32~1/RELEASE_X86_64 
+Base Packages: stats graphics grDevices utils datasets methods base Other Packages: Matrix_1.6-0 pROC_1.18.4 data.table_1.14.8 logr_1.3.4 lubridate_1.9.2 forcats_1.0.0 stringr_1.5.0 dplyr_1.1.2 purrr_1.0.1 readr_2.1.4 tidyr_1.3.0 tibble_3.2.1 ggplot2_3.4.2 tidyverse_2.0.0 optparse_1.7.3 
+Log Start Time: 2023-10-19 11:30:38 
+========================================================================= 
+
+running validate genes command is 
+
+Rscript marker_test_command_line.R --species_id 102478 -v FALSE -o ../102478_output --Rdata ../102478_output/102478.model_obj.Rdata --copy_number ../102478_output/102478.copynumber_data.csv --scale_copynumber TRUE --log_copynumber TRUE 
+
+Rdata loaded 
+
+copy_number loaded 
+
+data read in 
+
+========================================================================= 
+Log End Time: 2023-10-19 11:33:02 
+Log Elapsed Time: 0 00:02:23 
+========================================================================= 

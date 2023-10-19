@@ -541,26 +541,6 @@ filter_null_obj<-function(obj.pop.strut,sample_indexs){
   return(obj.pop.strut)
 }
 
-simulate_CNV_inner<-function(obj.pop.strut,glm_fit0,GRM,n_CNV=5000,alpha_value=.05,mean_sim=0,spread_sim=1,plot_qq=TRUE,SPA,sim_num){
-  n_samples<-nrow(GRM)
-  fake_copy_number_data<-data.frame(gene_id=
-                                      unlist(lapply(paste0("gene",seq(1,n_CNV)),function(x) rep(x,n_samples))),
-                                    sample_name=rep(obj.pop.strut$sampleID,n_CNV),
-                                    copy_number=c(rnorm(n_samples*n_CNV,mean_sim,spread_sim)))
-  fake_data<-micro_glmm(obj.pop.strut,glm_fit0,GRM,fake_copy_number_data,N="all",SPA=SPA,scale_g=FALSE,log_g=FALSE)
-  if(SPA){
-    pvalues=fake_data$SPA_pvalue
-  }else{
-    pvalues=fake_data$pvalue
-  }
-  if(plot_qq){
-    cat(sim_num)
-    
-    simpleQQPlot(pvalues,obj.pop.strut$tau,alpha_value,n_CNV,obj.pop.strut)
-  }
-  return(fake_data)
-  #return(fake_data)
-}
 simulate_one_CNV<-function(sample_names,y,mean_sim,spread_sim,beta=1){
   nsamples=length(sample_names)
   y_delta=if_else(y==0,-1,1)
@@ -568,49 +548,63 @@ simulate_one_CNV<-function(sample_names,y,mean_sim,spread_sim,beta=1){
   return(new_y)
 }
 
-simulate_CNV_inner<-function(obj.pop.strut,glm_fit0,GRM,n_CNV=5000,alpha_value=.05,mean_sim=0,spread_sim=1,plot_qq=TRUE,SPA,sim_num){
+simulate_type1_error<-function(obj.pop.strut,glm_fit0,GRM,n_CNV=5000,alpha_value=.05,mean_sim=0,spread_sim=1,plot_qq=TRUE,SPA=FALSE){
   n_samples<-nrow(GRM)
-  fake_copy_number_data<-data.frame(gene_id=
-                                      unlist(lapply(paste0("gene",seq(1,n_CNV)),function(x) rep(x,n_samples))),
-                                    sample_name=rep(obj.pop.strut$sampleID,n_CNV),
-                                    copy_number=c(rnorm(n_samples*n_CNV,mean_sim,spread_sim)))
-  fake_data<-micro_glmm(obj.pop.strut,glm_fit0,GRM,fake_copy_number_data,N="all",SPA=SPA,scale_g=FALSE,log_g=FALSE)
+  gene_ids=unlist(lapply(paste0("gene",seq(1,n_CNV)),function(x) rep(x,n_samples)))
+  sample_names=rep(obj.pop.strut$sampleID,n_CNV)
+  copynumbers=unlist(lapply(seq(1,n_CNV),function(x) simulate_one_CNV(obj.pop.strut$sampleID,obj.pop.strut$y,mean_sim,spread_sim,beta=0)))
+  fake_copy_number_data<-data.frame(gene_id=gene_ids,
+                                    sample_name=sample_names,
+                                    copy_number=copynumbers)
+  fake_data<-micro_glmm(obj.pop.strut,glm_fit0,GRM,fake_copy_number_data,SPA=SPA,scale_g=FALSE,log_g=FALSE)
   if(SPA){
     pvalues=fake_data$SPA_pvalue
   }else{
     pvalues=fake_data$pvalue
   }
   if(plot_qq){
-    cat(sim_num)
-    
+
     simpleQQPlot(pvalues,obj.pop.strut$tau,alpha_value,n_CNV,obj.pop.strut)
   }
   return(fake_data)
   #return(fake_data)
 }
 
-simulate_power<-function(obj.pop.strut,glm_fit0,GRM,alpha_value=.05,mean_sim=0,spread_sim=1,plot_qq=TRUE,SPA,sim_num){
+simulate_power<-function(obj.pop.strut,glm_fit0,GRM,n_CNV=5000,alpha_value=.05,mean_sim=0,spread_sim=1,SPA=FALSE){
   n_samples<-nrow(GRM)
-  CNV_list=data.frame(beta=c(rep(0,90),.1,.2,.3,.4,.5,.6,.7,8,.9,1,2))
-  n_CNV=nrow(CNV_list)
-  fake_copy_number_data<-data.frame(gene_id=
-                                      unlist(lapply(paste0("gene",seq(1,n_CNV)),function(x) rep(x,n_samples))),
-                                    sample_name=rep(obj.pop.strut$sampleID,n_CNV),
-                                    copy_number=c(apply(CNV_list,1,function(x) simulate_one_CNV(obj.pop.strut$sampleID,obj.pop.strut$y,mean_sim,spread_sim,beta=x[1]))))
-  fake_data<-micro_glmm(obj.pop.strut,glm_fit0,GRM,fake_copy_number_data,N="all",SPA=FALSE,scale_g=TRUE,log_g=FALSE)
-  fake_data %>% arrange(gene)
-  if(SPA){
-    pvalues=fake_data$SPA_pvalue
-  }else{
-    pvalues=fake_data$pvalue
-  }
-  if(plot_qq){
-    cat(sim_num)
+  beta_list=c(.05,.1,.15,.2,.25,.3,.35,.4,.45,.5,.75,1)
+  gene_ids=unlist(lapply(paste0("gene",seq(1,n_CNV)),function(x) rep(x,n_samples)))
+  sample_names=rep(obj.pop.strut$sampleID,n_CNV)
+  beta_df=data.frame(beta=beta_list,num_recovered=0)
+  for(beta in beta_list){
+    prec_real<-round(n_CNV*.1,1)
+    prec_fake<-round(n_CNV*.9,1)
+
+    betas_to_sim<-c(rep(0,prec_fake),rep(beta,prec_real))
+    copynumbers=unlist(lapply(betas_to_sim,function(x) simulate_one_CNV(obj.pop.strut$sampleID,obj.pop.strut$y,mean_sim,spread_sim,beta=x)))
+    fake_copy_number_data<-data.frame(gene_id=gene_ids,
+                                      sample_name=sample_names,
+                                      copy_number=copynumbers)  
+    fake_data<-micro_glmm(obj.pop.strut,glm_fit0,GRM,fake_copy_number_data,SPA=FALSE,scale_g=TRUE,log_g=FALSE)
     
-    simpleQQPlot(pvalues,obj.pop.strut$tau,alpha_value,n_CNV,obj.pop.strut)
+    fake_data$sim_beta<-betas_to_sim
+    
+    fake_data<-fake_data %>% mutate(num_found=(fake_data$pvalue <= alpha_value & sim_beta>0)) %>% arrange(-sim_beta)
+    print(head(fake_data))
+    beta_df[which(beta_df$beta==beta),2]=sum(fake_data$num_found)/sum(fake_data$sim_beta>0)
+    if(SPA){
+      pvalues=fake_data$SPA_pvalue
+    }else{
+      pvalues=fake_data$pvalue
+    }
   }
+ 
+  
+  print(ggplot(beta_df,aes(beta_list,num_recovered))+geom_point()+geom_smooth(formula= y ~ log(x),se=FALSE)+geom_hline(yintercept = .9)+labs(title=paste("Power test for species",obj.pop.strut$species_id,"at alpha value",alpha_value,"number CNV",n_CNV),x="simulated beta",y="precentage recovered"))
+  beta_df$case_contol<-fake_data$num_control[1]/fake_data$num_total[1]
+  beta_df$num_total<-fake_data$num_total[1]
+  beta_df$species_id<-fake_data$species_id[1]
   return(fake_data)
-  #return(fake_data)
 }
 
 

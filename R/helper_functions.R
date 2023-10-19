@@ -1,5 +1,7 @@
 color_pal<<-c("#E69F00","#CC79A7","#56B4E9","#009E73","#F0E442","#0072B2","#D55E00")
 
+theme_set(theme_minimal(base_size = 12))
+
 test_dir<-function(test_dir,verbose){tryCatch({
   
   if(file_test("-d",test_dir)){
@@ -50,21 +52,24 @@ validate_GRM_metadata<-function(opt){
 
   if(isTRUE(!is.na(opt$metadata))){
     if(file_test("-f",opt$metadata)){
-      metadata <<- fread(opt$metadata) 
+      metadata <- fread(opt$metadata) 
       metadata_overlaps<-base::intersect(metadata$sample_name,colnames(GRM))
       if(isFALSE(length(metadata_overlaps)>0)){
         put("samples in metadata do not match MIDAS output please make sure you metadata has sample names
             in a colmun labeled sample_name and binary phenotypes in a column labeled disease_status",console = verbose)
         stop()
       }else{
-        metadata<<-metadata %>% filter(sample_name %in% metadata_overlaps)
-        print(GRM)
-        GRM<<-GRM[metadata_overlaps,metadata_overlaps]
+        metadata<-metadata %>% filter(sample_name %in% metadata_overlaps)
+        print(metadata_overlaps)
+        print(metadata$sample_name)
+        GRM<-GRM[metadata_overlaps,metadata_overlaps]
         double_check<-metadata$sample_name==colnames(GRM)
-        if(!double_check){
+        if(!all(double_check)){
           put("metadata no match",console = verbose)
           stop()
         }
+        GRM<<-GRM
+        metadata<<-metadata
         put("metadata read in",console = verbose)
       }
     }else{
