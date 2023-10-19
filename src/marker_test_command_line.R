@@ -45,6 +45,40 @@ validate_marker_test(opt)
 
 output_dir<-test_dir(opt$out_folder,verbose)
 marker_test_df<-micro_glmm(glmm_fit,glm_fit0,GRM,copy_number_df,SPA=spa_opt,scale_g=scale_copynumber_opt,log_g=log_copynumber_opt)
-write.table(marker_test_df,file.path(output_dir, paste0(s_id,".marker_test.tsv")),sep="\t")
+pdf(file= file.path(output_dir,paste0(s_id,".marker_test_output.pdf")) ) 
+
+# create a 2X2 grid 
+par( mfrow= c(4,1) )
+m<-nrow(marker_test_df)
+bonferroni_cutoff<-.05/m
+marker_test_df<-marker_test_df%>% mutate(rank=seq(1,m)) %>% mutate(bh_pvalue=(rank/m)*.05)
+write.table(marker_test_df,file.path(output_dir, paste0(s_id,".marker_test.tsv")),sep="\t",row.names=FALSE)
+filtered_test_df<-marker_test_df %>% filter(bh_pvalue<.05)
+if(nrow(filtered_test_df)<1){
+  bh_cutoff<-bonferroni_cutoff
+}
+bh_cutoff<-min(filtered_test_df$pvalue)
+print(marker_test_df[1:50,])
+
+marker_test_df %>% ggplot(aes(x=pvalue)) +geom_histogram()+ggtitle(paste("Pvalue histogram for species ",s_id))
+marker_test_df %>% ggplot(aes(y=-log10(pvalue),x=beta)) +geom_hline(color="red",yintercept = -log10(bonferroni_cutoff))+geom_hline(color="green",yintercept =-log10(bh_cutoff))+geom_point()+ggtitle(paste("volcano plot for species ",s_id))
+
+#glm_model<-copy_number_df %>% group_by(gene_id) %>% group_modify(~broom::tidy(glm(glm_fit0$family,data = .x,family=binomial(link = "logit"))))
+#print(head(glm_model))
+#mean_cov_glm<- copy_number_df %>% group_by(gene_id)  %>% mutate(offset=0) %>% group_map(~glm(glm_fit0$family,data = .x,family=binomial(link = "logit"),offset=offset))
+#mean_cov_df<-copy_number_df %>% group_by(gene_id) %>% summarize(num_samples=n())
+#mean_cov_df$model<-as.vector(mean_cov_glm)
+#mean_cov_df$Dev<-as.numeric(lapply(mean_cov_glm,function(x) x$deviance))
+#mean_cov_df$ND<-as.numeric(lapply(mean_cov_glm,function(x) x$null.deviance))
+#mean_cov_df$r2<-1-mean_cov_df$Dev/mean_cov_df$ND
+#mean_cov_df$aic<-as.numeric(lapply(mean_cov_glm,function(x) x$aic))
+
+#p_value_ver_3<-both_marker_test %>% ggplot(aes(x=-log10(p.value),y=-log10(pvalue)))+geom_point()+ggtitle(paste("no adj pvalue for genes of species with Age:", s_id))+labs(y=c("adjusted_model"),x="glm model")+geom_abline(color="red")
+
+#p_value_ver_4<-ggExtra::ggMarginal(p_value_ver_3, type = "histogram")
+#print(p_value_ver_4,newpage = TRUE)
+
+#beta_plot<-both_marker_test %>% ggplot(aes(x=estimate,y=beta))+geom_point()+ggtitle(paste("beta for genes of species with Age:", s_id))+labs(y=c("adjusted_model"),x="glm model")+geom_abline(color="red")
+#print(beta_plot)
 
 log_close()

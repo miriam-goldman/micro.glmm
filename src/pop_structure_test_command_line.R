@@ -35,7 +35,9 @@ option_list = list(
   make_option(c("--formula_to_fit"), type="character", default="y~1",
               help="formula used to fit population structure; the phenotype and any covariates in the metadata file that are to be used",metavar="character" ),
   make_option(c("--n_tau"), type="numeric", default=0,
-              help="number of permuations to test for significance of tau, if 0 no test run",metavar="numeric" )
+              help="number of permuations to test for significance of tau, if 0 no test run",metavar="numeric" ),
+  make_option(c("--n_CNV"), type="numeric", default=0,
+              help="number of CNVs to test for type 1 error, if 0 no test run",metavar="numeric" )
  
 )
 
@@ -64,7 +66,7 @@ b_df=data.frame(b=as.vector(glmm_fit$b),y=as.vector(glmm_fit$y),fitted.values=as
 pdf(file= file.path(output_dir,paste0(s_id,".random_effect_output.pdf")) ) 
 
 # create a 2X2 grid 
-par( mfrow= c(4,1) )
+par( mfrow= c(10,1) )
 
 annotation_col = data.frame(disease_status=paste0("group_",as.vector(glm_fit0$y)),"b"=as.vector(glmm_fit$b))
 rownames(annotation_col) =colnames(GRM)
@@ -108,6 +110,13 @@ if(opt$n_tau>0){
                                            "\n number of permutations",opt$n_tau),caption =paste(glmm_fit$summary,"\n pvalue for t is", num_more_ext/opt$n_tau))+ theme(
                                              plot.caption = element_text(hjust = 0)
                                            )
+  #ggsave(file.path(output_dir,paste0(s_id,".permutation_test.pdf")),device="pdf")
+}
+
+if(opt$n_CNV>0){
+  simulate_type1_error_df<-simulate_type1_error(glmm_fit,glm_fit0,GRM,opt$n_CNV)
+  simulate_power_df<-simulate_power(glmm_fit,glm_fit0,GRM,opt$n_CNV)
+  write.csv(simulate_power_df,file.path(output_dir,paste0(s_id,".power_output.csv")))
   #ggsave(file.path(output_dir,paste0(s_id,".permutation_test.pdf")),device="pdf")
 }
 
