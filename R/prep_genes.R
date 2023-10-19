@@ -216,12 +216,13 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
       ggsave(file.path(output_dir, paste0(s_id,".gene_2d_histogram.pdf")), width = 7, height = 6)
       byGene %>% ggplot(aes(x = sample_freq,color=isCore)) + geom_histogram(bins = 30) + ggtitle(paste("Gene occurrence for species:", s_id))
       ggsave(file.path(output_dir, paste0(s_id,".gene_histogram.pdf")), width = 7, height = 6)
-      byGene<-byGene %>% filter(!isCore)
+      
     }
     
       put(paste("labeled genes core if >=", centroid_prevalence_cutoff, "of examples for species had the gene"),console = verbose)
       put(paste("number of genes length after pangenome filter:",length(unique(byGene$gene_id))),console = verbose)
-  }else{
+      byGene<-byGene %>% filter(!isCore)
+      }else{
     if(make_plots){
       byGene %>% ggplot(aes(x = sample_freq)) + geom_histogram(bins = 30) + ggtitle(paste("Gene occurrence for species:", s_id))
       ggsave(file.path(output_dir, paste0(s_id,".gene_histogram.pdf")), width = 7, height = 6)
