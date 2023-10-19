@@ -51,7 +51,6 @@ pdf(file= file.path(output_dir,paste0(s_id,".marker_test_output.pdf")) )
 par( mfrow= c(4,1) )
 m<-nrow(marker_test_df)
 bonferroni_cutoff<-.05/m
-marker_test_df<-marker_test_df %>% arrange(pvalue)
 marker_test_df<-marker_test_df%>% mutate(rank=seq(1,m)) %>% mutate(bh_pvalue=(rank/m)*.05)
 write.table(marker_test_df,file.path(output_dir, paste0(s_id,".marker_test.tsv")),sep="\t",row.names=FALSE)
 filtered_test_df<-marker_test_df %>% filter(bh_pvalue<.05)

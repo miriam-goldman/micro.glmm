@@ -60,7 +60,7 @@ validate_genes_input<-function(opt){
   }else{
     genes_summary<-NULL
     genes_summary_used=FALSE
-    put("genes depth file doesnt exist",console = verbose)
+    put("genes summary file doesnt exist",console = verbose)
   }
   
   if(isTRUE(!is.na(opt$centroid_prevalence_file))){
@@ -198,8 +198,8 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
   gdepth %<>% gather(sample_name, gene_depth, setdiff(colnames(gdepth), "gene_id"))
   gdepth %<>% filter(sample_name %in% list_of_samples)
   gcopynumber %<>% gather(sample_name, copy_number, setdiff(colnames(gcopynumber), "gene_id"))
-  gcopynumber %<>% filter(sample_name %in% list_of_samples)
-  gdepth %<>% filter(gene_depth >= depth_cutoff)
+  gcopynumber %<>% filter(sample_name %in% list_of_samples) %>% filter(copy_number>0)
+  gdepth %<>% filter(gene_depth >= depth_cutoff) 
   put(paste("Gene-level first filter: average gene depth >=",depth_cutoff),console = verbose)
   # compute gene occurrence frequency
   total_sample_counts<-length(list_of_samples)
@@ -218,10 +218,10 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
       ggsave(file.path(output_dir, paste0(s_id,".gene_histogram.pdf")), width = 7, height = 6)
       
     }
-    
+      byGene<-byGene %>% filter(isCore=="accessory")
       put(paste("labeled genes core if >=", centroid_prevalence_cutoff, "of examples for species had the gene"),console = verbose)
       put(paste("number of genes length after pangenome filter:",length(unique(byGene$gene_id))),console = verbose)
-      byGene<-byGene %>% filter(!isCore)
+      
       }else{
     if(make_plots){
       byGene %>% ggplot(aes(x = sample_freq)) + geom_histogram(bins = 30) + ggtitle(paste("Gene occurrence for species:", s_id))
@@ -230,7 +230,7 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
     
   }
   ## depth and copy number togetehr
-  df <- left_join(gdepth, gcopynumber, by=c("gene_id", "sample_name"))
+  df <- inner_join(gdepth, gcopynumber, by=c("gene_id", "sample_name"))
   ## filter to genes with enough samples and enough depth
   df %<>% filter(gene_id %in% unique(byGene$gene_id))
   ## filter to genes with enough samples and enough depth
