@@ -60,7 +60,7 @@ validate_genes_input<-function(opt){
   }else{
     genes_summary<-NULL
     genes_summary_used=FALSE
-    put("genes depth file doesnt exist",console = verbose)
+    put("genes summary file doesnt exist",console = verbose)
   }
   
   if(isTRUE(!is.na(opt$centroid_prevalence_file))){
