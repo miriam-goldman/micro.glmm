@@ -198,8 +198,8 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
   gdepth %<>% gather(sample_name, gene_depth, setdiff(colnames(gdepth), "gene_id"))
   gdepth %<>% filter(sample_name %in% list_of_samples)
   gcopynumber %<>% gather(sample_name, copy_number, setdiff(colnames(gcopynumber), "gene_id"))
-  gcopynumber %<>% filter(sample_name %in% list_of_samples)
-  gdepth %<>% filter(gene_depth >= depth_cutoff)
+  gcopynumber %<>% filter(sample_name %in% list_of_samples) %>% filter(copy_number>0)
+  gdepth %<>% filter(gene_depth >= depth_cutoff) 
   put(paste("Gene-level first filter: average gene depth >=",depth_cutoff),console = verbose)
   # compute gene occurrence frequency
   total_sample_counts<-length(list_of_samples)
@@ -230,7 +230,7 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
     
   }
   ## depth and copy number togetehr
-  df <- left_join(gdepth, gcopynumber, by=c("gene_id", "sample_name"))
+  df <- inner_join(gdepth, gcopynumber, by=c("gene_id", "sample_name"))
   ## filter to genes with enough samples and enough depth
   df %<>% filter(gene_id %in% unique(byGene$gene_id))
   ## filter to genes with enough samples and enough depth
