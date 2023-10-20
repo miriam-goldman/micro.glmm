@@ -16,7 +16,7 @@ rule parse_genes_input:
         gene_info = pandb_dir+ "/{s_id}/gene_info.txt",
     output:
         rep_genom = output_fp + "/gene_labels/{s_id}." + centriod_cutoff + ".centroid_to_repgenes.tsv",
-        centriod_counts=output_fp + "/gene_labels/{s_id}." + centriod_cutoff + ".centroid_prevalence.tsv"
+        centriod_counts=output_fp + "/gene_labels/{s_id}." + centriod_cutoff + ".centroid_prevalence.tsv",
         output_folder=output_fp + "/gene_labels"
     shell:
         """
