@@ -1,5 +1,6 @@
 library(pROC)
 library(Matrix)
+theme_set(theme_minimal(base_size = 18))
 ### functions needed to run GLMM for MWAS
 getCoefficients<-function(Y, X, W, tau, GRM){
   # Y is working vector Y=alpha X + b
@@ -600,11 +601,11 @@ simulate_power<-function(obj.pop.strut,glm_fit0,GRM,n_CNV=5000,alpha_value=.05,m
   }
  
   
-  print(ggplot(beta_df,aes(beta_list,num_recovered))+geom_point()+geom_smooth(formula= y ~ log(x),se=FALSE)+geom_hline(yintercept = .9)+labs(title=paste("Power test for species",obj.pop.strut$species_id,"at alpha value",alpha_value,"number CNV",n_CNV),x="simulated beta",y="precentage recovered"))
+  print(ggplot(beta_df,aes(beta_list,num_recovered))+geom_point(size=3)+geom_smooth(formula= y ~ log(x),se=FALSE,size=2)+geom_hline(yintercept = .9)+labs(title=paste("Power test for species",obj.pop.strut$species_id,"at alpha value",alpha_value,"number CNV",n_CNV),x="simulated beta",y="precentage recovered"))
   beta_df$case_contol<-fake_data$num_control[1]/fake_data$num_total[1]
   beta_df$num_total<-fake_data$num_total[1]
   beta_df$species_id<-fake_data$species_id[1]
-  return(fake_data)
+  return(beta_df)
 }
 
 
@@ -698,7 +699,7 @@ simpleQQPlot = function (observedPValues,tau,alpha_value,n_CNV,obj.pop.strut) {
   expeded_pvalues=-log10(1:length(observedPValues)/length(observedPValues))
   observed_pvalues_tranformed=-log10(sort(observedPValues))
   pvalue_df<-data.frame(expeded_pvalues,observed_pvalues_tranformed)
-  print(ggplot(pvalue_df,aes(expeded_pvalues,observed_pvalues_tranformed))+geom_point()+geom_abline(color="red")+labs(title=paste("qqplot for species,",obj.pop.strut$species_id, "tau:",round(tau[2],2),"error_rate < ",alpha_value,":",error_rate),x="-log10(expected P values)",y="-log10(observed p values)"))
+  print(ggplot(pvalue_df,aes(expeded_pvalues,observed_pvalues_tranformed))+geom_point(size=3)+geom_abline(color="red",size=3)+labs(title=paste("qqplot for species,",obj.pop.strut$species_id, "tau:",round(tau[2],2),"error_rate < ",alpha_value,":",error_rate),x="-log10(expected P values)",y="-log10(observed p values)"))
 }
 
 #### taken from SPA

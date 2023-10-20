@@ -116,7 +116,7 @@ if(opt$n_tau>0){
 if(opt$n_CNV>0){
   simulate_type1_error_df<-simulate_type1_error(glmm_fit,glm_fit0,GRM,opt$n_CNV)
   simulate_power_df<-simulate_power(glmm_fit,glm_fit0,GRM,opt$n_CNV)
-  write.csv(simulate_power_df,file.path(output_dir,paste0(s_id,".power_output.csv")))
+  save(simulate_type1_error_df, simulate_power_df, file = file.path(output_dir,paste0(s_id,".simulation_obj.Rdata")))
   #ggsave(file.path(output_dir,paste0(s_id,".permutation_test.pdf")),device="pdf")
 }
 

@@ -52,17 +52,18 @@ par( mfrow= c(4,1) )
 m<-nrow(marker_test_df)
 bonferroni_cutoff<-.05/m
 marker_test_df<-marker_test_df %>% arrange(pvalue)
-marker_test_df<-marker_test_df%>% mutate(rank=seq(1,m)) %>% mutate(bh_pvalue=(rank/m)*.05)
+q=.25
+marker_test_df<-marker_test_df%>% mutate(rank=seq(1,m)) %>% mutate(bh_pvalue=(rank/m)*q)
 write.table(marker_test_df,file.path(output_dir, paste0(s_id,".marker_test.tsv")),sep="\t",row.names=FALSE)
-filtered_test_df<-marker_test_df %>% filter(bh_pvalue<.05)
+filtered_test_df<-marker_test_df %>% filter(pvalue<=bh_pvalue)
 if(nrow(filtered_test_df)<1){
   bh_cutoff<-bonferroni_cutoff
 }
-bh_cutoff<-min(filtered_test_df$pvalue)
+bh_cutoff<-max(filtered_test_df$pvalue)
 print(marker_test_df[1:50,])
 
 marker_test_df %>% ggplot(aes(x=pvalue)) +geom_histogram()+ggtitle(paste("Pvalue histogram for species ",s_id))
-marker_test_df %>% ggplot(aes(y=-log10(pvalue),x=beta)) +geom_hline(color="red",yintercept = -log10(bonferroni_cutoff))+geom_hline(color="green",yintercept =-log10(bh_cutoff))+geom_point()+ggtitle(paste("volcano plot for species ",s_id))
+marker_test_df %>% ggplot(aes(y=-log10(pvalue),x=beta))+geom_hline(color="green",yintercept =-log10(bh_cutoff))+geom_point()+ggtitle(paste("volcano plot for species ",s_id))
 
 #glm_model<-copy_number_df %>% group_by(gene_id) %>% group_modify(~broom::tidy(glm(glm_fit0$family,data = .x,family=binomial(link = "logit"))))
 #print(head(glm_model))

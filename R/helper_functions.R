@@ -1,6 +1,6 @@
 color_pal<<-c("#E69F00","#CC79A7","#56B4E9","#009E73","#F0E442","#0072B2","#D55E00")
 
-theme_set(theme_minimal(base_size = 12))
+theme_set(theme_minimal(base_size = 18))
 
 test_dir<-function(test_dir,verbose){tryCatch({
   

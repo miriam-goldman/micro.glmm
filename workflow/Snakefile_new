@@ -2,7 +2,8 @@
 #run micro-glmm from start to finish
 pandb_dir=config["all"]["pandb_dir"]
 #s_id="102478"
-SPECIES_IDs=["101338","101380","102545"]
+#SPECIES_IDs=["101338","101380","102545"]
+SPECIES_IDs=["102545"]
 output_fp=config["all"]["output_fp"]
 centriod_cutoff=config["all"]["centriod_cutoff"]
 data_dir_snp=config["all"]["data_dir_snp"]
@@ -105,7 +106,7 @@ rule run_structure_test:
         """
         cd src
         Rscript pop_structure_test_command_line.R --species_id {wildcards.s_id} -v TRUE \
-        -o {output_fp} --GRM {input.GRM} --metadata {input.metadata} --tau 1 --n_tau 0 --n_CNV 0 \
+        -o {output_fp} --GRM {input.GRM} --metadata {input.metadata} --tau 1 --n_tau 0 --n_CNV 5000 \
         --formula_to_fit "y~age+1"
         """
 
