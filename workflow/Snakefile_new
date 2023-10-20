@@ -14,16 +14,16 @@ rule parse_genes_input:
     input:
         gene_length = pandb_dir+ "/{s_id}/genes.len",
         gene_info = pandb_dir+ "/{s_id}/gene_info.txt",
-        output_folder=output_fp + "/gene_labels"
     output:
         rep_genom = output_fp + "/gene_labels/{s_id}." + centriod_cutoff + ".centroid_to_repgenes.tsv",
         centriod_counts=output_fp + "/gene_labels/{s_id}." + centriod_cutoff + ".centroid_prevalence.tsv"
+        output_folder=output_fp + "/gene_labels"
     shell:
         """
         cd python
         python parse_gene.py --species_id {wildcards.s_id} \
         --pandb_dir {pandb_dir} --genome_info_file {genomes_file} \
-        --out_dir {input.output_folder} --by_col {centriod_cutoff}
+        --out_dir {output.output_folder} --by_col {centriod_cutoff}
         """
 rule prep_snps:
     input:
