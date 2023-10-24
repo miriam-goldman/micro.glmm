@@ -2,7 +2,7 @@
 # General options
 all:
   root: "/pollard/home/mgoldman/micro-glmm"
-  output_fp: "/pollard/data/projects/mwas-projects/output/centroid_90_all_species"
+  output_fp: "/pollard/data/projects/mwas-projects/output/centroid_90_all_species_spa"
   genes_label_fp: "/pollard/data/projects/mwas-projects/gene_labels"
   #specieslist_fp: "genomes.csv"
   pandb_dir: "/pollard/data/midas2-db/midas2db-uhgg-v1.5/pangenomes"

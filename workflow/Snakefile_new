@@ -121,7 +121,7 @@ rule run_marker_test:
         cd src
         Rscript marker_test_command_line.R --species_id {wildcards.s_id} -v TRUE \
         -o {output_fp} --Rdata {input.Rdata} --copy_number {input.copynumber_data} \
-        --SPA FALSE --scale_copynumber TRUE --log_copynumber TRUE
+        --SPA TRUE --scale_copynumber TRUE --log_copynumber TRUE --q_value .05 --alpha_value .05
         """
 
 rule run_all:
