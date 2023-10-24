@@ -49,12 +49,39 @@ get_AI_score<-function(Y,X,GRM,W,tau,Sigma_iY,Sigma_iX,cov){
   APY = GRM %*% PY1 # GRM (\hat{Y}-\hat(X) (Xt V X)^-1) 
   YPAPY = t(PY1) %*% APY # dot product
   Trace = GetTrace(Sigma_iX, X,GRM, W, tau, cov) #come back
-  
   Sigma=gen_sp_Sigma(W,tau,GRM)
   PAPY_1=solve(Sigma,APY)
   PAPY = PAPY_1 - Sigma_iX %*% (cov %*% (Sigma_iXt %*% PAPY_1))#PAPY
   AI = t(PAPY) %*% APY# AI=t(Y)%*%P%*%GRM%*%P%*%GRM%*%P%*%Y
   return(list(YPAPY=YPAPY,Trace=Trace,PY=PY1,AI=AI))
+}
+
+get_AI_score_quant<-function(Y,X,GRM,W,tau,Sigma_iY,Sigma_iX,cov){
+  ## get score for finding tau function from supplment of Saige paper
+  ## Inputs Y, X, GRM, W, Tau, Sigma_Y, Sigma_X, cov
+  phi=tau[1]
+  Sigma_iXt = t(Sigma_iX) #transpose X
+  PY1 = Sigma_iY - Sigma_iX %*% (cov %*% (Sigma_iXt %*% Y)) # \hat{Y}-\hat(X) (Xt V X)^-1 PY
+  S_0=1/phi*(W^-1)
+  A0PY = S_0 %*% PY1
+  YPA0PY = t(PY1) %*% A0PY
+  APY = GRM %*% PY1 # GRM (\hat{Y}-\hat(X) (Xt V X)^-1) 
+  YPAPY = t(PY1) %*% APY # dot product
+  Trace_P_GRM = GetTrace(Sigma_iX, X,GRM, W, tau, cov) #come back
+  Trace_PW=GetTrace_PW(Sigma_iX, X,GRM, W, tau, cov) 
+  Sigma=gen_sp_Sigma(W,tau,GRM)
+  PA0PY_1=solve(Sigma,A0PY) 
+  
+  PA0PY_1 = PA0PY_1 - Sigma_iX * (cov * (Sigma_iXt * PA0PY_1))
+  
+  
+  PAPY_1=solve(Sigma,APY)
+  PAPY = PAPY_1 - Sigma_iX %*% (cov %*% (Sigma_iXt %*% PAPY_1))#PAPY
+  AI_11 = t(PAPY) %*% APY# AI=t(Y)%*%P%*%GRM%*%P%*%GRM%*%P%*%Y
+  AI_00=t(PA0PY) %*% A0PY
+  AI_01= t(PAPY) %*%A0PY
+  AI_mat=matrix(c(AI_00,AI_01,AI_01,AI_1),2,2)
+  return(list(YPAPY=YPAPY,PY=PY1,YPA0PY=YPA0PY,Trace_P_GRM=Trace_P_GRM,Trace_PW=Trace_PW,AI=AI_mat))
 }
 
 
@@ -69,18 +96,18 @@ GetTrace<-function(Sigma_iX, X, GRM,W, tau, cov){
   return(tra)
 }
 
-GetTrace_2<-function(X, GRM,W, tau){
+GetTrace_PW<-function(Sigma_iX,X, GRM,W, tau,cov){
   #There is a more complicated version of this that is faster if needed
   ## gives the trace of P_GRM
-  cov=Matrix::solve(forceSymmetric(t(X) %*% sigma_X),sparse=TRUE,tol = 1e-10) # (Xt V^-1 X)^-1
+  phi=tau[1]
   Sigma=gen_sp_Sigma(W,tau,GRM)
-  Sigma_iX=solve(Sigma,X) # V^-1 X
-  Sigma_GRM= solve(Sigma,GRM) 
+  W_mat=(1/phi)*diag(W^-1,length(W))
+  Sigma_W= solve(Sigma,W_mat) 
   Sigma_iXt=t(Sigma_iX)
-  P_GRM= Sigma_GRM- Sigma_iX %*% (cov %*% (Sigma_iXt %*% GRM))
-  cat(paste("sd of the projection GRM",sd(diag(P_GRM))))
-  tra=sum(diag(P_GRM%*%P_GRM))
-  return(tra)
+  P_W= Sigma_W- Sigma_iX %*% cov %*% (Sigma_iXt %*% W_mat)
+  tra_P_W=sum(diag(P_W))
+  
+  return(tra_P_W)
 }
 
 
@@ -100,19 +127,51 @@ ScoreTest_NULL_Model = function(mu, y, X){
   return(re) 
 }	
 
+ScoreTest_NULL_Model_quant = function(mu, mu2,tau, y, X){
+  V = rep(1/tau[1], length(y))
+  res = as.vector(y - mu)
+  XV = t(X * V)
+  XVX = t(X) %*% (t(XV))
+  XVX_inv = solve(XVX)
+  XXVX_inv = X %*% XVX_inv
+  XVX_inv_XV = XXVX_inv * V
+  S_a =  colSums(X * res)
+  re = list(XV = XV, XVX = XVX, XXVX_inv = XXVX_inv, XVX_inv = XVX_inv, S_a = S_a, XVX_inv_XV = XVX_inv_XV, V = V)
+  class(re) = "SA_NULL"
+  return(re) 
+}	
 
 
-fitglmmaiRPCG<-function(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov,tol,verbose,write_log){
-  re.AI = get_AI_score(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov)
+
+fitglmmaiRPCG<-function(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov,tol,quat=FALSE,verbose,write_log){
+  if(!quat){ 
+    re.AI = get_AI_score(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov)
+    YPAPY = re.AI$YPAPY
+    Trace = re.AI$Trace #trace of P GRM
+    score1 = YPAPY[1] - Trace # this is equation 8 from paper 
+    AI1 = re.AI$AI
+    Dtau = score1/AI1
+    tau0 = tauVec
+    tauVec[2] = tau0[2] + Dtau
+    
+  }else{
+    re.AI = get_AI_score_quant(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov)
+    YPAPY = re.AI$YPAPY
+    YPA0PY = re.AI$YPA0PY
+    Trace_PW=re.AI$Trace_PW
+    Trace_P_GRM=re.AI$Trace_P_GRM
+    score0 = YPA0PY - Trace_PW
+    score1= YPAPY-Trace_P_GRM
+    score_vect=vector(c(score0,score1))
+    Dtau = solve(AI, score_vect)
+    tau0 = tauVec
+    tauVec = tau0 + Dtau
+  }
+ 
   
-  YPAPY = re.AI$YPAPY
-  Trace = re.AI$Trace #trace of P GRM
-  score1 = YPAPY[1] - Trace # this is equation 8 from paper 
-  AI1 = re.AI$AI
-  Dtau = score1/AI1
-  tau0 = tauVec
   
-  tauVec[2] = tau0[2] + Dtau
+  
+  
     if(any(tauVec < tol)){
       tauVec[which(tauVec < tol)]=0
     }
@@ -200,6 +259,9 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
   sample_ids<-colnames(GRM)
   if(family$family %in% c("poisson", "binomial")) {
     tau[1] = 1
+    quant=FALSE
+  }else{
+    quant=TRUE
   }
 
   if(verbose) cat("inital tau is ", tau,"\n")
@@ -210,9 +272,17 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
   W_0 = sqrtW_0^2
   Sigma_0=gen_sp_Sigma(W_0,tau0,GRM)
   re.coef = Get_Coef(y, X, tau, GRM,family, alpha0, eta0,  offset, maxiter=maxiter,verbose=verbose,tol.coef = tol,write_log=write_log)
-  re = get_AI_score(re.coef$Y, X, GRM,re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov)
+  ######
+  if(quant){
+    re = get_AI_score_quant(re.coef$Y, X, GRM,re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov)
+    tau[2] = max(0, tau0[2] + tau0[2]^2 * (re$YPAPY - re$Trace_P_GRM)/n)
+    tau[1] = max(0, tau0[1] + tau0[1]^2 * (re$YPA0PY - re$Trace_P_W)/n)
+  }else{
+    re = get_AI_score(re.coef$Y, X, GRM,re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov)
+    
+    tau[2] = max(0, as.numeric(tau0[2] + tau0[2]^2 * ((re$YPAPY - re$Trace)/2)/n)) #tau + Dtau dumb way
+  }
   
-  tau[2] = max(0, as.numeric(tau0[2] + tau0[2]^2 * ((re$YPAPY - re$Trace)/2)/n)) #tau + Dtau dumb way
   
   if(verbose) {
     cat("Variance component estimates:\n")
@@ -244,7 +314,7 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
       put(t_end_Get_Coef - t_begin_Get_Coef)
     }
     ##update tau
-    fit = fitglmmaiRPCG(re.coef$Y, X, GRM, re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov,tol=tol,verbose=verbose,write_log=write_log)
+    fit = fitglmmaiRPCG(re.coef$Y, X, GRM, re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov,tol=tol,verbose=verbose,write_log=write_log,quant=quant)
     t_end_fitglmmaiRPCG= proc.time()
     if(verbose) {
     cat("t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG\n")
@@ -275,6 +345,8 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
     if(tau[2] == 0) break
     # Use only tau for convergence evaluation, because alpha was evaluated already in Get_Coef
     tau_condition=max(abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)) < tol
+    
+ 
     rss=sum(res^2)
     rss_condition=rss_0-rss
     if(verbose){
@@ -307,8 +379,15 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
   }
   
   re.coef = Get_Coef(y, X, tau, GRM,family, alpha, eta,  offset,verbose=verbose, maxiter=maxiter,tol.coef = tol,write_log=write_log)
-  re_final = get_AI_score(re.coef$Y, X, GRM,re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov)
-  
+  if(quant){
+    re.final = get_AI_score_quant(re.coef$Y, X, GRM,re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov)
+    tau[2] = max(0, tau0[2] + tau0[2]^2 * (re.final$YPAPY - re.final$Trace_P_GRM)/n)
+    tau[1] = max(0, tau0[1] + tau0[1]^2 * (re.final$YPA0PY - re.final$Trace_P_W)/n)
+  }else{
+    re.final = get_AI_score(re.coef$Y, X, GRM,re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov)
+    
+    tau[2] = max(0, as.numeric(tau0[2] + tau0[2]^2 * ((re$YPAPY - re$Trace)/2)/n)) #tau + Dtau dumb way
+  }
   cov = re.coef$cov
   
   alpha = re.coef$alpha
@@ -322,8 +401,13 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
   converged = ifelse(i < maxiter, TRUE, FALSE)
   res = y - mu
   rss=sum(res^2)
-  mu2 = mu * (1-mu)
-  obj.noK = ScoreTest_NULL_Model(mu, y, Xorig)
+  if(quant){
+    obj.noK = ScoreTest_NULL_Model_quant(mu,y,Xorig,tau)
+  }else{
+    mu2 = mu * (1-mu)
+    obj.noK = ScoreTest_NULL_Model(mu, y, Xorig)
+  }
+  
   #exp_tau=GetTrace_2(X,GRM,W,tau)
   #print(paste("exp tau", exp_tau))
   #print(paste("tau_test",pchisq((1+tau[2])/(1+exp_tau/2),1,lower.tail = FALSE)))
@@ -493,7 +577,7 @@ micro_glmm = function(obj.pop.strut,
     Y = eta  + (filtered_obj.pop.strut$y - mu)/mu.eta
     
     
-    t_score=t(PG_tilde)%*%(Y) #t_score_2=t(G_tilde)%*%(filtered_obj.pop.strut$y - mu)
+    t_score=t(PG_tilde)%*%(Y)/tauVecNew[1] #t_score_2=t(G_tilde)%*%(filtered_obj.pop.strut$y - mu)
     m1 = t(G_tilde) %*% mu
     #qtilde=t(G_tilde)%*%filtered_obj.pop.strut$y
     var1 = t(G_tilde)%*%PG_tilde ## same as  t(G)%*%Sigma_iG - t(G)%*%filtered_obj.pop.strut$Sigma_iX%*%(solve(t(filtered_obj.pop.strut$X)%*%filtered_obj.pop.strut$Sigma_iX))%*%t(filtered_obj.pop.strut$X)%*%Sigma_iG
