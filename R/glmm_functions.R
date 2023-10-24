@@ -506,7 +506,7 @@ micro_glmm = function(obj.pop.strut,
     new_eta=beta[1,1]*G0+filtered_obj.pop.strut$b+filtered_obj.pop.strut$X %*% filtered_obj.pop.strut$coe
     new_mu=family$linkinv(new_eta)
     qtilde=t_score+m1
-    if(SPA){
+    if(SPA & pval<1){
     out1 = Saddle_Prob(q=qtilde, mu = mu, g = G_tilde, var1,Cutoff = 2,log.p=FALSE)
     list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=beta,"se beta"=se_beta,"pvalue"=pval,
                                        "t_adj"=t_adj,"num_control"=sum(filtered_obj.pop.strut$y==0),

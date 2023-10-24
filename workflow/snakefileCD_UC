@@ -1,0 +1,129 @@
+# 2023-10-24
+#run micro-glmm from start to finish for UC DC case
+pandb_dir=config["all"]["pandb_dir"]
+SPECIES_IDs=["100002",  "100038",  "100060",  "100084",  "100146",  "100217",  "100254",  "100723",  "101306",  "101338",    "102438",  "102478",  "102530",  "103439",  "103694",  "103937", "100003",  "100041",  "100074",  "100099",  "100190",  "100258",  "101292",    "101380",  "102293",  "102445",  "102492",  "102545",  "103681",  "103702",  "104158", "100022", "100044", "100076", "100142",  "100196",  "100249",  "100262",  "101300",  "101315",  "101346",  "102272", "102321",  "102454",  "102506",   "103686",  "103891",  "104323", "100045", "100078",  "100144",  "100212",  "100251",  "100271",  "101302",  "101337",  "101374",   "102395",  "102455",  "102528",  "102570",  "103693",  "103899"]
+output_fp=config["all"]["output_fp"]
+centriod_cutoff=config["all"]["centriod_cutoff"]
+data_dir_snp=config["all"]["data_dir_snp"]
+data_dir_genes=config["all"]["data_dir_genes"]
+metadata=config["all"]["metadata"]
+genomes_file=config["all"]["geneome_file"]
+genes_label_fp=config["all"]["genes_label_fp"]
+rule parse_genes_input:
+    input:
+        gene_length = pandb_dir+ "/{s_id}/genes.len",
+        gene_info = pandb_dir+ "/{s_id}/gene_info.txt",
+    output:
+        rep_genom = genes_label_fp +"/{s_id}." + centriod_cutoff + ".centroid_to_repgenes.tsv",
+        centriod_counts= genes_label_fp +"/{s_id}." + centriod_cutoff + ".centroid_prevalence.tsv"
+
+    shell:
+        """
+        mkdir -p {genes_label_fp}
+        cd python
+        python parse_gene.py --species_id {wildcards.s_id} \
+        --pandb_dir {pandb_dir} --genome_info_file {genomes_file} \
+        --out_dir {genes_label_fp} --by_col {centriod_cutoff}
+        """
+rule prep_snps:
+    input:
+        rep_genom =genes_label_fp +"/{s_id}." + centriod_cutoff + ".centroid_to_repgenes.tsv",
+        centriod_counts= genes_label_fp +"/{s_id}." + centriod_cutoff + ".centroid_prevalence.tsv",
+        gene_summary = data_dir_genes+"/{s_id}/genes/genes_summary.tsv",
+        s_depth=data_dir_snp+"/{s_id}/snps/{s_id}/{s_id}.snps_depth.tsv",
+        s_info=data_dir_snp+"/{s_id}/snps/{s_id}/{s_id}.snps_info.tsv",
+        s_freq=data_dir_snp+"/{s_id}/snps/{s_id}/{s_id}.snps_freqs.tsv"
+    output:
+        GRM=output_fp+"/{s_id}.GRM.tsv"
+    shell:
+        """
+        cd src
+        Rscript prep_snps_command_line.R  --species_id {wildcards.s_id} \
+        -v TRUE  -o {output_fp}  -i {input.s_info}  \
+        -f {input.s_freq}  -d {input.s_depth} -a 3 -m 5  -n 30  --genes_summary {input.gene_summary}\
+        -c {input.rep_genom} -p {input.centriod_counts} --centroid_prevalence_cutoff .9
+        """
+
+
+rule unzip_snps:
+    input:
+        s_depth_zip=data_dir_snp+"/{s_id}/snps/{s_id}/{s_id}.snps_depth.tsv.lz4",
+        s_info_zip=data_dir_snp+"/{s_id}/snps/{s_id}/{s_id}.snps_info.tsv.lz4",
+        s_freq_zip=data_dir_snp+"/{s_id}/snps/{s_id}/{s_id}.snps_freqs.tsv.lz4"
+    output:
+        s_depth=data_dir_snp+"/{s_id}/snps/{s_id}/{s_id}.snps_depth.tsv",
+        s_info=data_dir_snp+"/{s_id}/snps/{s_id}/{s_id}.snps_info.tsv",
+        s_freq=data_dir_snp+"/{s_id}/snps/{s_id}/{s_id}.snps_freqs.tsv"
+    shell:
+        """
+        lz4 -d -m  {input.s_depth_zip}
+        lz4 -d -m  {input.s_info_zip}
+        lz4 -d -m  {input.s_freq_zip}
+        """
+
+rule unzip_genes:
+    input:
+        g_copy_zip=data_dir_genes+"/{s_id}/genes/{s_id}/{s_id}.genes_copynum.tsv.lz4",
+        g_depth_zip=data_dir_genes+"/{s_id}/genes/{s_id}/{s_id}.genes_depth.tsv.lz4"
+    output:
+        g_copy=data_dir_genes+"/{s_id}/genes/{s_id}/{s_id}.genes_copynum.tsv",
+        g_depth=data_dir_genes+"/{s_id}/genes/{s_id}/{s_id}.genes_depth.tsv"
+    shell:
+        """
+        lz4 -d -m  {input.g_copy_zip}
+        lz4 -d -m  {input.g_depth_zip}
+        """
+
+rule prep_genes:
+    input:
+        rep_genom =genes_label_fp +"/{s_id}." + centriod_cutoff + ".centroid_to_repgenes.tsv",
+        centriod_counts= genes_label_fp +"/{s_id}." + centriod_cutoff + ".centroid_prevalence.tsv",
+        g_copy=data_dir_genes+"/{s_id}/genes/{s_id}/{s_id}.genes_copynum.tsv",
+        g_depth=data_dir_genes+"/{s_id}/genes/{s_id}/{s_id}.genes_depth.tsv",
+        gene_summary = data_dir_genes+"/{s_id}/genes/genes_summary.tsv",
+        metadata = metadata,
+        GRM=output_fp+"/{s_id}.GRM.tsv"
+    output:
+        copynumber_data=output_fp+"/{s_id}.copynumber_data.csv"
+    shell:
+        """
+        cd src
+        Rscript prep_genes_command_line.R  --species_id {wildcards.s_id} \
+        -v TRUE  -o {output_fp}  --genes_summary {input.gene_summary}\
+        -c {input.g_copy}  -d {input.g_depth}  --metadata {input.metadata}  \
+        --GRM {input.GRM} -n 30 -m 3 -p {input.centriod_counts} --centroid_prevalence_cutoff .9 --write_csv TRUE
+        """
+
+
+
+rule run_structure_test:
+    input:
+        GRM=output_fp+"/{s_id}.GRM.tsv",
+        metadata = metadata
+    output:
+        Rdata=output_fp+"/{s_id}.model_obj.Rdata"
+    shell:
+        """
+        cd src
+        Rscript pop_structure_test_command_line.R --species_id {wildcards.s_id} -v TRUE \
+        -o {output_fp} --GRM {input.GRM} --metadata {input.metadata} --tau 1 --n_tau 0 \
+        --formula_to_fit "y~age+1"
+        """
+
+rule run_marker_test:
+    input:
+        Rdata=output_fp+"/{s_id}.model_obj.Rdata",
+        copynumber_data=output_fp+"/{s_id}.copynumber_data.csv"
+    output:
+        marker_test=output_fp+"/{s_id}.marker_test.tsv"
+    shell:
+        """
+        cd src
+        Rscript marker_test_command_line.R --species_id {wildcards.s_id} -v TRUE \
+        -o {output_fp} --Rdata {input.Rdata} --copy_number {input.copynumber_data} \
+        --SPA TRUE --scale_copynumber TRUE --log_copynumber TRUE --q_value .05 --alpha_value .05
+        """
+
+rule run_all:
+    input:
+        results=expand(output_fp+'/{s_id}.marker_test.tsv', s_id=SPECIES_IDs)
