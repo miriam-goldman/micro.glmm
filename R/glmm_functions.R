@@ -1,6 +1,5 @@
 library(pROC)
 library(Matrix)
-theme_set(theme_minimal(base_size = 18))
 ### functions needed to run GLMM for MWAS
 getCoefficients<-function(Y, X, W, tau, GRM){
   # Y is working vector Y=alpha X + b
