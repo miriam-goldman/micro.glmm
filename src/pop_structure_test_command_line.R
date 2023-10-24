@@ -80,8 +80,8 @@ paletteLength <- 50
 myColor <- colorRampPalette(c("#FFFFFF",color_pal[4]))(paletteLength)
 # length(breaks) == length(paletteLength) + 1
 # use floor and ceiling to deal with even/odd length pallettelengths
-myBreaks <- c(seq(.5, .75, length.out=ceiling(paletteLength/2) + 1), 
-              seq(.76, 1, length.out=floor(paletteLength/2)))
+myBreaks <- c(seq(.7, .85, length.out=ceiling(paletteLength/2) + 1), 
+              seq(.86, 1, length.out=floor(paletteLength/2)))
 
 
 
