@@ -144,7 +144,7 @@ ScoreTest_NULL_Model_quant = function(mu, mu2,tau, y, X){
 
 
 fitglmmaiRPCG<-function(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov,tol,quant=FALSE,verbose,write_log){
-  if(!quat){ 
+  if(!quant){ 
     re.AI = get_AI_score(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov)
     YPAPY = re.AI$YPAPY
     Trace = re.AI$Trace #trace of P GRM
