@@ -143,7 +143,7 @@ ScoreTest_NULL_Model_quant = function(mu, mu2,tau, y, X){
 
 
 
-fitglmmaiRPCG<-function(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov,tol,quat=FALSE,verbose,write_log){
+fitglmmaiRPCG<-function(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov,tol,quant=FALSE,verbose,write_log){
   if(!quat){ 
     re.AI = get_AI_score(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov)
     YPAPY = re.AI$YPAPY
@@ -386,7 +386,7 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
   }else{
     re.final = get_AI_score(re.coef$Y, X, GRM,re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov)
     
-    tau[2] = max(0, as.numeric(tau0[2] + tau0[2]^2 * ((re$YPAPY - re$Trace)/2)/n)) #tau + Dtau dumb way
+    tau[2] = max(0, as.numeric(tau0[2] + tau0[2]^2 * ((re.final$YPAPY - re.final$Trace)/2)/n)) #tau + Dtau dumb way
   }
   cov = re.coef$cov
   
