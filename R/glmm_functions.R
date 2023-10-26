@@ -13,10 +13,10 @@ getCoefficients<-function(Y, X, W, tau, GRM){
   Y=as.vector(Y)
   Sigma_iY=solve(simga,Y) # V^-1 Y
   sigma_X=solve(simga,X) # V^-1 X
-  cov=Matrix::solve(forceSymmetric(t(X) %*% sigma_X),sparse=TRUE,tol = 1e-10) # (Xt V^-1 X)^-1
+  cov_var=Matrix::solve(forceSymmetric(t(X) %*% sigma_X),sparse=TRUE,tol = 1e-10) # (Xt V^-1 X)^-1
   Sigma_iXt=t(sigma_X) # t(V^-1 X)
   SigmaiXtY= Sigma_iXt%*%Y # XtV^-1Y
-  alpha = cov %*% SigmaiXtY # (Xt V X)^-1 XtVY 
+  alpha = cov_var %*% SigmaiXtY # (Xt V X)^-1 XtVY 
   #b1= tau[2]*GRM %*%solve(simga)%*%(Y-X %*% alpha)
   #epsilon=Y-(X%*%alpha+b)
   epsilon=tau[1] * (t(Sigma_iY) - t(sigma_X %*% alpha)) / as.vector(W)#tau[1] to act on W
@@ -27,7 +27,7 @@ getCoefficients<-function(Y, X, W, tau, GRM){
   b= eta-X %*% alpha
   #eta=Y-epsilon
   #print(round(eta_2,2))
-  re=list("Sigma_iY"=Sigma_iY,"Sigma_iX"=sigma_X,"cov"=cov,"alpha"=alpha,"eta"=eta,"b"=b,"epsilon"=epsilon)
+  re=list("Sigma_iY"=Sigma_iY,"Sigma_iX"=sigma_X,"cov_var"=cov_var,"alpha"=alpha,"eta"=eta,"b"=b,"epsilon"=epsilon)
 }
 gen_sp_Sigma<-function(W,tau,kinship){
   ### update kinship with W and tau
@@ -40,75 +40,68 @@ gen_sp_Sigma<-function(W,tau,kinship){
   return(as.matrix(new_kin))
 }
 
-get_AI_score<-function(Y,X,GRM,W,tau,Sigma_iY,Sigma_iX,cov){
+get_AI_score<-function(Y,X,GRM,W,tau,Sigma_iY,Sigma_iX,cov_var){
   ## get score for finding tau function from supplment of Saige paper
-  ## Inputs Y, X, GRM, W, Tau, Sigma_Y, Sigma_X, cov
-  
-  Sigma_iXt = t(Sigma_iX) #transpose X
-  PY1 = Sigma_iY - Sigma_iX %*% (cov %*% (Sigma_iXt %*% Y)) # \hat{Y}-\hat(X) (Xt V X)^-1 PY
-  APY = GRM %*% PY1 # GRM (\hat{Y}-\hat(X) (Xt V X)^-1) 
-  YPAPY = t(PY1) %*% APY # dot product
-  Trace = GetTrace(Sigma_iX, X,GRM, W, tau, cov) #come back
+  ## Inputs Y, X, GRM, W, Tau, Sigma_Y, Sigma_X, cov_var
   Sigma=gen_sp_Sigma(W,tau,GRM)
-  PAPY_1=solve(Sigma,APY)
-  PAPY = PAPY_1 - Sigma_iX %*% (cov %*% (Sigma_iXt %*% PAPY_1))#PAPY
-  AI = t(PAPY) %*% APY# AI=t(Y)%*%P%*%GRM%*%P%*%GRM%*%P%*%Y
-  return(list(YPAPY=YPAPY,Trace=Trace,PY=PY1,AI=AI))
+  Sigma_iXt = t(Sigma_iX) #transpose X
+  P=solve(Sigma) - Sigma_iX %*% cov_var %*% Sigma_iXt
+  PY1 = P %*% Y# \hat{Y}-\hat(X) (Xt V X)^-1 PY
+  APY = GRM %*% PY1 # GRM (\hat{Y}-\hat(X) (Xt V X)^-1) 
+  YPAPY = t(PY1) %*% APY# dot product
+  YPAPY=YPAPY[1]# dot product
+  PA= P %*% GRM
+  Trace_P_GRM = sum(diag(PA))
+  score1=YPAPY-Trace_P_GRM
+  PAPY=P%*% APY
+  
+  AI = (t(PAPY) %*% APY)# AI=t(Y)%*%P%*%GRM%*%P%*%GRM%*%P%*%Y
+  return(list(YPAPY=YPAPY,PY=PY1,YPA0PY=YPA0PY,Trace_P_GRM=Trace_P_GRM,score1=score1,AI=AI[1]))
 }
 
-get_AI_score_quant<-function(Y,X,GRM,W,tau,Sigma_iY,Sigma_iX,cov){
+get_AI_score_quant<-function(Y,X,GRM,W,tau,Sigma_iY,Sigma_iX,cov_var){
   ## get score for finding tau function from supplment of Saige paper
-  ## Inputs Y, X, GRM, W, Tau, Sigma_Y, Sigma_X, cov
-  phi=tau[1]
+  ## Inputs Y, X, GRM, W, Tau, Sigma_Y, Sigma_X, cov_var
+  n=length(W)
+  Sigma=gen_sp_Sigma(W,tau,GRM)
   Sigma_iXt = t(Sigma_iX) #transpose X
-  PY1 = Sigma_iY - Sigma_iX %*% (cov %*% (Sigma_iXt %*% Y)) # \hat{Y}-\hat(X) (Xt V X)^-1 PY
-  S_0=1/phi*(W^-1)
-  A0PY = S_0 %*% PY1
-  YPA0PY = t(PY1) %*% A0PY
-  APY = GRM %*% PY1 # GRM (\hat{Y}-\hat(X) (Xt V X)^-1) 
-  YPAPY = t(PY1) %*% APY # dot product
-  Trace_P_GRM = GetTrace(Sigma_iX, X,GRM, W, tau, cov) #come back
-  Trace_PW=GetTrace_PW(Sigma_iX, X,GRM, W, tau, cov) 
-  Sigma=gen_sp_Sigma(W,tau,GRM)
-  PA0PY_1=solve(Sigma,A0PY) 
+  P=solve(Sigma) - Sigma_iX %*% cov_var %*% Sigma_iXt
+  diag_P=diag(P)/W
+  PY1 = P %*% Y# \hat{Y}-\hat(X) (Xt V X)^-1 PY
+  wPY=PY1/W
+  #diagP <- (diag(Sigma_i) - rowSums(Sigma_iX * Sigma_iXcov))/W
+  #diag_P=diag(P)
+  YPwPY = t(PY1) %*% wPY
+  YPwPY=YPwPY[1]
   
-  PA0PY_1 = PA0PY_1 - Sigma_iX * (cov * (Sigma_iXt * PA0PY_1))
+  #APY = GRM %*% PY1 # GRM (\hat{Y}-\hat(X) (Xt V X)^-1) 
+  APY=GRM %*% PY1
+  YPAPY = t(PY1) %*% APY# dot product
+  YPAPY=YPAPY[1]# dot product
+  PA= P %*% GRM
+  Trace_P_GRM =  (sum(solve(Sigma)*GRM)-sum(Sigma_iX*crossprod(GRM,t(cov_var %*% Sigma_iXt))))
+  Trace_PW=sum(diag_P)
+  score1=YPAPY-Trace_P_GRM#score 1
+  
+ 
+  score0=YPwPY-Trace_PW #score 0 good
+  score_vector=as.matrix(c(score0[1],score1[1]))
+  PwPY = P %*% wPY
+  PAPY=P%*% APY
   
   
-  PAPY_1=solve(Sigma,APY)
-  PAPY = PAPY_1 - Sigma_iX %*% (cov %*% (Sigma_iXt %*% PAPY_1))#PAPY
-  AI_11 = t(PAPY) %*% APY# AI=t(Y)%*%P%*%GRM%*%P%*%GRM%*%P%*%Y
-  AI_00=t(PA0PY) %*% A0PY
-  AI_01= t(PAPY) %*%A0PY
-  AI_mat=matrix(c(AI_00,AI_01,AI_01,AI_1),2,2)
-  return(list(YPAPY=YPAPY,PY=PY1,YPA0PY=YPA0PY,Trace_P_GRM=Trace_P_GRM,Trace_PW=Trace_PW,AI=AI_mat))
+  AI_11 = (t(PAPY) %*% APY)#good
+  AI_00=(t(PwPY) %*% wPY) 
+  AI_01= (t(PAPY) %*% wPY)
+  AI_mat=matrix(c(AI_00[1],AI_01[1],AI_01[1],AI_11[1]),2,2)
+  Dtau <- solve(AI_mat, score_vector)
+  
+  
+  
+  return(list(YPAPY=YPAPY,PY=PY1,YPwPY=YPwPY,Trace_P_GRM=Trace_P_GRM,Trace_PW=Trace_PW,AI=AI_mat,score_vector=score_vector))
 }
 
 
-GetTrace<-function(Sigma_iX, X, GRM,W, tau, cov){
-  #There is a more complicated version of this that is faster if needed
-  ## gives the trace of P_GRM
-    Sigma=gen_sp_Sigma(W,tau,GRM)
-    Sigma_GRM= solve(Sigma,GRM) 
-    Sigma_iXt=t(Sigma_iX)
-    P_GRM= Sigma_GRM- Sigma_iX %*% cov %*% (Sigma_iXt %*% GRM)
-  tra=sum(diag(P_GRM))
-  return(tra)
-}
-
-GetTrace_PW<-function(Sigma_iX,X, GRM,W, tau,cov){
-  #There is a more complicated version of this that is faster if needed
-  ## gives the trace of P_GRM
-  phi=tau[1]
-  Sigma=gen_sp_Sigma(W,tau,GRM)
-  W_mat=(1/phi)*diag(W^-1,length(W))
-  Sigma_W= solve(Sigma,W_mat) 
-  Sigma_iXt=t(Sigma_iX)
-  P_W= Sigma_W- Sigma_iX %*% cov %*% (Sigma_iXt %*% W_mat)
-  tra_P_W=sum(diag(P_W))
-  
-  return(tra_P_W)
-}
 
 
 ScoreTest_NULL_Model = function(mu, y, X){
@@ -127,7 +120,7 @@ ScoreTest_NULL_Model = function(mu, y, X){
   return(re) 
 }	
 
-ScoreTest_NULL_Model_quant = function(mu, mu2,tau, y, X){
+ScoreTest_NULL_Model_quant = function(mu,tau, y, X){
   V = rep(1/tau[1], length(y))
   res = as.vector(y - mu)
   XV = t(X * V)
@@ -143,65 +136,38 @@ ScoreTest_NULL_Model_quant = function(mu, mu2,tau, y, X){
 
 
 
-fitglmmaiRPCG<-function(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov,tol,quant=FALSE,verbose,write_log){
+fitglmmaiRPCG<-function(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov_var,tol,quant=FALSE,verbose,write_log){
   if(!quant){ 
-    re.AI = get_AI_score(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov)
-    YPAPY = re.AI$YPAPY
-    Trace = re.AI$Trace #trace of P GRM
-    score1 = YPAPY[1] - Trace # this is equation 8 from paper 
+    re.AI = get_AI_score(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov_var)
+    score1 = re.AI$score1# this is equation 8 from paper 
     AI1 = re.AI$AI
     Dtau = score1/AI1
+    
     tau0 = tauVec
     tauVec[2] = tau0[2] + Dtau
     
   }else{
-    re.AI = get_AI_score_quant(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov)
+    re.AI = get_AI_score_quant(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov_var)
     YPAPY = re.AI$YPAPY
-    YPA0PY = re.AI$YPA0PY
+    YPwPY = re.AI$YPwPY
     Trace_PW=re.AI$Trace_PW
     Trace_P_GRM=re.AI$Trace_P_GRM
-    score0 = YPA0PY - Trace_PW
-    score1= YPAPY-Trace_P_GRM
-    score_vect=vector(c(score0,score1))
-    Dtau = solve(AI, score_vect)
+    Dtau = solve(re.AI$AI, re.AI$score_vector)
     tau0 = tauVec
     tauVec = tau0 + Dtau
   }
- 
   
-  
-  
-  
-    if(any(tauVec < tol)){
-      tauVec[which(tauVec < tol)]=0
-    }
   
   step = 1.0;
-  while(tauVec[2] < 0.0){
+  while(any(tauVec<0)){
     
-    step = step*0.5;
-    tauVec[2] = tau0[2] + step * Dtau;
+    step = step*0.5
+    tauVec = tau0 + step * Dtau
     
   }
   
   if(any(tauVec < tol)){
     tauVec[which(tauVec < tol)]=0
-  }
-  if(verbose) {
-    cat(paste("YPAPY",YPAPY))
-    cat(paste("Trace",Trace))
-    cat(paste("score1",score1))
-    cat(paste("AI",AI1))
-    cat(paste("Dtau",Dtau))
-    
-  }
-  if(write_log) {
-    put(paste("YPAPY",YPAPY))
-    put(paste("Trace",Trace))
-    put(paste("score1",score1))
-    put(paste("AI",AI1))
-    put(paste("Dtau",Dtau))
-    
   }
   
   return(list("tau" = tauVec))
@@ -219,7 +185,7 @@ fitglmmaiRPCG<-function(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov,to
 #' @param log_file log file to write to
 #' @return model output for the baseline structure glmm 
 #' @export
-pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, verbose = TRUE,tol=.0001,log_file=NA) {
+pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(1,1),maxiter =100, verbose = TRUE,tol=.0001,log_file=NA) {
   #Fits the null generalized linear mixed model for a binary trait
   #Args:
   #  glm_fit0: glm model. Logistic model output (with no sample relatedness accounted for) 
@@ -232,12 +198,12 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
   write_log=!is.na(log_file)
   t_begin = proc.time()
   if(verbose){
-    cat("begining time")
+    cat("begining time ")
     cat(t_begin)	
     
   }
   if(write_log){
-    put("begining time")
+    put("begining time ")
     put(t_begin)
   }
   y = glm_fit0$y
@@ -264,38 +230,35 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
     quant=TRUE
   }
 
-  if(verbose) cat("inital tau is ", tau,"\n")
-  if(write_log) put(paste("inital tau is ", tau))
+  if(verbose) cat(" Fixed-effect coefficients: ", glm_fit0$coef,"\n")
+  if(write_log) put(paste(" Fixed-effect coefficients: ", glm_fit0$coef))
+  if(verbose) cat(" inital tau is ", tau,"\n")
+  if(write_log) put(paste(" inital tau is ", tau))
   tau0=tau
+  if(tau[1]<=0){
+      stop("ERROR! The first variance component parameter estimate is 0\n")
+    }
   sqrtW_0 = mu.eta/sqrt(family$variance(mu))
-  
   W_0 = sqrtW_0^2
-  Sigma_0=gen_sp_Sigma(W_0,tau0,GRM)
   re.coef = Get_Coef(y, X, tau, GRM,family, alpha0, eta0,  offset, maxiter=maxiter,verbose=verbose,tol.coef = tol,write_log=write_log)
+  
   ######
   if(quant){
-    re = get_AI_score_quant(re.coef$Y, X, GRM,re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov)
-    tau[2] = max(0, tau0[2] + tau0[2]^2 * (re$YPAPY - re$Trace_P_GRM)/n)
-    tau[1] = max(0, tau0[1] + tau0[1]^2 * (re$YPA0PY - re$Trace_P_W)/n)
+    re = get_AI_score_quant(re.coef$Y, X, GRM,re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov_var)
+    tau[2] = max(0, as.numeric(tau0[2] + tau0[2]^2 * (re$YPAPY - re$Trace_P_GRM)/n))
+    tau[1] = max(0, as.numeric(tau0[1] + tau0[1]^2 * (re$YPwPY - re$Trace_PW)/n))
   }else{
-    re = get_AI_score(re.coef$Y, X, GRM,re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov)
+    re = get_AI_score(re.coef$Y, X, GRM,re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov_var)
     
-    tau[2] = max(0, as.numeric(tau0[2] + tau0[2]^2 * ((re$YPAPY - re$Trace)/2)/n)) #tau + Dtau dumb way
+    tau[2] = max(0, as.numeric(tau0[2] + tau0[2]^2 * ((re$YPAPY - re$Trace))/n)) #tau + Dtau dumb way
   }
-  
-  
-  if(verbose) {
-    cat("Variance component estimates:\n")
-    cat(tau)
-  }
-  
 
   for(i in seq_len(maxiter)){
     if(verbose) {
-      cat(paste("i",i))
+      cat(paste("\ni",i))
     }
-    if(verbose) cat("\nIteration ", i, "tau is ", tau, ":\n")
-    if(write_log) put(paste("Iteration ", i, "tau is ", tau, ":"))
+    if(verbose) cat("\nIteration ", i, "tau is ", tau, "\n")
+    if(write_log) put(paste(" Iteration ", i, "tau is: ", tau,))
     alpha0 = re.coef$alpha
     tau0 = tau
     #cat("tau0_v1: ", tau0, "\n")
@@ -306,7 +269,7 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
     re.coef = Get_Coef(y, X, tau, GRM,family, alpha0, eta0,  offset,verbose=verbose,maxiter=maxiter,tol.coef = tol,write_log=write_log)
     t_end_Get_Coef =  proc.time()
     if(verbose) {
-    cat("t_end_Get_Coef - t_begin_Get_Coef\n")
+    cat("\nt_end_Get_Coef - t_begin_Get_Coef\n")
     cat(t_end_Get_Coef - t_begin_Get_Coef)
     }
     if(write_log) {
@@ -314,10 +277,11 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
       put(t_end_Get_Coef - t_begin_Get_Coef)
     }
     ##update tau
-    fit = fitglmmaiRPCG(re.coef$Y, X, GRM, re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov,tol=tol,verbose=verbose,write_log=write_log,quant=quant)
+   
+    fit = fitglmmaiRPCG(re.coef$Y, X, GRM, re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov_var,tol=tol,verbose=verbose,write_log=write_log,quant=quant)
     t_end_fitglmmaiRPCG= proc.time()
     if(verbose) {
-    cat("t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG\n")
+    cat("\nt_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG\n")
     cat(t_end_fitglmmaiRPCG - t_end_Get_Coef)
     }
     if(write_log) {
@@ -325,22 +289,26 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
       put(t_end_fitglmmaiRPCG - t_end_Get_Coef)
     }
     tau = as.numeric(fit$tau)
-    cov = re.coef$cov
+    cov_var = re.coef$cov_var
     alpha = re.coef$alpha
     eta = re.coef$eta
     Y = re.coef$Y
     mu = re.coef$mu
     res = y - mu
      if(verbose) {
-       cat(paste("change in tau",abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)))
-    cat("tau: ", tau, "\n")
-    cat("tau0: ", tau0, "\n")
+       cat(paste("\nchange in tau",abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)))
+    cat("\ntau: ", tau, "\n")
+    cat("\ntau0: ", tau0, "\n")
      }
     if(write_log) {
       put(paste("change in tau",abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)))
       put("tau: ", tau)
       put("tau0: ", tau0)
     }
+    if(tau[1]<=0){
+      stop("\nERROR! The first variance component parameter estimate is 0\n")
+    }
+    
     
     if(tau[2] == 0) break
     # Use only tau for convergence evaluation, because alpha was evaluated already in Get_Coef
@@ -350,8 +318,8 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
     rss=sum(res^2)
     rss_condition=rss_0-rss
     if(verbose){
-      cat(paste("res",rss))
-      cat(paste("rss change",rss_condition))
+      cat(paste("\nres",rss))
+      cat(paste("\nrss change",rss_condition))
     }
     if(write_log){
       put(paste("res",rss))
@@ -366,7 +334,7 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
       break
     }
   }
-  if(verbose) cat("iter break at ",i)
+  if(verbose) cat("\niter break at ",i)
   if(verbose) cat("\nFinal " ,tau, ":\n")
   if(write_log) put(paste("iter break at ",i))
   if(write_log) put(paste("Final " ,tau, ":"))
@@ -380,15 +348,15 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
   
   re.coef = Get_Coef(y, X, tau, GRM,family, alpha, eta,  offset,verbose=verbose, maxiter=maxiter,tol.coef = tol,write_log=write_log)
   if(quant){
-    re.final = get_AI_score_quant(re.coef$Y, X, GRM,re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov)
+    re.final = get_AI_score_quant(re.coef$Y, X, GRM,re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov_var)
     tau[2] = max(0, tau0[2] + tau0[2]^2 * (re.final$YPAPY - re.final$Trace_P_GRM)/n)
     tau[1] = max(0, tau0[1] + tau0[1]^2 * (re.final$YPA0PY - re.final$Trace_P_W)/n)
   }else{
-    re.final = get_AI_score(re.coef$Y, X, GRM,re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov)
+    re.final = get_AI_score(re.coef$Y, X, GRM,re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov_var)
     
     tau[2] = max(0, as.numeric(tau0[2] + tau0[2]^2 * ((re.final$YPAPY - re.final$Trace)/2)/n)) #tau + Dtau dumb way
   }
-  cov = re.coef$cov
+  cov_var = re.coef$cov_var
   
   alpha = re.coef$alpha
   eta = re.coef$eta
@@ -402,7 +370,8 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
   res = y - mu
   rss=sum(res^2)
   if(quant){
-    obj.noK = ScoreTest_NULL_Model_quant(mu,y,Xorig,tau)
+    mu2 = rep(1/tau[1],length(y))
+    obj.noK = ScoreTest_NULL_Model_quant(mu,tau,y,Xorig)
   }else{
     mu2 = mu * (1-mu)
     obj.noK = ScoreTest_NULL_Model(mu, y, Xorig)
@@ -421,24 +390,30 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(0,0),maxiter =100, 
   call=paste("pop_structure_test formula=",glm_fit0$formula,"family=",glm_fit0$family)
   Coefficients=paste("Coefficents:",alpha)
   ###make another option for qaunt
-  AUC=paste("AUC",suppressMessages(suppressWarnings(auc(glm_fit0$y,as.vector(mu)))))
-  tau_script=paste("tau is:",tau[2],"t value is",sum(re.coef$b^2))
-  summary_text=paste(call,Coefficients,AUC,tau_script,sep="\n")
-  glmmSNPResult = list(tau=tau,
+  if(!quant){
+    AUC=paste("AUC",suppressMessages(suppressWarnings(auc(glm_fit0$y,as.vector(mu)))))
+    tau_script=paste("tau is:",tau[2],"t value is",sum(re.coef$b^2))
+    summary_text=paste(call,Coefficients,AUC,tau_script,sep="\n")
+  }else{
+    tau_script=paste("tau is:",tau[2],"t value is",sum(re.coef$b^2))
+    summary_text=paste(call,Coefficients,sep="\n")
+  }
+  
+  glmmSNPResult = list(summary_text=summary_text,tau=tau,
                     coefficients=alpha, b=re.coef$b,t=sum(re.coef$b^2),
                     linear.predictors=eta, linear_model=Xorig%*%alpha+re.coef$b, 
                     fitted.values=mu, var_mu=mu2,Y=Y, residuals=res, 
-                    cov=cov, converged=converged,
+                    cov_var=cov_var, converged=converged,
                     sampleID = sample_ids, 
                     obj.noK=obj.noK, 
                     y = y, X = Xorig, 
                     traitType=glm_fit0$family,
                     iter_finised=i,
-                    model_metrics=model_metrics,species_id=species_id,summary_text=summary_text)
+                    model_metrics=model_metrics,species_id=species_id)
   
   t_end_null = proc.time()
   if(verbose) {
-  cat("t_end_null - t_begin,  fitting the structure model took\n")
+  cat("\nt_end_null - t_begin,  fitting the structure model took\n")
   cat(t_end_null - t_begin)
   }
   
@@ -466,13 +441,13 @@ Get_Coef = function(y, X, tau, GRM,family, alpha0, eta0,  offset, verbose=FALSE,
     eta = as.matrix(re.coef$eta + offset)
     
     if(verbose) {
-      cat("Tau:\n")
+      cat("\n Tau:\n")
       cat(tau)
-      cat("Fixed-effect coefficients:\n")
+      cat("\n Fixed-effect coefficients:\n")
       cat(alpha)
     }
     if(write_log) {
-      put(paste("Tau:",tau,"Fixed-effect coefficients:",alpha))
+      put(paste(" Tau:",tau," Fixed-effect coefficients:",alpha))
     }
     mu = family$linkinv(eta)
     mu.eta = family$mu.eta(eta)
@@ -487,7 +462,7 @@ Get_Coef = function(y, X, tau, GRM,family, alpha0, eta0,  offset, verbose=FALSE,
     alpha0 = alpha
   }
   
-  re = list(Y=Y, alpha=alpha, eta=eta, W=W, cov=re.coef$cov, sqrtW=sqrtW, Sigma_iY = re.coef$Sigma_iY, Sigma_iX = re.coef$Sigma_iX, mu=mu,eta_2=re.coef$eta_2,b=re.coef$b)
+  re = list(Y=Y, alpha=alpha, eta=eta, W=W, cov_var=re.coef$cov_var, sqrtW=sqrtW, Sigma_iY = re.coef$Sigma_iY, Sigma_iX = re.coef$Sigma_iX, mu=mu,eta_2=re.coef$eta_2,b=re.coef$b)
 }
 
 #' micro_glmm
