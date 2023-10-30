@@ -252,7 +252,7 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(1,1),maxiter =100, 
       cat(paste("\ni",i))
     }
     if(verbose) cat("\nIteration ", i, "tau is ", tau, "\n")
-    if(write_log) put(paste(" Iteration ", i, "tau is: ", tau,))
+    if(write_log) put(paste(" Iteration ", i, "tau is: ", tau))
     alpha0 = re.coef$alpha
     tau0 = tau
     #cat("tau0_v1: ", tau0, "\n")
