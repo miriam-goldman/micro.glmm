@@ -53,8 +53,8 @@ rule prep_snps:
         cd src
         Rscript prep_snps_command_line.R  --species_id {wildcards.s_id} \
         -v {verbose}  -o {output_fp}  -i {input.s_info}  \
-        -f {input.s_freq}  -d {input.s_depth} -a {abs_depth_snps} -m {median_depth_snps}  -n {num_samples}  --genes_summary {input.gene_summary}\
-        -c {input.rep_genom} -p {input.centriod_counts} --centroid_prevalence_cutoff {centroid_prevalence_cutoff}
+        -f {input.s_freq}  -d {input.s_depth} -a {abs_depth_snps} -m {median_depth_snps}  -n {num_samples}  --genes_summary {input.gene_summary} \
+        -c {input.rep_genom} -p {input.centriod_counts} --centroid_prevalence_cutoff {centroid_prevalence_cutoff} --run_qp {run_qp}
         """
 
 
@@ -120,7 +120,7 @@ rule run_structure_test:
         cd src
         Rscript pop_structure_test_command_line.R --species_id {wildcards.s_id} -v {verbose} \
         -o {output_fp} --GRM {input.GRM} --metadata {input.metadata} --tau 1 --n_tau {n_tau}  --n_CNV {n_CNV}\
-        --formula_to_fit {formula} --run_qp {run_qp}
+        --formula_to_fit {formula}
         """
 
 rule run_marker_test:
