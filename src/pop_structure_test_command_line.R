@@ -39,7 +39,7 @@ option_list = list(
   make_option(c("--n_CNV"), type="numeric", default=0,
               help="number of CNVs to test for type 1 error, if 0 no test run",metavar="numeric" ),
   make_option(c("--SPA"), type="logical", default=TRUE, 
-              help="SPA, TRUE or FALSE for simulations", metavar="logical"),
+              help="SPA, TRUE or FALSE for simulations", metavar="logical")
  
 )
 
