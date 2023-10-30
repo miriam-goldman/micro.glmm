@@ -56,7 +56,7 @@ get_AI_score<-function(Y,X,GRM,W,tau,Sigma_iY,Sigma_iX,cov_var){
   PAPY=P%*% APY
   
   AI = (t(PAPY) %*% APY)# AI=t(Y)%*%P%*%GRM%*%P%*%GRM%*%P%*%Y
-  return(list(YPAPY=YPAPY,PY=PY1,YPA0PY=YPA0PY,Trace_P_GRM=Trace_P_GRM,score1=score1,AI=AI[1]))
+  return(list(YPAPY=YPAPY,PY=PY1,Trace_P_GRM=Trace_P_GRM,score1=score1,AI=AI[1]))
 }
 
 get_AI_score_quant<-function(Y,X,GRM,W,tau,Sigma_iY,Sigma_iX,cov_var){
@@ -69,12 +69,8 @@ get_AI_score_quant<-function(Y,X,GRM,W,tau,Sigma_iY,Sigma_iX,cov_var){
   diag_P=diag(P)/W
   PY1 = P %*% Y# \hat{Y}-\hat(X) (Xt V X)^-1 PY
   wPY=PY1/W
-  #diagP <- (diag(Sigma_i) - rowSums(Sigma_iX * Sigma_iXcov))/W
-  #diag_P=diag(P)
   YPwPY = t(PY1) %*% wPY
   YPwPY=YPwPY[1]
-  
-  #APY = GRM %*% PY1 # GRM (\hat{Y}-\hat(X) (Xt V X)^-1) 
   APY=GRM %*% PY1
   YPAPY = t(PY1) %*% APY# dot product
   YPAPY=YPAPY[1]# dot product
@@ -82,8 +78,6 @@ get_AI_score_quant<-function(Y,X,GRM,W,tau,Sigma_iY,Sigma_iX,cov_var){
   Trace_P_GRM =  (sum(solve(Sigma)*GRM)-sum(Sigma_iX*crossprod(GRM,t(cov_var %*% Sigma_iXt))))
   Trace_PW=sum(diag_P)
   score1=YPAPY-Trace_P_GRM#score 1
-  
- 
   score0=YPwPY-Trace_PW #score 0 good
   score_vector=as.matrix(c(score0[1],score1[1]))
   PwPY = P %*% wPY
@@ -250,7 +244,7 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(1,1),maxiter =100, 
   }else{
     re = get_AI_score(re.coef$Y, X, GRM,re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov_var)
     
-    tau[2] = max(0, as.numeric(tau0[2] + tau0[2]^2 * ((re$YPAPY - re$Trace))/n)) #tau + Dtau dumb way
+    tau[2] = max(0, as.numeric(tau0[2] + tau0[2]^2 * ((re$YPAPY - re$Trace_P_GRM))/n)) #tau + Dtau dumb way
   }
 
   for(i in seq_len(maxiter)){
@@ -350,11 +344,11 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(1,1),maxiter =100, 
   if(quant){
     re.final = get_AI_score_quant(re.coef$Y, X, GRM,re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov_var)
     tau[2] = max(0, tau0[2] + tau0[2]^2 * (re.final$YPAPY - re.final$Trace_P_GRM)/n)
-    tau[1] = max(0, tau0[1] + tau0[1]^2 * (re.final$YPA0PY - re.final$Trace_P_W)/n)
+    tau[1] = max(0, tau0[1] + tau0[1]^2 * (re.final$YPwPY - re.final$Trace_PW)/n)
   }else{
     re.final = get_AI_score(re.coef$Y, X, GRM,re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov_var)
     
-    tau[2] = max(0, as.numeric(tau0[2] + tau0[2]^2 * ((re.final$YPAPY - re.final$Trace)/2)/n)) #tau + Dtau dumb way
+    tau[2] = max(0, as.numeric(tau0[2] + tau0[2]^2 * ((re.final$YPAPY - re.final$Trace_P_GRM))/n)) #tau + Dtau dumb way
   }
   cov_var = re.coef$cov_var
   
@@ -527,7 +521,6 @@ micro_glmm = function(obj.pop.strut,
     one_gene<-one_gene %>% inner_join(sample_lookup,by=c("sample_name"="sampleID"))
     ## filter obj to samples present in gene copy number
     filtered_obj.pop.strut<-filter_null_obj(obj.pop.strut,one_gene)
-    if(length(unique(filtered_obj.pop.strut$y))==2){
     empty_mat<-matrix(0,nrow(one_gene),nrow(one_gene))
     # log and scale copy_number
     if(log_g==TRUE){
@@ -567,16 +560,15 @@ micro_glmm = function(obj.pop.strut,
     qtilde=t_score+m1
     if(SPA){
     out1 = Saddle_Prob(q=qtilde, mu = mu, g = G_tilde, var1,Cutoff = 2,log.p=FALSE)
-    list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=beta,"se beta"=se_beta,"pvalue"=pval,
+    list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene_id"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=beta,"se beta"=se_beta,"pvalue"=pval,
                                        "t_adj"=t_adj,"num_control"=sum(filtered_obj.pop.strut$y==0),
                                        "num_total"=length(G0),
                                        SPA_pvalue=out1$p.value,spa_score=out1$Score,pvalue_noadj=out1$p.value.NA))
     }else{
-      list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=beta,"se beta"=se_beta,"pvalue"=pval,
+      list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene_id"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=beta,"se beta"=se_beta,"pvalue"=pval,
                                          "t_adj"=t_adj,"num_control"=sum(filtered_obj.pop.strut$y==0),
                                          "num_total"=length(G0)))
       
-    }
     }
   }
   cat("total time past:")
@@ -821,6 +813,7 @@ Saddle_Prob<-function(q, mu, g, var1,Cutoff=2,alpha,output="P",nodes.fixed,nodes
       {
         pval = add_logp(p1,p2)
       } else {
+
         pval = abs(p1)+abs(p2)
       }
       Is.converge=TRUE
@@ -892,6 +885,18 @@ getroot_K1<-function(init,mu,g,q,m1,tol=.Machine$double.eps^0.25,maxiter=1000)
     }
     return(list(root=t,n.iter=rep,Is.converge=conv))
   }
+}
+
+Korg<-function(t, mu, g){
+  n.t<-length(t)
+  out<-rep(0,n.t)
+  
+  for(i in 1:n.t){
+    t1<-t[i]
+    temp<-log(1 - mu + mu * exp(g* t1))
+    out[i]<-sum(temp)
+  }
+  return(out)
 }
 
 Get_Saddle_Prob<-function(zeta, mu, g, q,log.p=FALSE) 

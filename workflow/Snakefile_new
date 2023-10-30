@@ -8,7 +8,20 @@ data_dir_genes=config["all"]["data_dir_genes"]
 metadata=config["all"]["metadata"]
 genomes_file=config["all"]["geneome_file"]
 genes_label_fp=config["all"]["genes_label_fp"]
+verbose=config["all"]["verbose"]
 SPECIES_IDs=config["all"]["SPECIES_IDs"]
+centroid_prevalence_cutoff=config["all"]["centroid_prevalence_cutoff"]
+num_samples=config["all"]["num_samples"]
+abs_depth_snps=config["snps"]["abs_depth_snps"]
+median_depth_snps=config["snps"]["median_depth_snps"]
+median_depth_genes=config["genes"]["median_depth_genes"]
+n_tau=config["snps"]["n_tau"]
+run_qp=config["snps"]["run_qp"]
+formula=config["snps"]["formula"]
+SPA=config["genes"]["SPA"]
+q_value=config["genes"]["q_value"]
+n_CNV=config["snps"]["n_CNV"]
+alpha_value=config["genes"]["alpha_value"]
 rule parse_genes_input:
     input:
         gene_length = pandb_dir+ "/{s_id}/genes.len",
@@ -39,9 +52,9 @@ rule prep_snps:
         """
         cd src
         Rscript prep_snps_command_line.R  --species_id {wildcards.s_id} \
-        -v TRUE  -o {output_fp}  -i {input.s_info}  \
-        -f {input.s_freq}  -d {input.s_depth} -a 3 -m 5  -n 30  --genes_summary {input.gene_summary}\
-        -c {input.rep_genom} -p {input.centriod_counts} --centroid_prevalence_cutoff .9
+        -v {verbose}  -o {output_fp}  -i {input.s_info}  \
+        -f {input.s_freq}  -d {input.s_depth} -a {abs_depth_snps} -m {median_depth_snps}  -n {num_samples}  --genes_summary {input.gene_summary}\
+        -c {input.rep_genom} -p {input.centriod_counts} --centroid_prevalence_cutoff {centroid_prevalence_cutoff}
         """
 
 
@@ -89,9 +102,9 @@ rule prep_genes:
         """
         cd src
         Rscript prep_genes_command_line.R  --species_id {wildcards.s_id} \
-        -v TRUE  -o {output_fp}  --genes_summary {input.gene_summary}\
+        -v {verbose}  -o {output_fp}  --genes_summary {input.gene_summary}\
         -c {input.g_copy}  -d {input.g_depth}  --metadata {input.metadata}  \
-        --GRM {input.GRM} -n 30 -m 3 -p {input.centriod_counts} --centroid_prevalence_cutoff .9 --write_csv TRUE
+        --GRM {input.GRM} -n {num_samples} -m {median_depth_genes} -p {input.centriod_counts} --centroid_prevalence_cutoff {centroid_prevalence_cutoff} --write_csv TRUE
         """
 
 
@@ -105,9 +118,9 @@ rule run_structure_test:
     shell:
         """
         cd src
-        Rscript pop_structure_test_command_line.R --species_id {wildcards.s_id} -v TRUE \
-        -o {output_fp} --GRM {input.GRM} --metadata {input.metadata} --tau 1 --n_tau 0 \
-        --formula_to_fit "y~age+1"
+        Rscript pop_structure_test_command_line.R --species_id {wildcards.s_id} -v {verbose} \
+        -o {output_fp} --GRM {input.GRM} --metadata {input.metadata} --tau 1 --n_tau {n_tau}  --n_CNV {n_CNV}\
+        --formula_to_fit {formula} --run_qp {run_qp}
         """
 
 rule run_marker_test:
@@ -119,9 +132,9 @@ rule run_marker_test:
     shell:
         """
         cd src
-        Rscript marker_test_command_line.R --species_id {wildcards.s_id} -v TRUE \
+        Rscript marker_test_command_line.R --species_id {wildcards.s_id} -v {verbose} \
         -o {output_fp} --Rdata {input.Rdata} --copy_number {input.copynumber_data} \
-        --SPA TRUE --scale_copynumber TRUE --log_copynumber TRUE --q_value .05 --alpha_value .05
+        --SPA {SPA} --scale_copynumber TRUE --log_copynumber TRUE --q_value {q_value} --alpha_value {alpha_value}
         """
 
 rule run_all:
