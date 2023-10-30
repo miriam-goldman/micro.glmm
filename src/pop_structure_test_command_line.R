@@ -75,11 +75,11 @@ rownames(annotation_col) =colnames(GRM)
 rownames(GRM)<-colnames(GRM)
 
 ann_colors = list(
-  disease_status = c("group_0" = color_pal[2], "group_1" = color_pal[4]),b=c(color_pal[5],"#FFFFFF",color_pal[3])
+  disease_status = c("group_0" = color_pal[2], "group_1" = color_pal[9]),b=c(color_pal[5],"#FFFFFF",color_pal[3])
 )
 
 paletteLength <- 50
-myColor <- colorRampPalette(c("#FFFFFF",color_pal[3]))(paletteLength)
+myColor <- colorRampPalette(c("#FFFFFF",color_pal[4]))(paletteLength)
 # length(breaks) == length(paletteLength) + 1
 # use floor and ceiling to deal with even/odd length pallettelengths
 myBreaks <- c(seq(.7, .85, length.out=ceiling(paletteLength/2) + 1), 

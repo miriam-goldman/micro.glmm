@@ -120,8 +120,8 @@ rule run_structure_test:
         """
         cd src
         Rscript pop_structure_test_command_line.R --species_id {wildcards.s_id} -v {verbose} \
-        -o {output_fp} --GRM {input.GRM} --metadata {input.metadata} --tau 1 --n_tau {n_tau}  --n_CNV {n_CNV}\
-        --formula_to_fit {formula} --SPA {SPA} 
+        -o {output_fp} --GRM {input.GRM} --metadata {input.metadata} --tau 1 --n_tau {n_tau}  --n_CNV {n_CNV} \
+        --formula_to_fit {formula} --SPA {SPA}
         """
 
 rule run_marker_test:
