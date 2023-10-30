@@ -636,7 +636,7 @@ simulate_power<-function(obj.pop.strut,glm_fit0,GRM,n_CNV=5000,alpha_value=.05,m
     fake_copy_number_data<-data.frame(gene_id=gene_ids,
                                       sample_name=sample_names,
                                       copy_number=copynumbers)  
-    fake_data<-micro_glmm(obj.pop.strut,glm_fit0,GRM,fake_copy_number_data,SPA=FALSE,scale_g=TRUE,log_g=FALSE)
+    fake_data<-micro_glmm(obj.pop.strut,glm_fit0,GRM,fake_copy_number_data,SPA=SPA,scale_g=TRUE,log_g=FALSE)
     
     fake_data$sim_beta<-betas_to_sim
     

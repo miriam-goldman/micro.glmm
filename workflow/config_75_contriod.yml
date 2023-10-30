@@ -18,13 +18,14 @@ all:
 snps:
   abs_depth_snps: 3
   median_depth_snps: 5
-  n_tau: 1000
+  n_tau: 10
   run_qp: TRUE
   formula: "y~age+1"
-  n_CNV: 10000
+  n_CNV: 10
 
 genes:
   SPA: TRUE
   q_value: .05
   alpha_value:  .05
   median_depth_genes: 3
+  compare_to_glm: TRUE

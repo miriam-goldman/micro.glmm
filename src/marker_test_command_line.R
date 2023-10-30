@@ -72,7 +72,7 @@ marker_test_df %>% ggplot(aes(y=-log10(pvalue),x=beta))+geom_hline(color="green"
 if(spa_opt){
   marker_test_df %>% ggplot(aes(x=SPA_pvalue)) +geom_histogram()+ggtitle(paste("SPA pvalue histogram for species ",s_id))
   marker_test_df %>% ggplot(aes(y=-log10(SPA_pvalue),x=beta))+geom_point()+ggtitle(paste("volcano plot for species ",s_id,"tau value is",glmm_fit$tau[2]))
-  marker_test_df %>% ggplot(aes(y=-log10(SPA_pvalue),x=beta))+geom_point()+geom_point(y=-log10(pvalue))+ggtitle(paste("volcano plot for species ",s_id,"tau value is",glmm_fit$tau[2]))
+  marker_test_df %>% ggplot(aes(y=-log10(SPA_pvalue),x=beta))+geom_point()+geom_point(aes(y=-log10(pvalue)))+ggtitle(paste("volcano plot for species ",s_id,"tau value is",glmm_fit$tau[2]))
   
 }
 if(opt$compare_to_glm){
