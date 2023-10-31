@@ -672,7 +672,6 @@ simulate_tau_inner<-function(glm_fit0,GRM,species_id=s_id,tau0,phi0){
 
   fit_logistic = glm(formulate_to_fit, data = data.new_shuffled, family = family_to_fit)
   fit_glmm_snp<-tryCatch(pop_structure_test(fit_logistic,GRM,tau=c(phi0,tau0),verbose = FALSE,species_id=s_id),error=function(e) "error")
-  print(fit_glmm_snp)
   if(all(fit_glmm_snp != "error")){
     t=sum(fit_glmm_snp$b^2,na.rm=TRUE)
     tau=fit_glmm_snp$tau[2]
