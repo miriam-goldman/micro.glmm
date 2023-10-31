@@ -610,13 +610,17 @@ simulate_type1_error<-function(obj.pop.strut,glm_fit0,GRM,n_CNV=5000,alpha_value
   fake_data<-micro_glmm(obj.pop.strut,glm_fit0,GRM,fake_copy_number_data,SPA=SPA,scale_g=FALSE,log_g=FALSE)
   if(SPA){
     pvalues=fake_data$SPA_pvalue
-  }else{
-    pvalues=fake_data$pvalue
+    if(plot_qq){
+      
+      simpleQQPlot(pvalues,obj.pop.strut$tau,alpha_value,n_CNV,obj.pop.strut,SPA)
+    }
   }
+  pvalues=fake_data$pvalue
   if(plot_qq){
-
-    simpleQQPlot(pvalues,obj.pop.strut$tau,alpha_value,n_CNV,obj.pop.strut)
+    
+    simpleQQPlot(pvalues,obj.pop.strut$tau,alpha_value,n_CNV,obj.pop.strut,SPA)
   }
+  
   return(fake_data)
   #return(fake_data)
 }
@@ -667,9 +671,16 @@ simulate_tau_inner<-function(glm_fit0,GRM,species_id=s_id,tau0,phi0){
   data.new_shuffled<-data.new[sample(1:nrow(data.new),nrow(data.new)),]
 
   fit_logistic = glm(formulate_to_fit, data = data.new_shuffled, family = family_to_fit)
-  fit_glmm_snp<-pop_structure_test(fit_logistic,GRM,tau=c(phi0,tau0),verbose = FALSE,species_id=s_id)
-  t=sum(fit_glmm_snp$b^2)
-  return(data.frame("tau"=fit_glmm_snp$tau[2],t))
+  fit_glmm_snp<-tryCatch(pop_structure_test(fit_logistic,GRM,tau=c(phi0,tau0),verbose = FALSE,species_id=s_id),error=function(e) NULL)
+  if(!is.na(fit_glmm_snp)){
+    t=sum(fit_glmm_snp$b^2,na.rm=TRUE)
+    tau=fit_glmm_snp$tau[2]
+  }
+  else{
+    tau=0
+    t=0
+  }
+  return(data.frame("tau"=tau,t))
 }
 
 simulate_tau_outer<-function(glm_fit0,GRM,n_tau,species_id=s_id,tau0,phi0){
@@ -744,32 +755,21 @@ LRT_score<-function(obj.pop.strut,glm_fit0,GRM){
 }
 
 
-simpleQQPlot = function (observedPValues,tau,alpha_value,n_CNV,obj.pop.strut) {
+simpleQQPlot = function (observedPValues,tau,alpha_value,n_CNV,obj.pop.strut,SPA) {
   error_rate=sum(observedPValues<alpha_value)/n_CNV
   expeded_pvalues=-log10(1:length(observedPValues)/length(observedPValues))
   observed_pvalues_tranformed=-log10(sort(observedPValues))
   pvalue_df<-data.frame(expeded_pvalues,observed_pvalues_tranformed)
-  print(ggplot(pvalue_df,aes(expeded_pvalues,observed_pvalues_tranformed))+geom_point(size=3)+geom_abline(color="red",size=3)+labs(title=paste("qqplot for species,",obj.pop.strut$species_id, "tau:",round(tau[2],2),"error_rate < ",alpha_value,":",error_rate),x="-log10(expected P values)",y="-log10(observed p values)"))
+  print(ggplot(pvalue_df,aes(expeded_pvalues,observed_pvalues_tranformed))+geom_point(size=3)+geom_abline(color="red",size=3)+labs(title=paste("qqplot for species,",obj.pop.strut$species_id, "tau:",round(tau[2],2),"error_rate < ",alpha_value,":",error_rate,"SPA:",SPA),x="-log10(expected P values)",y="-log10(observed p values)"))
 }
 
 #### taken from SPA
 
-Saddle_Prob<-function(q, mu, g, var1,Cutoff=2,alpha,output="P",nodes.fixed,nodes.init,log.p=FALSE)
+Saddle_Prob<-function(q, mu, g, var1,Cutoff=2,alpha,output="P",log.p=FALSE)
 {
   m1<-sum(mu * g)
   p1=NULL
   p2=NULL
-  if(output=="metaspline")
-  {
-    if(is.null(nodes.fixed)==TRUE)
-    {
-      nodes<-nodes.init
-      nodes<-getnodes(nodes,mu,g)$nodes
-    } else {
-      nodes<-unique(c(nodes.fixed,0))
-      nodes<-nodes[order(nodes)]
-    }
-  }
   
   Score<- q-m1
   #
@@ -826,7 +826,7 @@ Saddle_Prob<-function(q, mu, g, var1,Cutoff=2,alpha,output="P",nodes.fixed,nodes
   
   if(pval!=0 && pval.noadj/pval>10^3)
   {
-    return(Saddle_Prob(q, mu, g, Cutoff=Cutoff*2,alpha,output,nodes.fixed,nodes.init,log.p=log.p))
+    return(Saddle_Prob(q, mu, g, Cutoff=Cutoff*2,alpha,output,log.p=log.p))
   } else if(output=="metaspline")
   {
     return(list(p.value=pval, p.value.NA=pval.noadj, Is.converge=Is.converge,Score=Score,splfun=splfun,var=var1))
