@@ -252,7 +252,7 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(1,1),maxiter =100, 
       cat(paste("\ni",i))
     }
     if(verbose) cat("\nIteration ", i, "tau is ", tau, "\n")
-    if(write_log) put(paste(" Iteration ", i, "tau is: ", tau,))
+    if(write_log) put(paste(" Iteration ", i, "tau is: ", tau))
     alpha0 = re.coef$alpha
     tau0 = tau
     #cat("tau0_v1: ", tau0, "\n")
@@ -636,7 +636,7 @@ simulate_power<-function(obj.pop.strut,glm_fit0,GRM,n_CNV=5000,alpha_value=.05,m
     fake_copy_number_data<-data.frame(gene_id=gene_ids,
                                       sample_name=sample_names,
                                       copy_number=copynumbers)  
-    fake_data<-micro_glmm(obj.pop.strut,glm_fit0,GRM,fake_copy_number_data,SPA=FALSE,scale_g=TRUE,log_g=FALSE)
+    fake_data<-micro_glmm(obj.pop.strut,glm_fit0,GRM,fake_copy_number_data,SPA=SPA,scale_g=TRUE,log_g=FALSE)
     
     fake_data$sim_beta<-betas_to_sim
     

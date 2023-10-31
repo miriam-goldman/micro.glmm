@@ -55,7 +55,7 @@ marker_test_df<-micro_glmm(glmm_fit,glm_fit0,GRM,copy_number_df,SPA=spa_opt,scal
 pdf(file= file.path(output_dir,paste0(s_id,".marker_test_output.pdf")) ) 
 
 # create a 2X2 grid 
-par( mfrow= c(4,1) )
+par( mfrow= c(6,1) )
 m<-nrow(marker_test_df)
 bonferroni_cutoff<-opt$alpha_value/m
 marker_test_df<-marker_test_df %>% arrange(pvalue)
@@ -72,7 +72,7 @@ marker_test_df %>% ggplot(aes(y=-log10(pvalue),x=beta))+geom_hline(color="green"
 if(spa_opt){
   marker_test_df %>% ggplot(aes(x=SPA_pvalue)) +geom_histogram()+ggtitle(paste("SPA pvalue histogram for species ",s_id))
   marker_test_df %>% ggplot(aes(y=-log10(SPA_pvalue),x=beta))+geom_point()+ggtitle(paste("volcano plot for species ",s_id,"tau value is",glmm_fit$tau[2]))
-  marker_test_df %>% ggplot(aes(y=-log10(SPA_pvalue),x=beta))+geom_point()+geom_point(y=-log10(pvalue))+ggtitle(paste("volcano plot for species ",s_id,"tau value is",glmm_fit$tau[2]))
+  marker_test_df %>% ggplot(aes(y=-log10(SPA_pvalue),x=beta))+geom_point()+geom_point(aes(y=-log10(pvalue)))+ggtitle(paste("volcano plot for species ",s_id,"tau value is",glmm_fit$tau[2]))
   
 }
 if(opt$compare_to_glm){
@@ -85,8 +85,8 @@ if(opt$compare_to_glm){
   both_marker_test<-glm_model %>% filter(term=="copy_number") %>% right_join(marker_test_df)
   write.table(both_marker_test,file.path(output_dir, paste0(s_id,".both_marker_test.tsv")),sep="\t",row.names=FALSE)
   
-  both_marker_test %>% ggplot(aes(y=-log10(p.value),x=estimate))+geom_point()+ggtitle(paste("glm volcano plot for species ",s_id,"tau value is",glmm_fit$tau[2]))
-  
+  glm_marker<-both_marker_test %>% ggplot(aes(y=-log10(p.value),x=estimate))+geom_point()+ggtitle(paste("glm volcano plot for species ",s_id,"tau value is",glmm_fit$tau[2]))
+  glm_marker
   mean_cov_glm<- copy_number_df_with_y %>% group_by(gene_id)  %>% mutate(offset=0) %>% group_map(~glm(glm_fit0$formula,data = .x,family=binomial(link = "logit"),offset=offset))
   mean_cov_df<-copy_number_df %>% group_by(gene_id) %>% summarize(num_samples=n())
   mean_cov_df$model<-as.vector(mean_cov_glm)
@@ -95,17 +95,21 @@ if(opt$compare_to_glm){
   mean_cov_df$r2<-1-mean_cov_df$Dev/mean_cov_df$ND
   mean_cov_df$aic<-as.numeric(lapply(mean_cov_glm,function(x) x$aic))
   if(spa_opt){
-    pvalue_choice="SPA_pvalue"
+    p_value_ver_3<-both_marker_test %>% ggplot(aes(x=-log10(p.value),y=-log10(SPA_pvalue)))+geom_point()+ggtitle(paste("no adj pvalue for genes of species with Age:", s_id))+labs(y=c("adjusted_model"),x="glm model")+geom_abline(color="red")
+    
+    p_value_ver_4<-ggExtra::ggMarginal(p_value_ver_3, type = "histogram")
+    print(p_value_ver_4,newpage = TRUE)
   }else{
-    pvalue_choice="pvalue"
+    p_value_ver_3<-both_marker_test %>% ggplot(aes(x=-log10(p.value),y=-log10(pvalue)))+geom_point()+ggtitle(paste("no adj pvalue for genes of species with Age:", s_id))+labs(y=c("adjusted_model"),x="glm model")+geom_abline(color="red")
+    
+    p_value_ver_4<-ggExtra::ggMarginal(p_value_ver_3, type = "histogram")
+    print(p_value_ver_4,newpage = TRUE)
   }
-  p_value_ver_3<-both_marker_test %>% ggplot(aes(x=-log10(p.value),y=-log10(paste0(pvalue_choice))))+geom_point()+ggtitle(paste("no adj pvalue for genes of species with Age:", s_id))+labs(y=c("adjusted_model"),x="glm model")+geom_abline(color="red")
   
-  p_value_ver_4<-ggExtra::ggMarginal(p_value_ver_3, type = "histogram")
-  print(p_value_ver_4,newpage = TRUE)
+ 
   
   beta_plot<-both_marker_test %>% ggplot(aes(x=estimate,y=beta))+geom_point()+ggtitle(paste("beta for genes of species with Age:", s_id))+labs(y=c("adjusted_model"),x="glm model")+geom_abline(color="red")
-  print(beta_plot)
+  beta_plot
 }
 
 

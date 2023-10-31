@@ -37,7 +37,9 @@ option_list = list(
   make_option(c("--n_tau"), type="numeric", default=0,
               help="number of permuations to test for significance of tau, if 0 no test run",metavar="numeric" ),
   make_option(c("--n_CNV"), type="numeric", default=0,
-              help="number of CNVs to test for type 1 error, if 0 no test run",metavar="numeric" )
+              help="number of CNVs to test for type 1 error, if 0 no test run",metavar="numeric" ),
+  make_option(c("--SPA"), type="logical", default=TRUE, 
+              help="SPA, TRUE or FALSE for simulations", metavar="logical")
  
 )
 
@@ -73,11 +75,11 @@ rownames(annotation_col) =colnames(GRM)
 rownames(GRM)<-colnames(GRM)
 
 ann_colors = list(
-  disease_status = c("group_0" = color_pal[2], "group_1" = color_pal[4]),b=c(color_pal[5],"#FFFFFF",color_pal[3])
+  disease_status = c("group_0" = color_pal[2], "group_1" = color_pal[9]),b=c(color_pal[5],"#FFFFFF",color_pal[3])
 )
 
 paletteLength <- 50
-myColor <- colorRampPalette(c("#FFFFFF",color_pal[3]))(paletteLength)
+myColor <- colorRampPalette(c("#FFFFFF",color_pal[4]))(paletteLength)
 # length(breaks) == length(paletteLength) + 1
 # use floor and ceiling to deal with even/odd length pallettelengths
 myBreaks <- c(seq(.7, .85, length.out=ceiling(paletteLength/2) + 1), 
@@ -114,8 +116,8 @@ if(opt$n_tau>0){
 }
 
 if(opt$n_CNV>0){
-  simulate_type1_error_df<-simulate_type1_error(glmm_fit,glm_fit0,GRM,opt$n_CNV)
-  simulate_power_df<-simulate_power(glmm_fit,glm_fit0,GRM,opt$n_CNV)
+  simulate_type1_error_df<-simulate_type1_error(glmm_fit,glm_fit0,GRM,opt$n_CNV,SPA=opt$SPA)
+  simulate_power_df<-simulate_power(glmm_fit,glm_fit0,GRM,opt$n_CNV,SPA=opt$SPA)
   save(simulate_type1_error_df, simulate_power_df, file = file.path(output_dir,paste0(s_id,".simulation_obj.Rdata")))
   #ggsave(file.path(output_dir,paste0(s_id,".permutation_test.pdf")),device="pdf")
 }
