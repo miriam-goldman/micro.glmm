@@ -649,6 +649,9 @@ simulate_power<-function(obj.pop.strut,glm_fit0,GRM,n_CNV=5000,alpha_value=.05,m
   gene_ids=unlist(lapply(paste0("gene",seq(1,n_CNV)),function(x) rep(x,n_samples)))
   sample_names=rep(obj.pop.strut$sampleID,n_CNV)
   beta_df=data.frame(beta=beta_list,num_recovered=0)
+  if(SPA){
+    beta_df$num_recovered_SPA=0
+  }
   for(beta in beta_list){
     prec_real<-round(n_CNV*.1,1)
     prec_fake<-round(n_CNV*.9,1)
@@ -666,14 +669,16 @@ simulate_power<-function(obj.pop.strut,glm_fit0,GRM,n_CNV=5000,alpha_value=.05,m
     print(head(fake_data))
     beta_df[which(beta_df$beta==beta),2]=sum(fake_data$num_found)/sum(fake_data$sim_beta>0)
     if(SPA){
-      pvalues=fake_data$SPA_pvalue
-    }else{
-      pvalues=fake_data$pvalue
+      fake_data<-fake_data %>% mutate(num_found_spa=(fake_data$SPA_pvalue <= alpha_value & sim_beta>0)) %>% arrange(-sim_beta)
+      beta_df[which(beta_df$beta==beta),3]=sum(fake_data$num_found_spa)/sum(fake_data$sim_beta>0)
     }
   }
- 
+  print(ggplot(beta_df,aes(beta_list,num_recovered))+geom_point(size=3)+geom_smooth(formula= y ~ log(x),se=FALSE,size=2)+geom_hline(yintercept = .9)+labs(title=paste("Power test for species with",obj.pop.strut$species_id,"at alpha value",alpha_value,"number CNV",n_CNV),x="simulated beta",y="precentage recovered"))
+  if(SPA){
+    print(ggplot(beta_df,aes(beta_list,num_recovered_SPA))+geom_point(size=3)+geom_smooth(formula= y ~ log(x),se=FALSE,size=2)+geom_hline(yintercept = .9)+labs(title=paste("Power test for species with SPA",obj.pop.strut$species_id,"at alpha value",alpha_value,"number CNV",n_CNV),x="simulated beta",y="precentage recovered"))
+  }
   
-  print(ggplot(beta_df,aes(beta_list,num_recovered))+geom_point(size=3)+geom_smooth(formula= y ~ log(x),se=FALSE,size=2)+geom_hline(yintercept = .9)+labs(title=paste("Power test for species",obj.pop.strut$species_id,"at alpha value",alpha_value,"number CNV",n_CNV),x="simulated beta",y="precentage recovered"))
+  
   beta_df$case_contol<-fake_data$num_control[1]/fake_data$num_total[1]
   beta_df$num_total<-fake_data$num_total[1]
   beta_df$species_id<-fake_data$species_id[1]
