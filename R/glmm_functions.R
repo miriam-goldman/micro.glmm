@@ -132,7 +132,6 @@ ScoreTest_NULL_Model_quant = function(mu,tau, y, X){
 
 fitglmmaiRPCG<-function(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov_var,tol,quant=FALSE,verbose,write_log){
   if(!quant){ 
-    print("is binom")
     re.AI = get_AI_score(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov_var)
     score1 = re.AI$score1# this is equation 8 from paper 
     AI1 = re.AI$AI
