@@ -132,13 +132,22 @@ ScoreTest_NULL_Model_quant = function(mu,tau, y, X){
 
 fitglmmaiRPCG<-function(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov_var,tol,quant=FALSE,verbose,write_log){
   if(!quant){ 
+    print("is binom")
     re.AI = get_AI_score(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov_var)
     score1 = re.AI$score1# this is equation 8 from paper 
     AI1 = re.AI$AI
     Dtau = score1/AI1
     
     tau0 = tauVec
+    
     tauVec[2] = tau0[2] + Dtau
+    step = 1.0
+    while(tauVec[2]<0){
+      
+      step = step*0.5
+      tauVec[2] = tau0[2] + step*Dtau
+      
+    }
     
   }else{
     re.AI = get_AI_score_quant(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov_var)
@@ -149,16 +158,17 @@ fitglmmaiRPCG<-function(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov_va
     Dtau = solve(re.AI$AI, re.AI$score_vector)
     tau0 = tauVec
     tauVec = tau0 + Dtau
+    step = 1.0
+    while(any(tauVec<0)){
+      
+      step = step*0.5
+      tauVec = tau0 + step * Dtau
+      
+    }
   }
   
   
-  step = 1.0;
-  while(any(tauVec<0)){
-    
-    step = step*0.5
-    tauVec = tau0 + step * Dtau
-    
-  }
+  
   
   if(any(tauVec < tol)){
     tauVec[which(tauVec < tol)]=0
@@ -218,6 +228,7 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(1,1),maxiter =100, 
   eta0 = eta
   sample_ids<-colnames(GRM)
   if(family$family %in% c("poisson", "binomial")) {
+    print("is binom")
     tau[1] = 1
     quant=FALSE
   }else{
@@ -242,6 +253,7 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(1,1),maxiter =100, 
     tau[2] = max(0, as.numeric(tau0[2] + tau0[2]^2 * (re$YPAPY - re$Trace_P_GRM)/n))
     tau[1] = max(0, as.numeric(tau0[1] + tau0[1]^2 * (re$YPwPY - re$Trace_PW)/n))
   }else{
+    print("is binom")
     re = get_AI_score(re.coef$Y, X, GRM,re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov_var)
     
     tau[2] = max(0, as.numeric(tau0[2] + tau0[2]^2 * ((re$YPAPY - re$Trace_P_GRM))/n)) #tau + Dtau dumb way
@@ -516,6 +528,7 @@ micro_glmm = function(obj.pop.strut,
       cat("\n")
     }
     one_gene<-copy_number_df %>% ungroup %>% filter(gene_id==k)
+    print(k)
     #one_gene_indexs<-sample_lookup %>% inner_join(one_gene,by=c("sampleID"="sample_name")) %>% select(sampleID,index)
     
     one_gene<-one_gene %>% inner_join(sample_lookup,by=c("sample_name"="sampleID"))
@@ -546,9 +559,10 @@ micro_glmm = function(obj.pop.strut,
     
     
     t_score=t(PG_tilde)%*%(Y)/tauVecNew[1] #t_score_2=t(G_tilde)%*%(filtered_obj.pop.strut$y - mu)
+   
     m1 = t(G_tilde) %*% mu
     #qtilde=t(G_tilde)%*%filtered_obj.pop.strut$y
-    var1 = t(G_tilde)%*%PG_tilde ## same as  t(G)%*%Sigma_iG - t(G)%*%filtered_obj.pop.strut$Sigma_iX%*%(solve(t(filtered_obj.pop.strut$X)%*%filtered_obj.pop.strut$Sigma_iX))%*%t(filtered_obj.pop.strut$X)%*%Sigma_iG
+    var1 = t(G_tilde)%*%PG_tilde## same as  t(G)%*%Sigma_iG - t(G)%*%filtered_obj.pop.strut$Sigma_iX%*%(solve(t(filtered_obj.pop.strut$X)%*%filtered_obj.pop.strut$Sigma_iX))%*%t(filtered_obj.pop.strut$X)%*%Sigma_iG
     t_adj=t_score/sqrt(var1)
     t_adj_2=t_score^2/var1
     beta=t_score/var1
@@ -559,11 +573,19 @@ micro_glmm = function(obj.pop.strut,
     new_mu=family$linkinv(new_eta)
     qtilde=t_score+m1
     if(SPA){
-    out1 = Saddle_Prob(q=qtilde, mu = mu, g = G_tilde, var1,Cutoff = 2,log.p=FALSE)
-    list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene_id"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=beta,"se beta"=se_beta,"pvalue"=pval,
-                                       "t_adj"=t_adj,"num_control"=sum(filtered_obj.pop.strut$y==0),
-                                       "num_total"=length(G0),
-                                       SPA_pvalue=out1$p.value,spa_score=out1$Score,pvalue_noadj=out1$p.value.NA))
+      if(var1<0){
+        list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene_id"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=NA,"se beta"=NA,"pvalue"=NA,
+                                           "t_adj"=NA,"num_control"=sum(filtered_obj.pop.strut$y==0),
+                                           "num_total"=length(G0),
+                                           SPA_pvalue=NA,spa_score=NA,pvalue_noadj=NA))
+      }else{
+        out1 = Saddle_Prob(q=qtilde, mu = mu, g = G_tilde, var1,Cutoff = 2,log.p=FALSE)
+        list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene_id"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=beta,"se beta"=se_beta,"pvalue"=pval,
+                                           "t_adj"=t_adj,"num_control"=sum(filtered_obj.pop.strut$y==0),
+                                           "num_total"=length(G0),
+                                           SPA_pvalue=out1$p.value,spa_score=out1$Score,pvalue_noadj=out1$p.value.NA))
+      }
+   
     }else{
       list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene_id"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=beta,"se beta"=se_beta,"pvalue"=pval,
                                          "t_adj"=t_adj,"num_control"=sum(filtered_obj.pop.strut$y==0),
