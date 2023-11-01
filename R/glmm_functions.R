@@ -296,8 +296,8 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(1,1),maxiter =100, 
      }
     if(write_log) {
       put(paste("change in tau",abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)))
-      put("tau: ", tau)
-      put("tau0: ", tau0)
+      put(paste("tau: ", tau))
+      put(paste("tau0: ", tau0))
     }
     if(tau[1]<=0){
       stop("\nERROR! The first variance component parameter estimate is 0\n")
