@@ -228,7 +228,6 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(1,1),maxiter =100, 
   eta0 = eta
   sample_ids<-colnames(GRM)
   if(family$family %in% c("poisson", "binomial")) {
-    print("is binom")
     tau[1] = 1
     quant=FALSE
   }else{
@@ -253,7 +252,6 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(1,1),maxiter =100, 
     tau[2] = max(0, as.numeric(tau0[2] + tau0[2]^2 * (re$YPAPY - re$Trace_P_GRM)/n))
     tau[1] = max(0, as.numeric(tau0[1] + tau0[1]^2 * (re$YPwPY - re$Trace_PW)/n))
   }else{
-    print("is binom")
     re = get_AI_score(re.coef$Y, X, GRM,re.coef$W, tau, re.coef$Sigma_iY, re.coef$Sigma_iX, re.coef$cov_var)
     
     tau[2] = max(0, as.numeric(tau0[2] + tau0[2]^2 * ((re$YPAPY - re$Trace_P_GRM))/n)) #tau + Dtau dumb way
@@ -528,7 +526,6 @@ micro_glmm = function(obj.pop.strut,
       cat("\n")
     }
     one_gene<-copy_number_df %>% ungroup %>% filter(gene_id==k)
-    print(k)
     #one_gene_indexs<-sample_lookup %>% inner_join(one_gene,by=c("sampleID"="sample_name")) %>% select(sampleID,index)
     
     one_gene<-one_gene %>% inner_join(sample_lookup,by=c("sample_name"="sampleID"))
