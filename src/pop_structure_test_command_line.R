@@ -68,7 +68,7 @@ b_df=data.frame(b=as.vector(glmm_fit$b),y=as.vector(glmm_fit$y),fitted.values=as
 pdf(file= file.path(output_dir,paste0(s_id,".random_effect_output.pdf")) ) 
 
 # create a 2X2 grid 
-par( mfrow= c(10,1) )
+par( mfrow= c(11,1) )
 
 annotation_col = data.frame(disease_status=paste0("group_",as.vector(glm_fit0$y)),"b"=as.vector(glmm_fit$b))
 rownames(annotation_col) =colnames(GRM)

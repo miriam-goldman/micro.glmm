@@ -138,7 +138,15 @@ fitglmmaiRPCG<-function(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov_va
     Dtau = score1/AI1
     
     tau0 = tauVec
+    
     tauVec[2] = tau0[2] + Dtau
+    step = 1.0
+    while(tauVec[2]<0){
+      
+      step = step*0.5
+      tauVec[2] = tau0[2] + step*Dtau
+      
+    }
     
   }else{
     re.AI = get_AI_score_quant(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov_var)
@@ -149,16 +157,17 @@ fitglmmaiRPCG<-function(Yvec, Xmat,GRM,wVec,  tauVec, Sigma_iY, Sigma_iX, cov_va
     Dtau = solve(re.AI$AI, re.AI$score_vector)
     tau0 = tauVec
     tauVec = tau0 + Dtau
+    step = 1.0
+    while(any(tauVec<0)){
+      
+      step = step*0.5
+      tauVec = tau0 + step * Dtau
+      
+    }
   }
   
   
-  step = 1.0;
-  while(any(tauVec<0)){
-    
-    step = step*0.5
-    tauVec = tau0 + step * Dtau
-    
-  }
+  
   
   if(any(tauVec < tol)){
     tauVec[which(tauVec < tol)]=0
@@ -296,8 +305,8 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(1,1),maxiter =100, 
      }
     if(write_log) {
       put(paste("change in tau",abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)))
-      put("tau: ", tau)
-      put("tau0: ", tau0)
+      put(paste("tau: ", tau))
+      put(paste("tau0: ", tau0))
     }
     if(tau[1]<=0){
       stop("\nERROR! The first variance component parameter estimate is 0\n")
@@ -546,9 +555,10 @@ micro_glmm = function(obj.pop.strut,
     
     
     t_score=t(PG_tilde)%*%(Y)/tauVecNew[1] #t_score_2=t(G_tilde)%*%(filtered_obj.pop.strut$y - mu)
+   
     m1 = t(G_tilde) %*% mu
     #qtilde=t(G_tilde)%*%filtered_obj.pop.strut$y
-    var1 = t(G_tilde)%*%PG_tilde ## same as  t(G)%*%Sigma_iG - t(G)%*%filtered_obj.pop.strut$Sigma_iX%*%(solve(t(filtered_obj.pop.strut$X)%*%filtered_obj.pop.strut$Sigma_iX))%*%t(filtered_obj.pop.strut$X)%*%Sigma_iG
+    var1 = t(G_tilde)%*%PG_tilde## same as  t(G)%*%Sigma_iG - t(G)%*%filtered_obj.pop.strut$Sigma_iX%*%(solve(t(filtered_obj.pop.strut$X)%*%filtered_obj.pop.strut$Sigma_iX))%*%t(filtered_obj.pop.strut$X)%*%Sigma_iG
     t_adj=t_score/sqrt(var1)
     t_adj_2=t_score^2/var1
     beta=t_score/var1
@@ -559,11 +569,19 @@ micro_glmm = function(obj.pop.strut,
     new_mu=family$linkinv(new_eta)
     qtilde=t_score+m1
     if(SPA){
-    out1 = Saddle_Prob(q=qtilde, mu = mu, g = G_tilde, var1,Cutoff = 2,log.p=FALSE)
-    list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene_id"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=beta,"se beta"=se_beta,"pvalue"=pval,
-                                       "t_adj"=t_adj,"num_control"=sum(filtered_obj.pop.strut$y==0),
-                                       "num_total"=length(G0),
-                                       SPA_pvalue=out1$p.value,spa_score=out1$Score,pvalue_noadj=out1$p.value.NA))
+      if(var1<0){
+        list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene_id"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=NA,"se beta"=NA,"pvalue"=NA,
+                                           "t_adj"=NA,"num_control"=sum(filtered_obj.pop.strut$y==0),
+                                           "num_total"=length(G0),
+                                           SPA_pvalue=NA,spa_score=NA,pvalue_noadj=NA))
+      }else{
+        out1 = Saddle_Prob(q=qtilde, mu = mu, g = G_tilde, var1,Cutoff = 2,log.p=FALSE)
+        list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene_id"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=beta,"se beta"=se_beta,"pvalue"=pval,
+                                           "t_adj"=t_adj,"num_control"=sum(filtered_obj.pop.strut$y==0),
+                                           "num_total"=length(G0),
+                                           SPA_pvalue=out1$p.value,spa_score=out1$Score,pvalue_noadj=out1$p.value.NA))
+      }
+   
     }else{
       list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene_id"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=beta,"se beta"=se_beta,"pvalue"=pval,
                                          "t_adj"=t_adj,"num_control"=sum(filtered_obj.pop.strut$y==0),
@@ -610,13 +628,17 @@ simulate_type1_error<-function(obj.pop.strut,glm_fit0,GRM,n_CNV=5000,alpha_value
   fake_data<-micro_glmm(obj.pop.strut,glm_fit0,GRM,fake_copy_number_data,SPA=SPA,scale_g=FALSE,log_g=FALSE)
   if(SPA){
     pvalues=fake_data$SPA_pvalue
-  }else{
-    pvalues=fake_data$pvalue
+    if(plot_qq){
+      
+      simpleQQPlot(pvalues,obj.pop.strut$tau,alpha_value,n_CNV,obj.pop.strut,SPA)
+    }
   }
+  pvalues=fake_data$pvalue
   if(plot_qq){
-
-    simpleQQPlot(pvalues,obj.pop.strut$tau,alpha_value,n_CNV,obj.pop.strut)
+    
+    simpleQQPlot(pvalues,obj.pop.strut$tau,alpha_value,n_CNV,obj.pop.strut,SPA)
   }
+  
   return(fake_data)
   #return(fake_data)
 }
@@ -627,6 +649,9 @@ simulate_power<-function(obj.pop.strut,glm_fit0,GRM,n_CNV=5000,alpha_value=.05,m
   gene_ids=unlist(lapply(paste0("gene",seq(1,n_CNV)),function(x) rep(x,n_samples)))
   sample_names=rep(obj.pop.strut$sampleID,n_CNV)
   beta_df=data.frame(beta=beta_list,num_recovered=0)
+  if(SPA){
+    beta_df$num_recovered_SPA=0
+  }
   for(beta in beta_list){
     prec_real<-round(n_CNV*.1,1)
     prec_fake<-round(n_CNV*.9,1)
@@ -644,14 +669,16 @@ simulate_power<-function(obj.pop.strut,glm_fit0,GRM,n_CNV=5000,alpha_value=.05,m
     print(head(fake_data))
     beta_df[which(beta_df$beta==beta),2]=sum(fake_data$num_found)/sum(fake_data$sim_beta>0)
     if(SPA){
-      pvalues=fake_data$SPA_pvalue
-    }else{
-      pvalues=fake_data$pvalue
+      fake_data<-fake_data %>% mutate(num_found_spa=(fake_data$SPA_pvalue <= alpha_value & sim_beta>0)) %>% arrange(-sim_beta)
+      beta_df[which(beta_df$beta==beta),3]=sum(fake_data$num_found_spa)/sum(fake_data$sim_beta>0)
     }
   }
- 
+  print(ggplot(beta_df,aes(beta_list,num_recovered))+geom_point(size=3)+geom_smooth(formula= y ~ log(x),se=FALSE,size=2)+geom_hline(yintercept = .9)+labs(title=paste("Power test for species with",obj.pop.strut$species_id,"at alpha value",alpha_value,"number CNV",n_CNV),x="simulated beta",y="precentage recovered"))
+  if(SPA){
+    print(ggplot(beta_df,aes(beta_list,num_recovered_SPA))+geom_point(size=3)+geom_smooth(formula= y ~ log(x),se=FALSE,size=2)+geom_hline(yintercept = .9)+labs(title=paste("Power test for species with SPA",obj.pop.strut$species_id,"at alpha value",alpha_value,"number CNV",n_CNV),x="simulated beta",y="precentage recovered"))
+  }
   
-  print(ggplot(beta_df,aes(beta_list,num_recovered))+geom_point(size=3)+geom_smooth(formula= y ~ log(x),se=FALSE,size=2)+geom_hline(yintercept = .9)+labs(title=paste("Power test for species",obj.pop.strut$species_id,"at alpha value",alpha_value,"number CNV",n_CNV),x="simulated beta",y="precentage recovered"))
+  
   beta_df$case_contol<-fake_data$num_control[1]/fake_data$num_total[1]
   beta_df$num_total<-fake_data$num_total[1]
   beta_df$species_id<-fake_data$species_id[1]
@@ -667,9 +694,15 @@ simulate_tau_inner<-function(glm_fit0,GRM,species_id=s_id,tau0,phi0){
   data.new_shuffled<-data.new[sample(1:nrow(data.new),nrow(data.new)),]
 
   fit_logistic = glm(formulate_to_fit, data = data.new_shuffled, family = family_to_fit)
-  fit_glmm_snp<-pop_structure_test(fit_logistic,GRM,tau=c(phi0,tau0),verbose = FALSE,species_id=s_id)
-  t=sum(fit_glmm_snp$b^2)
-  return(data.frame("tau"=fit_glmm_snp$tau[2],t))
+  fit_glmm_snp<-tryCatch(pop_structure_test(fit_logistic,GRM,tau=c(phi0,tau0),verbose = FALSE,species_id=s_id),error=function(e) NULL)
+  if(isTRUE(any(!is.na(fit_glmm_snp)))){
+    t=sum(fit_glmm_snp$b^2,na.rm=TRUE)
+    tau=fit_glmm_snp$tau[2]
+  }else{
+    tau=0
+    t=0
+  }
+  return(data.frame("tau"=tau,t))
 }
 
 simulate_tau_outer<-function(glm_fit0,GRM,n_tau,species_id=s_id,tau0,phi0){
@@ -744,32 +777,21 @@ LRT_score<-function(obj.pop.strut,glm_fit0,GRM){
 }
 
 
-simpleQQPlot = function (observedPValues,tau,alpha_value,n_CNV,obj.pop.strut) {
+simpleQQPlot = function (observedPValues,tau,alpha_value,n_CNV,obj.pop.strut,SPA) {
   error_rate=sum(observedPValues<alpha_value)/n_CNV
   expeded_pvalues=-log10(1:length(observedPValues)/length(observedPValues))
   observed_pvalues_tranformed=-log10(sort(observedPValues))
   pvalue_df<-data.frame(expeded_pvalues,observed_pvalues_tranformed)
-  print(ggplot(pvalue_df,aes(expeded_pvalues,observed_pvalues_tranformed))+geom_point(size=3)+geom_abline(color="red",size=3)+labs(title=paste("qqplot for species,",obj.pop.strut$species_id, "tau:",round(tau[2],2),"error_rate < ",alpha_value,":",error_rate),x="-log10(expected P values)",y="-log10(observed p values)"))
+  print(ggplot(pvalue_df,aes(expeded_pvalues,observed_pvalues_tranformed))+geom_point(size=3)+geom_abline(color="red",size=3)+labs(title=paste("qqplot for species,",obj.pop.strut$species_id, "tau:",round(tau[2],2),"error_rate < ",alpha_value,":",error_rate,"SPA:",SPA),x="-log10(expected P values)",y="-log10(observed p values)"))
 }
 
 #### taken from SPA
 
-Saddle_Prob<-function(q, mu, g, var1,Cutoff=2,alpha,output="P",nodes.fixed,nodes.init,log.p=FALSE)
+Saddle_Prob<-function(q, mu, g, var1,Cutoff=2,output="P",log.p=FALSE)
 {
   m1<-sum(mu * g)
   p1=NULL
   p2=NULL
-  if(output=="metaspline")
-  {
-    if(is.null(nodes.fixed)==TRUE)
-    {
-      nodes<-nodes.init
-      nodes<-getnodes(nodes,mu,g)$nodes
-    } else {
-      nodes<-unique(c(nodes.fixed,0))
-      nodes<-nodes[order(nodes)]
-    }
-  }
   
   Score<- q-m1
   #
@@ -826,7 +848,7 @@ Saddle_Prob<-function(q, mu, g, var1,Cutoff=2,alpha,output="P",nodes.fixed,nodes
   
   if(pval!=0 && pval.noadj/pval>10^3)
   {
-    return(Saddle_Prob(q, mu, g, Cutoff=Cutoff*2,alpha,output,nodes.fixed,nodes.init,log.p=log.p))
+    return(Saddle_Prob(q, mu, g,var1, Cutoff=Cutoff*2,output,log.p=log.p))
   } else if(output=="metaspline")
   {
     return(list(p.value=pval, p.value.NA=pval.noadj, Is.converge=Is.converge,Score=Score,splfun=splfun,var=var1))
