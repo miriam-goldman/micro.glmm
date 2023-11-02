@@ -89,8 +89,7 @@ if(opt$compare_to_glm){
   both_marker_test<-glm_model %>% filter(term=="copy_number") %>% right_join(marker_test_df)
   write.table(both_marker_test,file.path(output_dir, paste0(s_id,".both_marker_test.tsv")),sep="\t",row.names=FALSE)
   
-  glm_marker<-both_marker_test %>% ggplot(aes(y=-log10(p.value),x=estimate))+geom_hline(color="green",yintercept =-log10(bh_cutoff))+geom_hline(color="red",yintercept =-log10(bonferroni_cutoff))+geom_point()+ggtitle(paste("glm volcano plot for species ",s_id,"tau value is",glmm_fit$tau[2]))
-  glm_marker
+  
   mean_cov_glm<- copy_number_df_with_y %>% group_by(gene_id)  %>% mutate(offset=0) %>% group_map(~glm(glm_fit0$formula,data = .x,family=binomial(link = "logit"),offset=offset))
   mean_cov_df<-copy_number_df %>% group_by(gene_id) %>% summarize(num_samples=n())
   mean_cov_df$model<-as.vector(mean_cov_glm)
@@ -110,7 +109,8 @@ if(opt$compare_to_glm){
     print(p_value_ver_4,newpage = TRUE)
   }
   
- 
+  glm_marker<-both_marker_test %>% ggplot(aes(y=-log10(p.value),x=estimate))+geom_hline(color="green",yintercept =-log10(bh_cutoff))+geom_hline(color="red",yintercept =-log10(bonferroni_cutoff))+geom_point()+ggtitle(paste("glm volcano plot for species ",s_id,"tau value is",glmm_fit$tau[2]))
+  glm_marker
   
   beta_plot<-both_marker_test %>% ggplot(aes(x=estimate,y=beta))+geom_point()+ggtitle(paste("beta for genes of species with Age:", s_id))+labs(y=c("adjusted_model"),x="glm model")+geom_abline(color="red")
   beta_plot
