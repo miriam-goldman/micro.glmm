@@ -121,7 +121,7 @@ if(opt$n_CNV>0){
   save(simulate_type1_error_df, simulate_power_df, file = file.path(output_dir,paste0(s_id,".simulation_obj.Rdata")))
   #ggsave(file.path(output_dir,paste0(s_id,".permutation_test.pdf")),device="pdf")
 }
-
+dev.off()
 # Close log
 log_close()
 

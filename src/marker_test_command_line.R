@@ -71,10 +71,11 @@ marker_test_df %>% ggplot(aes(y=-log10(pvalue),x=beta))+geom_hline(color="green"
 
 if(spa_opt){
   marker_test_df %>% ggplot(aes(x=SPA_pvalue)) +geom_histogram()+ggtitle(paste("SPA pvalue histogram for species ",s_id))
-  marker_test_df %>% ggplot(aes(y=-log10(SPA_pvalue),x=beta))+geom_point()+ggtitle(paste("volcano plot for species with SPA",s_id,"tau value is",glmm_fit$tau[2]))
-  marker_test_df %>% ggplot(aes(x=beta))+geom_point(aes(y=-log10(SPA_pvalue),color="red"))+geom_point(aes(y=-log10(pvalue),color="blue"))+ggtitle(paste("volcano plot for species ",s_id,"tau value is",glmm_fit$tau[2]))
+  marker_test_df %>% ggplot(aes(y=-log10(SPA_pvalue),x=beta))+geom_hline(color="green",yintercept =-log10(bh_cutoff))+geom_hline(color="red",yintercept =-log10(bonferroni_cutoff))+geom_point()+ggtitle(paste("volcano plot for species with SPA",s_id,"tau value is",glmm_fit$tau[2]))
+  marker_test_df %>% ggplot(aes(x=beta))+geom_hline(color="green",yintercept =-log10(bh_cutoff))+geom_hline(color="red",yintercept =-log10(bonferroni_cutoff))+geom_point(aes(y=-log10(SPA_pvalue),color="red"))+geom_point(aes(y=-log10(pvalue),color="blue"))+ggtitle(paste("volcano plot for species ",s_id,"tau value is",glmm_fit$tau[2]))+labs(y="-log10(pvalues) blue pvalue red SPA pvalue")
   
 }
+dev.off()
 if(opt$compare_to_glm){
   pdf(file= file.path(output_dir,paste0(s_id,".compare_to_glm.pdf")) ) 
   par( mfrow= c(4,1) )
@@ -85,7 +86,7 @@ if(opt$compare_to_glm){
   both_marker_test<-glm_model %>% filter(term=="copy_number") %>% right_join(marker_test_df)
   write.table(both_marker_test,file.path(output_dir, paste0(s_id,".both_marker_test.tsv")),sep="\t",row.names=FALSE)
   
-  glm_marker<-both_marker_test %>% ggplot(aes(y=-log10(p.value),x=estimate))+geom_point()+ggtitle(paste("glm volcano plot for species ",s_id,"tau value is",glmm_fit$tau[2]))
+  glm_marker<-both_marker_test %>% ggplot(aes(y=-log10(p.value),x=estimate))+geom_hline(color="green",yintercept =-log10(bh_cutoff))+geom_hline(color="red",yintercept =-log10(bonferroni_cutoff))+geom_point()+ggtitle(paste("glm volcano plot for species ",s_id,"tau value is",glmm_fit$tau[2]))
   glm_marker
   mean_cov_glm<- copy_number_df_with_y %>% group_by(gene_id)  %>% mutate(offset=0) %>% group_map(~glm(glm_fit0$formula,data = .x,family=binomial(link = "logit"),offset=offset))
   mean_cov_df<-copy_number_df %>% group_by(gene_id) %>% summarize(num_samples=n())
@@ -110,6 +111,7 @@ if(opt$compare_to_glm){
   
   beta_plot<-both_marker_test %>% ggplot(aes(x=estimate,y=beta))+geom_point()+ggtitle(paste("beta for genes of species with Age:", s_id))+labs(y=c("adjusted_model"),x="glm model")+geom_abline(color="red")
   beta_plot
+  dev.off()
 }
 
 

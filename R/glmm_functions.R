@@ -630,13 +630,13 @@ simulate_type1_error<-function(obj.pop.strut,glm_fit0,GRM,n_CNV=5000,alpha_value
     pvalues=fake_data$SPA_pvalue
     if(plot_qq){
       
-      simpleQQPlot(pvalues,obj.pop.strut$tau,alpha_value,n_CNV,obj.pop.strut,SPA)
+      simpleQQPlot(pvalues,obj.pop.strut$tau,alpha_value,n_CNV,obj.pop.strut,SPA=TRUE)
     }
   }
   pvalues=fake_data$pvalue
   if(plot_qq){
     
-    simpleQQPlot(pvalues,obj.pop.strut$tau,alpha_value,n_CNV,obj.pop.strut,SPA)
+    simpleQQPlot(pvalues,obj.pop.strut$tau,alpha_value,n_CNV,obj.pop.strut,SPA=FALSE)
   }
   
   return(fake_data)
