@@ -23,6 +23,8 @@ q_value=config["genes"]["q_value"]
 n_CNV=config["snps"]["n_CNV"]
 alpha_value=config["genes"]["alpha_value"]
 compare_to_glm=config["genes"]["compare_to_glm"]
+log_copynumber=config["genes"]["log_copynumber"]
+scale_copynumber=config["genes"]["scale_copynumber"]
 rule parse_genes_input:
     input:
         gene_length = pandb_dir+ "/{s_id}/genes.len",
@@ -121,7 +123,7 @@ rule run_structure_test:
         cd src
         Rscript pop_structure_test_command_line.R --species_id {wildcards.s_id} -v {verbose} \
         -o {output_fp} --GRM {input.GRM} --metadata {input.metadata} --tau 1 --n_tau {n_tau}  --n_CNV {n_CNV} \
-        --formula_to_fit {formula} --SPA {SPA}
+        --formula_to_fit {formula} --SPA {SPA} --log_copynumber {log_copynumber} --scale_copynumber {scale_copynumber}
         """
 
 rule run_marker_test:

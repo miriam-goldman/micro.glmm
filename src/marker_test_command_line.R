@@ -58,13 +58,24 @@ pdf(file= file.path(output_dir,paste0(s_id,".marker_test_output.pdf")) )
 par( mfrow= c(6,1) )
 m<-nrow(marker_test_df)
 bonferroni_cutoff<-opt$alpha_value/m
-marker_test_df<-marker_test_df %>% arrange(pvalue)
+
 q=opt$q_value
-marker_test_df<-marker_test_df%>% mutate(rank=seq(1,m)) %>% mutate(bh_pvalue=(rank/m)*q)
+if(spa_opt){
+  marker_test_df<-marker_test_df %>% arrange(SPA_pvalue)
+  marker_test_df<-marker_test_df%>% mutate(rank=seq(1,m)) %>% mutate(bh_pvalue=(rank/m)*q)
+  filtered_test_df<-marker_test_df %>% filter(SPA_pvalue<=bh_pvalue)
+  bh_cutoff<-max(filtered_test_df$SPA_pvalue)
+  print(marker_test_df[1:50,])
+}else{
+  marker_test_df<-marker_test_df %>% arrange(pvalue)
+  marker_test_df<-marker_test_df%>% mutate(rank=seq(1,m)) %>% mutate(bh_pvalue=(rank/m)*q)
+  filtered_test_df<-marker_test_df %>% filter(pvalue<=bh_pvalue)
+  bh_cutoff<-max(filtered_test_df$pvalue)
+  print(marker_test_df[1:50,])
+  
+}
 write.table(marker_test_df,file.path(output_dir, paste0(s_id,".marker_test.tsv")),sep="\t",row.names=FALSE)
-filtered_test_df<-marker_test_df %>% filter(pvalue<=bh_pvalue)
-bh_cutoff<-max(filtered_test_df$pvalue)
-print(marker_test_df[1:50,])
+
 
 plot1<-marker_test_df %>% ggplot(aes(x=pvalue)) +geom_histogram()+ggtitle(paste("Pvalue histogram for species ",s_id))
 print(plot1)
