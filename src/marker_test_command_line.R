@@ -116,12 +116,12 @@ if(opt$compare_to_glm){
   mean_cov_df$r2<-1-mean_cov_df$Dev/mean_cov_df$ND
   mean_cov_df$aic<-as.numeric(lapply(mean_cov_glm,function(x) x$aic))
   if(spa_opt){
-    p_value_ver_3<-both_marker_test %>% ggplot(aes(x=-log10(p.value),y=-log10(SPA_pvalue)))+geom_point()+ggtitle(paste("no adj pvalue for genes of species with Age:", s_id))+labs(y=c("adjusted_model"),x="glm model")+geom_abline(color="red")
+    p_value_ver_3<-both_marker_test %>% ggplot(aes(x=-log10(p.value),y=-log10(SPA_pvalue)))+geom_point(aes(color=var1>2))+ggtitle(paste("GLMM SPA pvalue verse GLM pvalue species:", s_id))+labs(y=c("adjusted_model"),x="glm model")+geom_abline(color="red")
     
     p_value_ver_4<-ggExtra::ggMarginal(p_value_ver_3, type = "histogram")
     print(p_value_ver_4,newpage = TRUE)
   }else{
-    p_value_ver_3<-both_marker_test %>% ggplot(aes(x=-log10(p.value),y=-log10(pvalue)))+geom_point()+ggtitle(paste("no adj pvalue for genes of species with Age:", s_id))+labs(y=c("adjusted_model"),x="glm model")+geom_abline(color="red")
+    p_value_ver_3<-both_marker_test %>% ggplot(aes(x=-log10(p.value),y=-log10(pvalue)))+geom_point()+ggtitle(paste("GLMM SPA pvalue verse GLM pvalue species:", s_id))+labs(y=c("adjusted_model"),x="glm model")+geom_abline(color="red")
     
     p_value_ver_4<-ggExtra::ggMarginal(p_value_ver_3, type = "histogram")
     print(p_value_ver_4,newpage = TRUE)
