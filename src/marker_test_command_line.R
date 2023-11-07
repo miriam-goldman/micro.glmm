@@ -48,7 +48,14 @@ put(paste("Rscript marker_test_command_line.R",commad_message),console = verbose
 
 validate_marker_test(opt)
 
-
+if(log_copynumber_opt==TRUE){
+  copy_number_df$copy_number<-log(as.vector(copy_number_df$copy_number))
+}else{
+  copy_number_df$copy_number<-as.vector(copy_number_df$copy_number)
+}
+if(scale_copynumber_opt==TRUE){
+  copy_number_df$copy_number<-scale(copy_number_df$copy_number)
+}
 
 output_dir<-test_dir(opt$out_folder,verbose)
 marker_test_df<-micro_glmm(glmm_fit,glm_fit0,GRM,copy_number_df,SPA=spa_opt,scale_g=scale_copynumber_opt,log_g=log_copynumber_opt)

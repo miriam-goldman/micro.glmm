@@ -512,7 +512,6 @@ micro_glmm = function(obj.pop.strut,
   obj.pop.strut$Sigma_iY<-Sigma_iY
   sample_lookup<-data.frame(sampleID=obj.pop.strut$sampleID,index=seq(1,length(obj.pop.strut$sampleID)))
   sample_genes<-unique(copy_number_df$gene_id)
-  
   ##randomize the marker orders to be tested
   
   for(k in sample_genes){
@@ -532,15 +531,8 @@ micro_glmm = function(obj.pop.strut,
     filtered_obj.pop.strut<-filter_null_obj(obj.pop.strut,one_gene)
     empty_mat<-matrix(0,nrow(one_gene),nrow(one_gene))
     # log and scale copy_number
-    if(log_g==TRUE){
-      G0<-log(as.vector(one_gene$copy_number))
-    }else{
-      G0<-as.vector(one_gene$copy_number)
-    }
-    if(scale_g==TRUE){
-      G0<-scale(G0)
-    }
    
+    G0<-as.vector(one_gene$copy_number)
     G_tilde = G0  -  filtered_obj.pop.strut$obj.noK$XXVX_inv %*%  (filtered_obj.pop.strut$obj.noK$XV %*% G0) # G1 is X adjusted
     res=filtered_obj.pop.strut$residuals
     eta = filtered_obj.pop.strut$linear.predictors
