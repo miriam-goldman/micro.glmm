@@ -92,7 +92,7 @@ pheatmap(GRM,show_rownames=FALSE,show_colnames=FALSE,labels_row="samples",labels
          annotation_col=annotation_col,annotation_colors = ann_colors,color=myColor,breaks=myBreaks)
 
 
-ggplot(b_df,aes(b,fill=as.factor(y)))+geom_histogram()+ scale_fill_manual(values=c(color_pal[1],color_pal[2]),name="diagnosis")+
+ggplot(b_df,aes(b,fill=as.factor(y)))+geom_histogram()+ scale_fill_manual(values=c(color_pal[2],color_pal[9]),name="diagnosis")+
   labs(x="values of random varible b",title=paste("Histogram of random varaible b for species",s_id,"\ncolored by diagnosis"),legend="diagnosis")
 
 ggplot(b_df, aes(d = y, m = fitted.values)) + geom_roc()+labs(caption =paste(glmm_fit$summary))+ theme(
