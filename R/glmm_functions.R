@@ -412,7 +412,7 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(1,1),maxiter =100, 
                     y = y, X = Xorig, 
                     traitType=glm_fit0$family,
                     iter_finised=i,
-                    model_metrics=model_metrics,species_id=species_id)
+                    model_metrics=model_metrics,species_id=species_id,GRM=GRM)
   
   t_end_null = proc.time()
   if(verbose) {

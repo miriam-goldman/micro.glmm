@@ -2,7 +2,7 @@
 # General options
 all:
   root: "/pollard/home/mgoldman/micro-glmm"
-  output_fp: "/pollard/data/projects/mwas-projects/output/centroid_75_all_species_spa_UC_CD"
+  output_fp: "/pollard/data/projects/mwas-projects/output/centroid_75_all_species_spa"
   genes_label_fp: "/pollard/data/projects/mwas-projects/gene_labels"
   verbose: "TRUE"
   pandb_dir: "/pollard/data/midas2-db/midas2db-uhgg-v1.5/pangenomes"
@@ -20,7 +20,7 @@ snps:
   n_tau: 1000
   run_qp: FALSE
   formula: "y~age+1"
-  n_CNV: 5000
+  n_CNV: 0
 
 genes:
   SPA: "TRUE"

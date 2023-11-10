@@ -112,6 +112,7 @@ if(opt$n_tau>0){
                                            "\n number of permutations",opt$n_tau),caption =paste(glmm_fit$summary,"\n pvalue for t is", num_more_ext/opt$n_tau))+ theme(
                                              plot.caption = element_text(hjust = 0)
                                            )
+  write.csv(data.frame(s_id=s_id,n_tau=opt$n_tau,tau=glmm_fit$tau[2],pvalue=num_more_ext/opt$n_tau,tvalue=glmm_fit$t),"tau_file.csv")
   #ggsave(file.path(output_dir,paste0(s_id,".permutation_test.pdf")),device="pdf")
 }
 
