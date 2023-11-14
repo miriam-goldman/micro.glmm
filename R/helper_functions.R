@@ -3,8 +3,6 @@ color_pal<<-c("#E69F00",
               "#F0E442","#0072B2","#D55E00",
               "#E1BE6A","#0231A9")
 
-theme_set(theme_minimal(base_size = 12))
-
 test_dir<-function(test_dir,verbose){tryCatch({
   
   if(file_test("-d",test_dir)){
