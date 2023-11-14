@@ -12,7 +12,12 @@ library(data.table,quietly=TRUE,warn.conflicts=FALSE)
 #source(file.path(script_folder,"helper_functions.R"))
 library(magrittr,quietly=TRUE,warn.conflicts=FALSE)
 
-#validate input argument
+#' validate_genes_input
+#' 
+#' helper function to validate gene input
+#' 
+#' @param opt
+#' @export
 validate_genes_input<-function(opt){
   s_id=opt$species_id
   verbose=opt$verbose
@@ -165,6 +170,15 @@ validate_genes_input<-function(opt){
 # global_opts = parse_input_genes(opt)
 #prep_genes_function_R(global_opts)
 
+#' prep_genes_function_R
+#' 
+#' helper function to filter snps data from midas2 and make GRM
+#' 
+#' @param gcopynumber
+#' @param gdepth
+#' @param depth_cutoff
+#' @param samples_per_copynumber
+#' @export
 prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copynumber,
                               verbose=FALSE,make_plots=FALSE,write_csv=FALSE,output_dir=NULL,s_id="s_id",
                               pangenome_used=FALSE,centroid_prevalence_file=NULL,centroid_prevalence_cutoff=.7,

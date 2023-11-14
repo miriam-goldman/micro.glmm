@@ -2,3 +2,10 @@
 
 export(micro_glmm)
 export(pop_structure_test)
+export(prep_genes_function_R)
+export(prep_snps_function_R)
+export(test_dir)
+export(validate_GRM_metadata)
+export(validate_genes_input)
+export(validate_marker_test)
+export(validate_snps_input)

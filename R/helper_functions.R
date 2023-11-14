@@ -3,6 +3,12 @@ color_pal<<-c("#E69F00",
               "#F0E442","#0072B2","#D55E00",
               "#E1BE6A","#0231A9")
 
+#' test_dir
+#' 
+#' helper function to validate directory
+#' 
+#' @param test_dir
+#' @export
 test_dir<-function(test_dir,verbose){tryCatch({
   
   if(file_test("-d",test_dir)){
@@ -29,7 +35,12 @@ test_dir<-function(test_dir,verbose){tryCatch({
  
   return(output_directory)})}
 
-
+#' validate_GRM_metadata
+#' 
+#' helper function to validate GRM and metadata
+#' 
+#' @param opt
+#' @export
 validate_GRM_metadata<-function(opt){
   verbose<-opt$verbose
   if(isTRUE(!is.na(opt$GRM))){
@@ -121,7 +132,12 @@ validate_GRM_metadata<-function(opt){
   }
 }
 
-
+#' validate_marker_test
+#' 
+#' helper function to validate marker test from command line
+#' 
+#' @param opt
+#' @export
 validate_marker_test<-function(opt){
   
   if(isTRUE(!is.na(opt$Rdata))){
