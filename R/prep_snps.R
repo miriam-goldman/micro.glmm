@@ -8,15 +8,15 @@ library(logr,quietly=TRUE,warn.conflicts=FALSE)
 library(RcppXPtrUtils,quietly=TRUE,warn.conflicts=FALSE)
 library(pheatmap,quietly=TRUE,warn.conflicts=FALSE)
 library(parallelDist,quietly=TRUE,warn.conflicts=FALSE)
-wd<-getwd()
+#wd<-getwd()
 
-if(basename(wd)=="micro-glmm"){
-  script_folder=file.path(wd,"R")
-}
-if(basename(dirname(wd))=="micro-glmm"){
-  script_folder=file.path(dirname(wd),"R")
-}
-source(file.path(script_folder,"helper_functions.R"))
+#if(basename(wd)=="micro-glmm"){
+#  script_folder=file.path(wd,"R")
+#}
+#if(basename(dirname(wd))=="micro-glmm"){
+#  script_folder=file.path(dirname(wd),"R")
+#}
+#source(file.path(script_folder,"helper_functions.R"))
 library(ape,quietly=TRUE,warn.conflicts=FALSE)
 
 manhattanFuncPtr <- cppXPtr(
