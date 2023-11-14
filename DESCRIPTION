@@ -16,5 +16,4 @@ Imports:
 	ggExtra,
 	stringr,
 	parallelDist,
-	pheatmap,
-	pander
+	pheatmap
