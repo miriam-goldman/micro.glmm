@@ -8,7 +8,6 @@ library(logr,quietly=TRUE,warn.conflicts=FALSE)
 library(RcppXPtrUtils,quietly=TRUE,warn.conflicts=FALSE)
 library(pheatmap,quietly=TRUE,warn.conflicts=FALSE)
 library(parallelDist,quietly=TRUE,warn.conflicts=FALSE)
-
 #wd<-getwd()
 
 #if(basename(wd)=="micro-glmm"){
