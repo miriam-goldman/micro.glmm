@@ -9,4 +9,5 @@
 #' @importFrom stringr str_split
 #' @importFrom parallelDist parDist
 #' @importFrom pheatmap pheatmap
+#' @importFrom pander pander
 NULL
