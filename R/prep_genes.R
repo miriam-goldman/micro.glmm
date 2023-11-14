@@ -1,18 +1,3 @@
-library(logr)
-suppressPackageStartupMessages(library(tidyverse))
-library(data.table,quietly=TRUE,warn.conflicts=FALSE)
-#wd<-getwd()
-
-#if(basename(wd)=="micro-glmm"){
- # script_folder=file.path(wd,"R")
-#}
-#if(basename(dirname(wd))=="micro-glmm"){
- # script_folder=file.path(dirname(wd),"R")
-#}
-#source(file.path(script_folder,"helper_functions.R"))
-library(magrittr,quietly=TRUE,warn.conflicts=FALSE)
-library(data.table,quietly=TRUE,warn.conflicts=FALSE)
-
 #' validate_genes_input
 #' 
 #' helper function to validate gene input
@@ -209,9 +194,9 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
   
   
   
-  gdepth %<>% gather(sample_name, gene_depth, setdiff(colnames(gdepth), "gene_id"))
+  gdepth %<>% pivot_longer(sample_name, gene_depth, setdiff(colnames(gdepth), "gene_id"))
   gdepth %<>% filter(sample_name %in% list_of_samples)
-  gcopynumber %<>% gather(sample_name, copy_number, setdiff(colnames(gcopynumber), "gene_id"))
+  gcopynumber %<>% pivot_longer(sample_name, copy_number, setdiff(colnames(gcopynumber), "gene_id"))
   gcopynumber %<>% filter(sample_name %in% list_of_samples) %>% filter(copy_number>0)
   gdepth %<>% filter(gene_depth >= depth_cutoff) 
   put(paste("Gene-level first filter: average gene depth >=",depth_cutoff),console = verbose)
@@ -254,7 +239,7 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
     model_df_input<-df %>% left_join(metadata, by=c("sample_name"))
     keep_genes<-model_df_input %>% group_by(gene_id,y) %>% 
       summarise(num_samples=n(),.groups="drop") %>% 
-      spread(y,num_samples, fill=NA) %>% 
+      pivot_wider(y,num_samples, fill=NA) %>% 
       filter(`0`>min_num_control,`1`>min_num_case) #filter for enough samples in control and not control
     list_of_genes<-list_of_genes[which(list_of_genes %in% keep_genes$gene_id)]
       put(paste("number of genes length after metadata filter:",length(list_of_genes)),console = verbose)

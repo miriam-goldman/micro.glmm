@@ -1,24 +1,3 @@
-suppressPackageStartupMessages(library(tidyverse,quietly=TRUE,warn.conflicts=FALSE,verbose=FALSE))
-library(data.table,quietly=TRUE,warn.conflicts=FALSE)
-library(magrittr,quietly=TRUE,warn.conflicts=FALSE)
-library(pander,quietly=TRUE,warn.conflicts=FALSE)
-library(purrr,quietly=TRUE,warn.conflicts=FALSE)
-library(ggExtra,quietly=TRUE,warn.conflicts=FALSE)
-library(logr,quietly=TRUE,warn.conflicts=FALSE)
-
-library(pheatmap,quietly=TRUE,warn.conflicts=FALSE)
-library(parallelDist,quietly=TRUE,warn.conflicts=FALSE)
-#wd<-getwd()
-
-#if(basename(wd)=="micro-glmm"){
-#  script_folder=file.path(wd,"R")
-#}
-#if(basename(dirname(wd))=="micro-glmm"){
-#  script_folder=file.path(dirname(wd),"R")
-#}
-#source(file.path(script_folder,"helper_functions.R"))
-library(ape,quietly=TRUE,warn.conflicts=FALSE)
-
 #' manhattanFuncPtr
 #' 
 #' helper function to calculate distance
@@ -261,7 +240,7 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
   if(run_qp){
     info_for_qp <- snp_info %>% filter(site_type == "4D")
     depth_for_qp<-snp_depth %>% filter(site_id %in% unique(info_for_qp$site_id)) 
-    depth_for_qp %<>% gather(sample_name, site_depth, all_of(list_of_samples))
+    depth_for_qp %<>% pivot_longer(sample_name, site_depth, all_of(list_of_samples))
     depth_for_qp %<>% 
       left_join(D %>% select(sample_name, median_site_depth)) %>%
       mutate(min_bound =  l* median_site_depth, max_bound = u * median_site_depth)
@@ -287,7 +266,7 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
     
     
     freq_for_qp %<>%
-      gather(sample_name, allele_freq, all_of(samples_pass_depth)) %>%
+      pivot_longer(sample_name, allele_freq, all_of(samples_pass_depth)) %>%
       filter(allele_freq != -1)
     df <- left_join(depth_for_qp, freq_for_qp, by=c("site_id", "sample_name"))
     df %<>% 
@@ -362,7 +341,7 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
   
   info_for_distance<-snp_info %>% filter(core==TRUE) %>% filter(snp_type=="bi")
   depth_for_distance<-snp_depth %>% filter(site_id %in% unique(info_for_distance$site_id)) 
-  depth_for_distance %<>% gather(sample_name, site_depth, all_of(list_of_samples))
+  depth_for_distance %<>% pivot_longer(sample_name, site_depth, all_of(list_of_samples))
   
   depth_for_distance %<>% 
     left_join(D %>% select(sample_name, median_site_depth))
@@ -400,7 +379,7 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
     select(site_id, all_of(samples_pass_depth))
   
   freq_for_distance %<>%
-    gather(sample_name, allele_freq, all_of(samples_pass_depth)) %>%
+    pivot_longer(sample_name, allele_freq, all_of(samples_pass_depth)) %>%
     filter(allele_freq != -1)
   
   

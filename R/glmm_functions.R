@@ -1,5 +1,3 @@
-suppressPackageStartupMessages(library(pROC))
-suppressPackageStartupMessages(library(Matrix))
 ### functions needed to run GLMM for MWAS
 getCoefficients<-function(Y, X, W, tau, GRM){
   # Y is working vector Y=alpha X + b
