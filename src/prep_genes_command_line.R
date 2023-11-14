@@ -33,7 +33,7 @@ option_list = list(
   make_option(c("-m","--depth_cutoff"), type="integer", default=5,
               help="depth needed for gene to be included",metavar="integer")
 )
-
+suppressPackageStartupMessages(library(micro.glmm))
 #' Rscript prep_genes.R 
 #' --species_id 104158 
 #' -v TRUE 
