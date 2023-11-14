@@ -1,7 +1,7 @@
 library("optparse",quietly=TRUE)
 #source("../R/prep_snps.R")
 library(devtools)
-install_github("miriam-goldman/micro-glmm")
+suppressPackageStartupMessages(library(micro.glmm))
 suppressPackageStartupMessages(library(tidyverse,quietly=TRUE,warn.conflicts=FALSE,verbose=FALSE))
 option_list = list(
   make_option(c("-s", "--species_id"), type="character", default="s_id", 
