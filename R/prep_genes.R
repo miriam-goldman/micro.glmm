@@ -1,7 +1,6 @@
 library(logr)
 suppressPackageStartupMessages(library(tidyverse))
 library(data.table,quietly=TRUE,warn.conflicts=FALSE)
-
 #wd<-getwd()
 
 #if(basename(wd)=="micro-glmm"){
