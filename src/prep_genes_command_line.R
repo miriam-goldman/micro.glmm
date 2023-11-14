@@ -1,5 +1,4 @@
 library("optparse")
-source("../R/prep_genes.R")
 option_list = list(
   make_option(c("-s", "--species_id"), type="character", default="s_id", 
               help="species id for labeling output file names (optional)", metavar="character"),

@@ -1,10 +1,10 @@
 suppressPackageStartupMessages(library("optparse"))
 suppressPackageStartupMessages(library(tidyverse))
-source("../R/helper_functions.R")
 suppressPackageStartupMessages(library(logr))
 suppressPackageStartupMessages(library(data.table))
 library("ggExtra")
-source("../R/glmm_functions.R")
+suppressPackageStartupMessages(library(micro.glmm))
+
 option_list = list(
   make_option(c("-s", "--species_id"), type="character", default="s_id", 
               help="species id for labeling output file names (optional)", metavar="character"),
