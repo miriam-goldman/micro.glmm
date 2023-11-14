@@ -4,3 +4,16 @@ Title: Microbiome Generalized Linear Mixed Model
 Version: 0.0.1.0
 RoxygenNote: 7.2.3
 Encoding: UTF-8
+Imports:
+	utils,
+	stats,
+	data.table,
+	logr,
+	magrittr,
+	dplyr,
+	ggplot2,
+	tidyr,
+	ggExtra,
+	stringr,
+	parallelDist,
+	pheatmap
