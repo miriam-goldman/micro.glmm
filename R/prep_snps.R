@@ -179,8 +179,7 @@ validate_snps_input<-function(opt){
   put(paste("starting with:", start_samples,"samples and snps:",start_snps),console = verbose)
   
   snp_info %>% dplyr::count(snp_type, locus_type, site_type) %>% 
-    spread(site_type, n, fill = 0) %>%
-    pander() %>% put(console = verbose)
+    spread(site_type, n, fill = 0) %>% put(console = verbose)
   
   
   make_plots=opt$make_plots
