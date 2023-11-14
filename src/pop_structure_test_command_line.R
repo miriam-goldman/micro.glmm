@@ -92,7 +92,7 @@ pheatmap(GRM,show_rownames=FALSE,show_colnames=FALSE,labels_row="samples",labels
          annotation_col=annotation_col,annotation_colors = ann_colors,color=myColor,breaks=myBreaks)
 
 
-ggplot(b_df,aes(b,fill=as.factor(y)))+geom_histogram()+ scale_fill_manual(values=c(color_pal[1],color_pal[2]),name="diagnosis")+
+ggplot(b_df,aes(b,fill=as.factor(y)))+geom_histogram()+ scale_fill_manual(values=c(color_pal[2],color_pal[9]),name="diagnosis")+
   labs(x="values of random varible b",title=paste("Histogram of random varaible b for species",s_id,"\ncolored by diagnosis"),legend="diagnosis")
 
 ggplot(b_df, aes(d = y, m = fitted.values)) + geom_roc()+labs(caption =paste(glmm_fit$summary))+ theme(
@@ -112,6 +112,7 @@ if(opt$n_tau>0){
                                            "\n number of permutations",opt$n_tau),caption =paste(glmm_fit$summary,"\n pvalue for t is", num_more_ext/opt$n_tau))+ theme(
                                              plot.caption = element_text(hjust = 0)
                                            )
+  write.csv(data.frame(s_id=s_id,n_tau=opt$n_tau,tau=glmm_fit$tau[2],pvalue=num_more_ext/opt$n_tau,tvalue=glmm_fit$t),file.path(output_dir,paste0(s_id,".tau_file.csv")))
   #ggsave(file.path(output_dir,paste0(s_id,".permutation_test.pdf")),device="pdf")
 }
 
@@ -121,7 +122,7 @@ if(opt$n_CNV>0){
   save(simulate_type1_error_df, simulate_power_df, file = file.path(output_dir,paste0(s_id,".simulation_obj.Rdata")))
   #ggsave(file.path(output_dir,paste0(s_id,".permutation_test.pdf")),device="pdf")
 }
-
+dev.off()
 # Close log
 log_close()
 

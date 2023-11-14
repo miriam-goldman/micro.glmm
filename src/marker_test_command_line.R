@@ -48,7 +48,14 @@ put(paste("Rscript marker_test_command_line.R",commad_message),console = verbose
 
 validate_marker_test(opt)
 
-
+if(log_copynumber_opt==TRUE){
+  copy_number_df$copy_number<-log(as.vector(copy_number_df$copy_number))
+}else{
+  copy_number_df$copy_number<-as.vector(copy_number_df$copy_number)
+}
+if(scale_copynumber_opt==TRUE){
+  copy_number_df$copy_number<-scale(copy_number_df$copy_number)
+}
 
 output_dir<-test_dir(opt$out_folder,verbose)
 marker_test_df<-micro_glmm(glmm_fit,glm_fit0,GRM,copy_number_df,SPA=spa_opt,scale_g=scale_copynumber_opt,log_g=log_copynumber_opt)
@@ -58,23 +65,38 @@ pdf(file= file.path(output_dir,paste0(s_id,".marker_test_output.pdf")) )
 par( mfrow= c(6,1) )
 m<-nrow(marker_test_df)
 bonferroni_cutoff<-opt$alpha_value/m
-marker_test_df<-marker_test_df %>% arrange(pvalue)
+
 q=opt$q_value
-marker_test_df<-marker_test_df%>% mutate(rank=seq(1,m)) %>% mutate(bh_pvalue=(rank/m)*q)
-write.table(marker_test_df,file.path(output_dir, paste0(s_id,".marker_test.tsv")),sep="\t",row.names=FALSE)
-filtered_test_df<-marker_test_df %>% filter(pvalue<=bh_pvalue)
-bh_cutoff<-max(filtered_test_df$pvalue)
-print(marker_test_df[1:50,])
-
-marker_test_df %>% ggplot(aes(x=pvalue)) +geom_histogram()+ggtitle(paste("Pvalue histogram for species ",s_id))
-marker_test_df %>% ggplot(aes(y=-log10(pvalue),x=beta))+geom_hline(color="green",yintercept =-log10(bh_cutoff))+geom_hline(color="red",yintercept =-log10(bonferroni_cutoff))+geom_point()+ggtitle(paste("volcano plot for species ",s_id,"tau value is",glmm_fit$tau[2]))
-
 if(spa_opt){
-  marker_test_df %>% ggplot(aes(x=SPA_pvalue)) +geom_histogram()+ggtitle(paste("SPA pvalue histogram for species ",s_id))
-  marker_test_df %>% ggplot(aes(y=-log10(SPA_pvalue),x=beta))+geom_point()+ggtitle(paste("volcano plot for species with SPA",s_id,"tau value is",glmm_fit$tau[2]))
-  marker_test_df %>% ggplot(aes(x=beta))+geom_point(aes(y=-log10(SPA_pvalue),color="red"))+geom_point(aes(y=-log10(pvalue),color="blue"))+ggtitle(paste("volcano plot for species ",s_id,"tau value is",glmm_fit$tau[2]))
+  marker_test_df<-marker_test_df %>% arrange(SPA_pvalue)
+  marker_test_df<-marker_test_df%>% mutate(rank=seq(1,m)) %>% mutate(bh_pvalue=(rank/m)*q)
+  filtered_test_df<-marker_test_df %>% filter(SPA_pvalue<=bh_pvalue)
+  bh_cutoff<-max(filtered_test_df$SPA_pvalue)
+  print(marker_test_df[1:50,])
+}else{
+  marker_test_df<-marker_test_df %>% arrange(pvalue)
+  marker_test_df<-marker_test_df%>% mutate(rank=seq(1,m)) %>% mutate(bh_pvalue=(rank/m)*q)
+  filtered_test_df<-marker_test_df %>% filter(pvalue<=bh_pvalue)
+  bh_cutoff<-max(filtered_test_df$pvalue)
+  print(marker_test_df[1:50,])
   
 }
+write.table(marker_test_df,file.path(output_dir, paste0(s_id,".marker_test.tsv")),sep="\t",row.names=FALSE)
+
+
+plot1<-marker_test_df %>% ggplot(aes(x=pvalue)) +geom_histogram()+ggtitle(paste("Pvalue histogram for species ",s_id))
+print(plot1)
+plot2<-marker_test_df %>% ggplot(aes(y=-log10(pvalue),x=beta))+geom_hline(color="green",yintercept =-log10(bh_cutoff))+geom_hline(color="red",yintercept =-log10(bonferroni_cutoff))+geom_point()+ggtitle(paste("volcano plot for species ",s_id,"tau value is",glmm_fit$tau[2]))
+print(plot2)
+if(spa_opt){
+  plot3<-marker_test_df %>% ggplot(aes(x=SPA_pvalue)) +geom_histogram()+ggtitle(paste("SPA pvalue histogram for species ",s_id))
+  print(plot3)
+  plot4<-marker_test_df %>% ggplot(aes(y=-log10(SPA_pvalue),x=beta))+geom_hline(color="green",yintercept =-log10(bh_cutoff))+geom_hline(color="red",yintercept =-log10(bonferroni_cutoff))+geom_point()+ggtitle(paste("volcano plot for species with SPA",s_id,"tau value is",glmm_fit$tau[2]))
+  print(plot4)
+  plot5<-marker_test_df %>% ggplot(aes(x=beta))+geom_hline(color="green",yintercept =-log10(bh_cutoff))+geom_hline(color="red",yintercept =-log10(bonferroni_cutoff))+geom_point(aes(y=-log10(SPA_pvalue),color="red"))+geom_point(aes(y=-log10(pvalue),color="blue"))+ggtitle(paste("volcano plot for species ",s_id,"tau value is",glmm_fit$tau[2]))+labs(y="-log10(pvalues) blue pvalue red SPA pvalue")
+  print(plot5)
+}
+dev.off()
 if(opt$compare_to_glm){
   pdf(file= file.path(output_dir,paste0(s_id,".compare_to_glm.pdf")) ) 
   par( mfrow= c(4,1) )
@@ -85,8 +107,7 @@ if(opt$compare_to_glm){
   both_marker_test<-glm_model %>% filter(term=="copy_number") %>% right_join(marker_test_df)
   write.table(both_marker_test,file.path(output_dir, paste0(s_id,".both_marker_test.tsv")),sep="\t",row.names=FALSE)
   
-  glm_marker<-both_marker_test %>% ggplot(aes(y=-log10(p.value),x=estimate))+geom_point()+ggtitle(paste("glm volcano plot for species ",s_id,"tau value is",glmm_fit$tau[2]))
-  glm_marker
+  
   mean_cov_glm<- copy_number_df_with_y %>% group_by(gene_id)  %>% mutate(offset=0) %>% group_map(~glm(glm_fit0$formula,data = .x,family=binomial(link = "logit"),offset=offset))
   mean_cov_df<-copy_number_df %>% group_by(gene_id) %>% summarize(num_samples=n())
   mean_cov_df$model<-as.vector(mean_cov_glm)
@@ -95,21 +116,23 @@ if(opt$compare_to_glm){
   mean_cov_df$r2<-1-mean_cov_df$Dev/mean_cov_df$ND
   mean_cov_df$aic<-as.numeric(lapply(mean_cov_glm,function(x) x$aic))
   if(spa_opt){
-    p_value_ver_3<-both_marker_test %>% ggplot(aes(x=-log10(p.value),y=-log10(SPA_pvalue)))+geom_point()+ggtitle(paste("no adj pvalue for genes of species with Age:", s_id))+labs(y=c("adjusted_model"),x="glm model")+geom_abline(color="red")
+    p_value_ver_3<-both_marker_test %>% ggplot(aes(x=-log10(p.value),y=-log10(SPA_pvalue)))+geom_point()+ggtitle(paste("GLMM SPA pvalue verse GLM pvalue species:", s_id))+labs(y=c("adjusted_model"),x="glm model")+geom_abline(color="red")
     
     p_value_ver_4<-ggExtra::ggMarginal(p_value_ver_3, type = "histogram")
     print(p_value_ver_4,newpage = TRUE)
   }else{
-    p_value_ver_3<-both_marker_test %>% ggplot(aes(x=-log10(p.value),y=-log10(pvalue)))+geom_point()+ggtitle(paste("no adj pvalue for genes of species with Age:", s_id))+labs(y=c("adjusted_model"),x="glm model")+geom_abline(color="red")
+    p_value_ver_3<-both_marker_test %>% ggplot(aes(x=-log10(p.value),y=-log10(pvalue)))+geom_point()+ggtitle(paste("GLMM SPA pvalue verse GLM pvalue species:", s_id))+labs(y=c("adjusted_model"),x="glm model")+geom_abline(color="red")
     
     p_value_ver_4<-ggExtra::ggMarginal(p_value_ver_3, type = "histogram")
     print(p_value_ver_4,newpage = TRUE)
   }
   
- 
+  glm_marker<-both_marker_test %>% ggplot(aes(y=-log10(p.value),x=estimate))+geom_hline(color="green",yintercept =-log10(bh_cutoff))+geom_hline(color="red",yintercept =-log10(bonferroni_cutoff))+geom_point()+ggtitle(paste("glm volcano plot for species ",s_id,"tau value is",glmm_fit$tau[2]))
+  print(glm_marker)
   
   beta_plot<-both_marker_test %>% ggplot(aes(x=estimate,y=beta))+geom_point()+ggtitle(paste("beta for genes of species with Age:", s_id))+labs(y=c("adjusted_model"),x="glm model")+geom_abline(color="red")
-  beta_plot
+  print(beta_plot)
+  dev.off()
 }
 
 
