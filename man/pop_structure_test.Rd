@@ -8,7 +8,7 @@ pop_structure_test(
   glm_fit0,
   GRM,
   species_id,
-  tau = c(0, 0),
+  tau = c(1, 1),
   maxiter = 100,
   verbose = TRUE,
   tol = 1e-04,
