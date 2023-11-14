@@ -35,7 +35,7 @@ gen_sp_Sigma<-function(W,tau,kinship){
   #kinship is an (nxn) symetric matrix
   dtkin=W^-1 * (tau[1]) # inverse W 
   new_kin = kinship* tau[2]
-  diag(new_kin)=diag(new_kin)+dtkin
+  Matrix::diag(new_kin)=Matrix::diag(new_kin)+dtkin
   new_kin[new_kin<1e-4]=1e-4
   return(as.matrix(new_kin))
 }

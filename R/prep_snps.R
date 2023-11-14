@@ -5,7 +5,7 @@ library(pander,quietly=TRUE,warn.conflicts=FALSE)
 library(purrr,quietly=TRUE,warn.conflicts=FALSE)
 library(ggExtra,quietly=TRUE,warn.conflicts=FALSE)
 library(logr,quietly=TRUE,warn.conflicts=FALSE)
-library(RcppXPtrUtils,quietly=TRUE,warn.conflicts=FALSE)
+
 library(pheatmap,quietly=TRUE,warn.conflicts=FALSE)
 library(parallelDist,quietly=TRUE,warn.conflicts=FALSE)
 #wd<-getwd()
@@ -19,6 +19,11 @@ library(parallelDist,quietly=TRUE,warn.conflicts=FALSE)
 #source(file.path(script_folder,"helper_functions.R"))
 library(ape,quietly=TRUE,warn.conflicts=FALSE)
 
+#' manhattanFuncPtr
+#' 
+#' helper function to calculate distance
+#' 
+#' @export
 manhattanFuncPtr <- cppXPtr(
   "double customDist(const arma::mat &A, const arma::mat &B) {
     float dist_com=0;
