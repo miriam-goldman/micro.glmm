@@ -11,6 +11,7 @@ library(data.table,quietly=TRUE,warn.conflicts=FALSE)
 #}
 #source(file.path(script_folder,"helper_functions.R"))
 library(magrittr,quietly=TRUE,warn.conflicts=FALSE)
+library(data.table,quietly=TRUE,warn.conflicts=FALSE)
 
 #' validate_genes_input
 #' 
