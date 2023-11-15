@@ -6,6 +6,9 @@
 \usage{
 test_dir(test_dir, verbose)
 }
+\arguments{
+\item{test_dir}{directory to test}
+}
 \description{
 helper function to validate directory
 }

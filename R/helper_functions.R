@@ -6,7 +6,7 @@ color_pal<<-c("#E69F00",
 #' 
 #' helper function to validate directory
 #' 
-#' @param test_dir
+#' @param test_dir directory to test
 #' @export
 test_dir<-function(test_dir,verbose){tryCatch({
   
@@ -38,7 +38,7 @@ test_dir<-function(test_dir,verbose){tryCatch({
 #' 
 #' helper function to validate GRM and metadata
 #' 
-#' @param opt
+#' @param opt input from command line
 #' @export
 validate_GRM_metadata<-function(opt){
   verbose<-opt$verbose
@@ -135,7 +135,7 @@ validate_GRM_metadata<-function(opt){
 #' 
 #' helper function to validate marker test from command line
 #' 
-#' @param opt
+#' @param opt commandline arguments from marker test
 #' @export
 validate_marker_test<-function(opt){
   

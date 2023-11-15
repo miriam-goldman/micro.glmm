@@ -6,6 +6,9 @@
 \usage{
 validate_GRM_metadata(opt)
 }
+\arguments{
+\item{opt}{input from command line}
+}
 \description{
 helper function to validate GRM and metadata
 }
