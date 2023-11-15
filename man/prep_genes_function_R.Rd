@@ -27,6 +27,15 @@ prep_genes_function_R(
   min_num_case = 0
 )
 }
+\arguments{
+\item{gcopynumber}{gcopynumber}
+
+\item{gdepth}{gdepth}
+
+\item{depth_cutoff}{depth_cutoff}
+
+\item{samples_per_copynumber}{samples_per_copynumber}
+}
 \description{
 helper function to filter snps data from midas2 and make GRM
 }

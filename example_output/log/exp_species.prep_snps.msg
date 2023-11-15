@@ -1,56 +1,3 @@
-========================================================================= 
-Log Path: ../example_output/log/exp_species.prep_snps.log 
-Program Path: /Users/miriamgoldman/Projects/micro-glmm/src/prep_snps_command_line.R 
-Working Directory: /Users/miriamgoldman/Projects/micro-glmm/src 
-User Name: miriamgoldman 
-R Version: 4.2.3 (2023-03-15) 
-Machine: Miriam x86_64 
-Operating System: Darwin 20.6.0 Darwin Kernel Version 20.6.0: Thu Jul 6 22:12:47 PDT 2023; root:xnu-7195.141.49.702.12~1/RELEASE_X86_64 
-Base Packages: stats graphics grDevices utils datasets methods base Other Packages: RcppXPtrUtils_0.1.2 data.table_1.14.8 logr_1.3.3 forcats_1.0.0 stringr_1.5.0 dplyr_1.1.3 purrr_1.0.2 readr_2.1.4 tidyr_1.3.0 tibble_3.2.1 ggplot2_3.4.3 tidyverse_1.3.2 micro.glmm_0.0.1.0 devtools_2.4.5 usethis_2.2.2 optparse_1.7.3 
-Log Start Time: 2023-11-14 16:05:53 
-========================================================================= 
-
-running validate genes command is 
-
-Rscript prep_snps_command_line.R --species_id exp_species -v TRUE -o ../example_output -i ../example_data/exp_species.snps_info.tsv -f ../example_data/exp_species.snps_freqs.tsv -d ../example_data/exp_species.snps_depth.tsv -a 3 -m 5 -n 5 
-
-species id for out files is: exp_species 
-
-not running pangenome 
-
-using snps in coding region 
-
-genes depth file doesnt exist 
-
-optional files read in 
-
-for Species ID exp_species 
-
-filtering with samples per sites 5 
-
-abulose depth at 3 
-
-sample median depth filter 5 
-
-pangenome used: FALSE 
-
-genes summary used: FALSE 
-
-starting with: 33 samples and snps: 999 
-
-  snp_type locus_type  1D 2D  3D  4D None
-1       bi        CDS 149 48 317 348    0
-2       bi        IGR   0  0   0   0  126
-3       bi       tRNA   0  0   0   0    3
-4      tri        CDS   0  0   0   5    0
-5      tri        IGR   0  0   0   0    3
-
-number of samples 33 
-
-number of samples after filter 33 
-
-number of samples passing filter plot 
-
 Error in pivot_longer(., sample_name, site_depth, all_of(list_of_samples)) :  Calls: do.call ... <Anonymous> -> <Anonymous> -> cnd_signal -> signal_abort 
 Traceback: 
    [1] "28: stop(fallback)"                                                                                                         
@@ -1257,7 +1204,3 @@ Traceback:
 [1202] "    ..."                                                                                                                    
 [1203] "1: do.call(prep_snps_function_R, validate_snps_output)"                                                                     
 
-========================================================================= 
-Log End Time: 2023-11-14 16:05:53 
-Log Elapsed Time: 0 00:00:00 
-========================================================================= 
