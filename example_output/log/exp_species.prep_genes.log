@@ -7,7 +7,7 @@ R Version: 4.2.3 (2023-03-15)
 Machine: Miriam x86_64 
 Operating System: Darwin 20.6.0 Darwin Kernel Version 20.6.0: Thu Jul 6 22:12:47 PDT 2023; root:xnu-7195.141.49.702.12~1/RELEASE_X86_64 
 Base Packages: stats graphics grDevices utils datasets methods base Other Packages: micro.glmm_0.0.1.0 logr_1.3.3 optparse_1.7.3 
-Log Start Time: 2023-11-15 09:29:50 
+Log Start Time: 2023-11-15 10:05:12 
 ========================================================================= 
 
 running validate genes command is 
@@ -27,6 +27,6 @@ Traceback:
 1: validate_genes_input(opt) 
 
 ========================================================================= 
-Log End Time: 2023-11-15 09:29:50 
+Log End Time: 2023-11-15 10:05:12 
 Log Elapsed Time: 0 00:00:00 
 ========================================================================= 
