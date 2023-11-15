@@ -16,4 +16,5 @@ dependencies:
   - r-rcppxptrutils
   - r-paralleldist
   - r-ape
+  - r-devtools
 prefix: /Users/miriamgoldman/opt/miniconda3/envs/microglmm
