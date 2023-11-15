@@ -616,7 +616,20 @@ simulate_tau_inner<-function(glm_fit0,GRM,species_id=s_id,tau0,phi0){
   return(data.frame("tau"=tau,t))
 }
 
-simulate_tau_outer<-function(glm_fit0,GRM,n_tau,species_id=s_id,tau0,phi0){
+
+#' run_tau_test
+#' 
+#' take output from population structure test and test how exterme the tau is for that set of data
+#' 
+#' @param glm_fit0 glm model. Model output with no sample relatedness accounted for
+#' @param GRM Genetic Relatedness Matrix (from scripts or user) NxN matrix of sample relatedness
+#' @param n_tau number of tau to simulate
+#' @param species_id species id for bactrial species
+#' @param tau0 starting tau
+#' @param phi0 starting phi
+#' @return df of values of T for tau for different runs
+#' @export
+run_tau_test<-function(glm_fit0,GRM,n_tau,species_id=s_id,tau0,phi0){
   list_of_tau<-lapply(seq(1,n_tau),function(x) simulate_tau_inner(glm_fit0,GRM,species_id=s_id,tau0,phi0))
   df_of_tau<-do.call(rbind, list_of_tau)
   return(df_of_tau)

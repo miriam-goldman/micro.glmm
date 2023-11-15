@@ -1,7 +1,4 @@
-color_pal<<-c("#E69F00",
-              "#CC79A7","#56B4E9","#009E73",
-              "#F0E442","#0072B2","#D55E00",
-              "#E1BE6A","#0231A9")
+
 #' test_dir
 #' 
 #' helper function to validate directory
