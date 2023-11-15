@@ -68,8 +68,6 @@ validate_GRM_metadata<-function(opt){
         stop()
       }else{
         metadata<-metadata %>% filter(sample_name %in% metadata_overlaps)
-        print(metadata_overlaps)
-        print(metadata$sample_name)
         GRM<-GRM[metadata_overlaps,metadata_overlaps]
         double_check<-metadata$sample_name==colnames(GRM)
         if(!all(double_check)){
