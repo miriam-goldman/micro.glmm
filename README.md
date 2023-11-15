@@ -1,9 +1,10 @@
-# micro.glmm
+![micro_glmm_logo_11072023](https://github.com/miriam-goldman/micro.glmm/assets/46382670/88ea180f-13d9-4787-8e2f-5655fa53fad0)
 ## Purpose to Make an deploy Micro.glmm R package and files to run it
-<img width="985" alt="image" src="https://github.com/miriam-goldman/micro-glmm/assets/46382670/7f1fde4b-7439-4c0c-a99d-bcba26fbe5f3">
+<img width="950" alt="image" src="https://github.com/miriam-goldman/micro.glmm/assets/46382670/1d814a2d-ae54-4690-b70f-8353bae1457f">
 
 # Instructions on how to run
 ### Install Conda
+
 ```
 conda env create -f microglmm.yml
 conda activate microglmm
