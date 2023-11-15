@@ -379,6 +379,7 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
   site_df<-df_for_distance %>% select(site_id,sample_name,allele_freq) %>% pivot_wider(names_from = site_id,values_from=allele_freq)
     put(head(site_df),console = verbose)
   print(paste("CPP error", checkXPtr(manhattanFuncPtr,"double",c("const arma::mat&","const arma::mat&"))))
+  print(manhattanFuncPtr)
   freq_mat_dist_man<-parDist(as.matrix(site_df[,-1]), method="custom", func = manhattanFuncPtr)
   freq_mat_dist_man<-as.matrix(freq_mat_dist_man)
   
