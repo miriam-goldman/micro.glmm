@@ -6,6 +6,9 @@
 \usage{
 validate_marker_test(opt)
 }
+\arguments{
+\item{opt}{commandline arguments from marker test}
+}
 \description{
 helper function to validate marker test from command line
 }

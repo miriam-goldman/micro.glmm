@@ -24,6 +24,17 @@ prep_snps_function_R(
   genes_summary
 )
 }
+\arguments{
+\item{snp_freq}{snp_freq from MIDAS2}
+
+\item{snp_depth}{snp_depth from MIDAS2}
+
+\item{snp_info}{snp_info from MIDAS2}
+
+\item{sample_median_depth_filter}{sample median depth filter}
+
+\item{number_of_samples_for_sites}{number of samples for sites}
+}
 \description{
 helper function to filter snps data from midas2 and make GRM
 }

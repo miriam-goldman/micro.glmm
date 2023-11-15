@@ -42,12 +42,11 @@ jaccardFuncPtr <- cppXPtr(
 #' 
 #' helper function to validate the input from command line for snps
 #' 
-#' @param opt opt
+#' @param opt the inputs from the command line
 #' @export
 validate_snps_input<-function(opt){
   s_id=opt$species_id
   verbose=opt$verbose
-  print(opt)
   put(paste("species id for out files is:",s_id),console = verbose)
   if(isTRUE(!is.na(opt$snps_info_file))){
     if(file_test("-f",opt$snps_info_file)){
@@ -100,7 +99,7 @@ validate_snps_input<-function(opt){
     }else{
       put("centriod prevalence doesnt exist",console = verbose)
     }
-    ref_core_labeled<-left_join(centroid_to_repgenes,core_label)
+    ref_core_labeled<-left_join(centroid_to_repgenes,core_label,by=c("centriod_gene_id"))
     snp_info<-snp_info %>% left_join(ref_core_labeled,by=c("gene_id"="rep_gene_id"))
     centroid_prevalence_cutoff<-opt$centroid_prevalence_cutoff
     snp_info$core<-snp_info$centroid_prevalence>centroid_prevalence_cutoff
@@ -185,15 +184,27 @@ validate_snps_input<-function(opt){
 #' 
 #' helper function to filter snps data from midas2 and make GRM
 #' 
-#' @param snp_freq
-#' @param snp_depth
-#' @param snp_info
-#' @param sample_median_depth_filter
-#' @param number_of_samples_for_sites
+#' @param snp_freq snp_freq from MIDAS2
+#' @param snp_depth snp_depth from MIDAS2
+#' @param snp_info snp_info from MIDAS2
+#' @param sample_median_depth_filter sample median depth filter
+#' @param number_of_samples_for_sites number of samples for sites
 #' @export
 prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_filter,number_of_samples_for_sites,verbose=FALSE,make_plots=FALSE,pangenome_used=FALSE,centroid_prevalence_cutoff=.8,run_qp=FALSE,l=.3,u=3,a=5,start_samples,start_snps,genes_summary_used,genes_summary){
   ######## Filter Samples based on D_median_cds 
   # Compute median site depth for all protein coding genes
+  manhattanFuncPtr <- cppXPtr(
+    "double customDist(const arma::mat &A, const arma::mat &B) {
+    float dist_com=0;
+    int n_sites=0;
+    for (int i = 0; i < A.size(); i++){
+      if(A[i]>=0 & B[i] >=0){
+        dist_com += fabs(A[i]-B[i]);
+        n_sites++;
+      }
+	          }
+	          return dist_com/n_sites;
+  }", depends = c("RcppArmadillo"),rebuild = TRUE)
   snp_depth <- snp_depth %>%
     filter(site_id %in% unique(snp_info$site_id))
   nsamples = ncol(snp_depth)-1
@@ -235,7 +246,7 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
     depth_for_qp<-snp_depth %>% filter(site_id %in% unique(info_for_qp$site_id)) 
     depth_for_qp %<>% pivot_longer(matches(list_of_samples),names_to="sample_name", values_to="site_depth")
     depth_for_qp %<>% 
-      left_join(D %>% select(sample_name, median_site_depth)) %>%
+      left_join(D %>% select(sample_name, median_site_depth),by=c("sample_name")) %>%
       mutate(min_bound =  l* median_site_depth, max_bound = u * median_site_depth)
     depth_for_qp %<>%
       filter(site_depth >= min_bound & site_depth <= max_bound) %>%
@@ -337,7 +348,7 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
   depth_for_distance %<>% pivot_longer(matches(list_of_samples), names_to="sample_name", values_to="site_depth")
   
   depth_for_distance %<>% 
-    left_join(D %>% select(sample_name, median_site_depth))
+    left_join(D %>% select(sample_name, median_site_depth),by=c("sample_name"))
   
   depth_for_distance %<>%
     filter(site_depth >= a) %>% #<-------------
@@ -378,20 +389,6 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
   df_for_distance <- left_join(depth_for_distance, freq_for_distance, by=c("site_id", "sample_name"))
   site_df<-df_for_distance %>% select(site_id,sample_name,allele_freq) %>% pivot_wider(names_from = site_id,values_from=allele_freq)
     put(head(site_df),console = verbose)
-  manhattanFuncPtr <- cppXPtr(
-    "double customDist(const arma::mat &A, const arma::mat &B) {
-    float dist_com=0;
-    int n_sites=0;
-    for (int i = 0; i < A.size(); i++){
-      if(A[i]>=0 & B[i] >=0){
-        dist_com += fabs(A[i]-B[i]);
-        n_sites++;
-      }
-	          }
-	          return dist_com/n_sites;
-  }", depends = c("RcppArmadillo"),rebuild = TRUE)
-  print(manhattanFuncPtr)
-  print(paste("CPP error", checkXPtr(manhattanFuncPtr,"double",c("const arma::mat&","const arma::mat&"))))
   
   freq_mat_dist_man<-parDist(as.matrix(site_df[,-1]), method="custom", func = manhattanFuncPtr)
   freq_mat_dist_man<-as.matrix(freq_mat_dist_man)

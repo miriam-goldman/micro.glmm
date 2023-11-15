@@ -7,7 +7,7 @@
 validate_snps_input(opt)
 }
 \arguments{
-\item{opt}{opt}
+\item{opt}{the inputs from the command line}
 }
 \description{
 helper function to validate the input from command line for snps

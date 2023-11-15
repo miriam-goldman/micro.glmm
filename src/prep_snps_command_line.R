@@ -1,11 +1,10 @@
 library("optparse",quietly=TRUE)
 #source("../R/prep_snps.R")
-library(devtools)
+library(devtools,quietly=TRUE)
 suppressPackageStartupMessages(library(micro.glmm))
 suppressPackageStartupMessages(library(tidyverse,quietly=TRUE,warn.conflicts=FALSE,verbose=FALSE))
 suppressPackageStartupMessages(library(logr))
 suppressPackageStartupMessages(library(data.table))
-library(RcppXPtrUtils,quietly=TRUE,warn.conflicts=FALSE)
 option_list = list(
   make_option(c("-s", "--species_id"), type="character", default="s_id", 
               help="species id for labeling output file names (optional)", metavar="character"),
