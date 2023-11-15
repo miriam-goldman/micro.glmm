@@ -376,15 +376,14 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
     select(site_id, matches(samples_pass_depth))
   
   freq_for_distance %<>%
-    pivot_longer(matches(samples_pass_depth),names_to="sample_name", values_to="allele_freq") %>%
-    filter(allele_freq != -1)
+    pivot_longer(matches(samples_pass_depth),names_to="sample_name", values_to="allele_freq") %>% filter(allele_freq > -1)
   
   
   df_for_distance <- left_join(depth_for_distance, freq_for_distance, by=c("site_id", "sample_name"))
   site_df<-df_for_distance %>% select(site_id,sample_name,allele_freq) %>% pivot_wider(names_from = site_id,values_from=allele_freq)
     put(head(site_df),console = verbose)
-  checkXPtr(manhattanFuncPtr,"double",c("const arma::mat&","const arma::mat&"))
-  freq_mat_dist_man<-parDist(as.matrix(site_df[,-1]), method="custom", func = manhattanFuncPtr)
+  return(checkXPtr(micro.glmm::manhattanFuncPtr,"double",c("const arma::mat&","const arma::mat&")))
+  freq_mat_dist_man<-parDist(as.matrix(site_df[,-1]), method="custom", func = micro.glmm::manhattanFuncPtr)
   freq_mat_dist_man<-as.matrix(freq_mat_dist_man)
   
   dimnames(freq_mat_dist_man)<-c(site_df[,1],site_df[,1])
