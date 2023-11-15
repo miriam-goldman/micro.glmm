@@ -194,9 +194,9 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
   
   
   
-  gdepth %<>% pivot_longer(sample_name, gene_depth, setdiff(colnames(gdepth), "gene_id"))
+  gdepth %<>% pivot_longer(setdiff(colnames(gdepth), "gene_id"),names_to="sample_name", values_to="gene_depth")
   gdepth %<>% filter(sample_name %in% list_of_samples)
-  gcopynumber %<>% pivot_longer(sample_name, copy_number, setdiff(colnames(gcopynumber), "gene_id"))
+  gcopynumber %<>% pivot_longer(setdiff(colnames(gcopynumber), "gene_id"),names_to="sample_name", values_to="copy_number")
   gcopynumber %<>% filter(sample_name %in% list_of_samples) %>% filter(copy_number>0)
   gdepth %<>% filter(gene_depth >= depth_cutoff) 
   put(paste("Gene-level first filter: average gene depth >=",depth_cutoff),console = verbose)
