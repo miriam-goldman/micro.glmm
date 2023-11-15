@@ -446,7 +446,7 @@ Get_Coef = function(y, X, tau, GRM,family, alpha0, eta0,  offset, verbose=FALSE,
       cat(alpha)
     }
     if(write_log) {
-      put(paste(" Tau:",tau," Fixed-effect coefficients:",alpha))
+      put(paste(" Tau:",tau," Fixed-effect coefficients:",alpha),console = FALSE)
     }
     mu = family$linkinv(eta)
     mu.eta = family$mu.eta(eta)
