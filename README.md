@@ -14,7 +14,7 @@ From R
 ```
 R
 library(devtools)
-install_github(miriam-goldman/micro.glmm)
+install_github('miriam-goldman/micro.glmm')
 ```
 
 ### Move into src folder
