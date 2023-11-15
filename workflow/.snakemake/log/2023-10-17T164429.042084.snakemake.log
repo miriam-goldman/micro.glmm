@@ -1,2 +1,0 @@
-SyntaxError in file /pollard/home/mgoldman/micro-glmm/workflow/Snakefile_new, line 12:
-Command must be given as string after the shell keyword. (Snakefile_new, line 12)

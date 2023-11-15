@@ -3,3 +3,5 @@
 workflow
 bin
 .git
+example_data
+example_output

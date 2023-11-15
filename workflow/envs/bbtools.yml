@@ -1,7 +1,0 @@
-name: bbtools
-channels:
-  - agbiome
-  - bioconda
-  - conda-forge
-dependencies:
-  - bbtools=37.62
