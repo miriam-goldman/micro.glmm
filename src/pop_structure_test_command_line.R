@@ -36,8 +36,6 @@ option_list = list(
               help="formula used to fit population structure; the phenotype and any covariates in the metadata file that are to be used",metavar="character" ),
   make_option(c("--n_tau"), type="numeric", default=0,
               help="number of permuations to test for significance of tau, if 0 no test run",metavar="numeric" ),
-  make_option(c("--n_CNV"), type="numeric", default=0,
-              help="number of CNVs to test for type 1 error, if 0 no test run",metavar="numeric" ),
   make_option(c("--SPA"), type="logical", default=TRUE, 
               help="SPA, TRUE or FALSE for simulations", metavar="logical")
  

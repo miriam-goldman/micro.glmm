@@ -11,4 +11,5 @@
 #' @importFrom parallelDist parDist
 #' @importFrom pheatmap pheatmap
 #' @import Matrix
+#' @importFrom pROC auc
 NULL

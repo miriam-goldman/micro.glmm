@@ -58,7 +58,7 @@ if(scale_copynumber_opt==TRUE){
 }
 
 output_dir<-test_dir(opt$out_folder,verbose)
-marker_test_df<-micro_glmm(glmm_fit,glm_fit0,GRM,copy_number_df,SPA=spa_opt,scale_g=scale_copynumber_opt,log_g=log_copynumber_opt)
+marker_test_df<-micro_glmm(glmm_fit,glm_fit0,GRM,copy_number_df,SPA=spa_opt)
 pdf(file= file.path(output_dir,paste0(s_id,".marker_test_output.pdf")) ) 
 
 # create a 2X2 grid 
@@ -97,43 +97,6 @@ if(spa_opt){
   print(plot5)
 }
 dev.off()
-if(opt$compare_to_glm){
-  pdf(file= file.path(output_dir,paste0(s_id,".compare_to_glm.pdf")) ) 
-  par( mfrow= c(4,1) )
-  copy_number_df_with_y<-left_join(copy_number_df,glm_fit0$data) %>% filter(!is.na(y)) 
-  
-  glm_model<-copy_number_df_with_y %>% group_by(gene_id) %>% group_modify(~broom::tidy(glm(paste0(glm_fit0$formula,"+ copy_number"),data = .x,family=glm_fit0$family)))
-  
-  both_marker_test<-glm_model %>% filter(term=="copy_number") %>% right_join(marker_test_df)
-  write.table(both_marker_test,file.path(output_dir, paste0(s_id,".both_marker_test.tsv")),sep="\t",row.names=FALSE)
-  
-  
-  mean_cov_glm<- copy_number_df_with_y %>% group_by(gene_id)  %>% mutate(offset=0) %>% group_map(~glm(glm_fit0$formula,data = .x,family=binomial(link = "logit"),offset=offset))
-  mean_cov_df<-copy_number_df %>% group_by(gene_id) %>% summarize(num_samples=n())
-  mean_cov_df$model<-as.vector(mean_cov_glm)
-  mean_cov_df$Dev<-as.numeric(lapply(mean_cov_glm,function(x) x$deviance))
-  mean_cov_df$ND<-as.numeric(lapply(mean_cov_glm,function(x) x$null.deviance))
-  mean_cov_df$r2<-1-mean_cov_df$Dev/mean_cov_df$ND
-  mean_cov_df$aic<-as.numeric(lapply(mean_cov_glm,function(x) x$aic))
-  if(spa_opt){
-    p_value_ver_3<-both_marker_test %>% ggplot(aes(x=-log10(p.value),y=-log10(SPA_pvalue)))+geom_point()+ggtitle(paste("GLMM SPA pvalue verse GLM pvalue species:", s_id))+labs(y=c("adjusted_model"),x="glm model")+geom_abline(color="red")
-    
-    p_value_ver_4<-ggExtra::ggMarginal(p_value_ver_3, type = "histogram")
-    print(p_value_ver_4,newpage = TRUE)
-  }else{
-    p_value_ver_3<-both_marker_test %>% ggplot(aes(x=-log10(p.value),y=-log10(pvalue)))+geom_point()+ggtitle(paste("GLMM SPA pvalue verse GLM pvalue species:", s_id))+labs(y=c("adjusted_model"),x="glm model")+geom_abline(color="red")
-    
-    p_value_ver_4<-ggExtra::ggMarginal(p_value_ver_3, type = "histogram")
-    print(p_value_ver_4,newpage = TRUE)
-  }
-  
-  glm_marker<-both_marker_test %>% ggplot(aes(y=-log10(p.value),x=estimate))+geom_hline(color="green",yintercept =-log10(bh_cutoff))+geom_hline(color="red",yintercept =-log10(bonferroni_cutoff))+geom_point()+ggtitle(paste("glm volcano plot for species ",s_id,"tau value is",glmm_fit$tau[2]))
-  print(glm_marker)
-  
-  beta_plot<-both_marker_test %>% ggplot(aes(x=estimate,y=beta))+geom_point()+ggtitle(paste("beta for genes of species with Age:", s_id))+labs(y=c("adjusted_model"),x="glm model")+geom_abline(color="red")
-  print(beta_plot)
-  dev.off()
-}
 
 
 log_close()

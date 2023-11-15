@@ -1,7 +1,7 @@
-Error in t.default(sigma_X %*% alpha) : argument is not a matrix Calls: pop_structure_test -> Get_Coef -> getCoefficients -> t -> t.default 
+Error in diag(new_kin) : long vectors not supported yet: array.c:2192 Calls: pop_structure_test ... Get_Coef -> getCoefficients -> gen_sp_Sigma -> diag 
 Traceback: 
-[1] "5: t.default(sigma_X %*% alpha)"                                                
-[2] "4: t(sigma_X %*% alpha)"                                                        
+[1] "5: diag(new_kin)"                                                               
+[2] "4: gen_sp_Sigma(W, tau, GRM)"                                                   
 [3] "3: getCoefficients(Y, X, W, tau, GRM)"                                          
 [4] "2: Get_Coef(y, X, tau, GRM, family, alpha0, eta0, offset, maxiter = maxiter, "  
 [5] "       verbose = verbose, tol.coef = tol, write_log = write_log)"               
