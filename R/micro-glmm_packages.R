@@ -13,3 +13,14 @@
 #' @import Matrix
 #' @importFrom pROC auc
 NULL
+
+#' The micro.glmm package
+#'
+#' micro.glmm is a library and R package for microbiome GLMM models
+#'
+#' @rdname micro.glmm
+#' @name micro.glmm-package
+#' @keywords glmm
+#' @aliases micro.glmm-package micro.glmm
+#' @docType package
+NULL
