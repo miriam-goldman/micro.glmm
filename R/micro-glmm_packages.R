@@ -1,5 +1,5 @@
 #' @importFrom data.table fread
-#' @importFrom RcppXPtrUtils cppXPtr
+#' @importFrom RcppXPtrUtils cppXPtr checkXPtr
 #' @import RcppArmadillo
 #' @importFrom logr put
 #' @importFrom magrittr %>%  %<>% 
