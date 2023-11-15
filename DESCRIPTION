@@ -17,4 +17,6 @@ Imports:
 	stringr,
 	parallelDist,
 	pheatmap,
-	RcppArmadillo
+	RcppArmadillo,
+	Matrix
+

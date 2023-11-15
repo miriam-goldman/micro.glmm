@@ -10,4 +10,5 @@
 #' @importFrom stringr str_split
 #' @importFrom parallelDist parDist
 #' @importFrom pheatmap pheatmap
+#' @import Matrix
 NULL

@@ -24,7 +24,6 @@ getCoefficients<-function(Y, X, W, tau, GRM){
   
   b= eta-X %*% alpha
   #eta=Y-epsilon
-  #print(round(eta_2,2))
   re=list("Sigma_iY"=Sigma_iY,"Sigma_iX"=sigma_X,"cov_var"=cov_var,"alpha"=alpha,"eta"=eta,"b"=b,"epsilon"=epsilon)
 }
 gen_sp_Sigma<-function(W,tau,kinship){
@@ -33,7 +32,7 @@ gen_sp_Sigma<-function(W,tau,kinship){
   #kinship is an (nxn) symetric matrix
   dtkin=W^-1 * (tau[1]) # inverse W 
   new_kin = kinship* tau[2]
-  Matrix::diag(new_kin)=Matrix::diag(new_kin)+dtkin
+  diag(new_kin)=diag(new_kin)+dtkin
   new_kin[new_kin<1e-4]=1e-4
   return(as.matrix(new_kin))
 }
@@ -378,11 +377,7 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(1,1),maxiter =100, 
     obj.noK = ScoreTest_NULL_Model(mu, y, Xorig)
   }
   
-  #exp_tau=GetTrace_2(X,GRM,W,tau)
-  #print(paste("exp tau", exp_tau))
-  #print(paste("tau_test",pchisq((1+tau[2])/(1+exp_tau/2),1,lower.tail = FALSE)))
   ss=sum((y-mean(y))^2)
-  #print(rss/ss)
   var_fixed=var(Xorig%*%alpha)
   var_random=var(as.vector(re.coef$b))
   var_error=var(res)
@@ -600,82 +595,6 @@ filter_null_obj<-function(obj.pop.strut,sample_indexs){
   return(obj.pop.strut)
 }
 
-simulate_one_CNV<-function(sample_names,y,mean_sim,spread_sim,beta=1){
-  nsamples=length(sample_names)
-  y_delta=if_else(y==0,-1,1)
-  new_y=beta*y_delta+rnorm(nsamples,mean_sim,spread_sim)
-  return(new_y)
-}
-
-simulate_type1_error<-function(obj.pop.strut,glm_fit0,GRM,n_CNV=5000,alpha_value=.05,mean_sim=0,spread_sim=1,plot_qq=TRUE,SPA=FALSE){
-  n_samples<-nrow(GRM)
-  gene_ids=unlist(lapply(paste0("gene",seq(1,n_CNV)),function(x) rep(x,n_samples)))
-  sample_names=rep(obj.pop.strut$sampleID,n_CNV)
-  copynumbers=unlist(lapply(seq(1,n_CNV),function(x) simulate_one_CNV(obj.pop.strut$sampleID,obj.pop.strut$y,mean_sim,spread_sim,beta=0)))
-  fake_copy_number_data<-data.frame(gene_id=gene_ids,
-                                    sample_name=sample_names,
-                                    copy_number=copynumbers)
-  fake_data<-micro_glmm(obj.pop.strut,glm_fit0,GRM,fake_copy_number_data,SPA=SPA,scale_g=FALSE,log_g=FALSE)
-  if(SPA){
-    pvalues=fake_data$SPA_pvalue
-    if(plot_qq){
-      
-      simpleQQPlot(pvalues,obj.pop.strut$tau,alpha_value,n_CNV,obj.pop.strut,SPA=TRUE)
-    }
-  }
-  pvalues=fake_data$pvalue
-  if(plot_qq){
-    
-    simpleQQPlot(pvalues,obj.pop.strut$tau,alpha_value,n_CNV,obj.pop.strut,SPA=FALSE)
-  }
-  
-  return(fake_data)
-  #return(fake_data)
-}
-
-simulate_power<-function(obj.pop.strut,glm_fit0,GRM,n_CNV=5000,alpha_value=.05,mean_sim=0,spread_sim=1,SPA=FALSE){
-  n_samples<-nrow(GRM)
-  beta_list=c(.05,.1,.15,.2,.25,.3,.35,.4,.45,.5,.75,1)
-  gene_ids=unlist(lapply(paste0("gene",seq(1,n_CNV)),function(x) rep(x,n_samples)))
-  sample_names=rep(obj.pop.strut$sampleID,n_CNV)
-  beta_df=data.frame(beta=beta_list,num_recovered=0)
-  if(SPA){
-    beta_df$num_recovered_SPA=0
-  }
-  for(beta in beta_list){
-    prec_real<-round(n_CNV*.1,1)
-    prec_fake<-round(n_CNV*.9,1)
-
-    betas_to_sim<-c(rep(0,prec_fake),rep(beta,prec_real))
-    copynumbers=unlist(lapply(betas_to_sim,function(x) simulate_one_CNV(obj.pop.strut$sampleID,obj.pop.strut$y,mean_sim,spread_sim,beta=x)))
-    fake_copy_number_data<-data.frame(gene_id=gene_ids,
-                                      sample_name=sample_names,
-                                      copy_number=copynumbers)  
-    fake_data<-micro_glmm(obj.pop.strut,glm_fit0,GRM,fake_copy_number_data,SPA=SPA,scale_g=TRUE,log_g=FALSE)
-    
-    fake_data$sim_beta<-betas_to_sim
-    
-    fake_data<-fake_data %>% mutate(num_found=(fake_data$pvalue <= alpha_value & sim_beta>0)) %>% arrange(-sim_beta)
-    print(head(fake_data))
-    beta_df[which(beta_df$beta==beta),2]=sum(fake_data$num_found)/sum(fake_data$sim_beta>0)
-    if(SPA){
-      fake_data<-fake_data %>% mutate(num_found_spa=(fake_data$SPA_pvalue <= alpha_value & sim_beta>0)) %>% arrange(-sim_beta)
-      beta_df[which(beta_df$beta==beta),3]=sum(fake_data$num_found_spa)/sum(fake_data$sim_beta>0)
-    }
-  }
-  print(ggplot(beta_df,aes(beta_list,num_recovered))+geom_point(size=3)+geom_smooth(formula= y ~ log(x),se=FALSE,size=2)+geom_hline(yintercept = .9)+labs(title=paste("Power test for species with",obj.pop.strut$species_id,"at alpha value",alpha_value,"number CNV",n_CNV),x="simulated beta",y="precentage recovered"))
-  if(SPA){
-    print(ggplot(beta_df,aes(beta_list,num_recovered_SPA))+geom_point(size=3)+geom_smooth(formula= y ~ log(x),se=FALSE,size=2)+geom_hline(yintercept = .9)+labs(title=paste("Power test for species with SPA",obj.pop.strut$species_id,"at alpha value",alpha_value,"number CNV",n_CNV),x="simulated beta",y="precentage recovered"))
-  }
-  
-  
-  beta_df$case_contol<-fake_data$num_control[1]/fake_data$num_total[1]
-  beta_df$num_total<-fake_data$num_total[1]
-  beta_df$species_id<-fake_data$species_id[1]
-  return(beta_df)
-}
-
-
 
 simulate_tau_inner<-function(glm_fit0,GRM,species_id=s_id,tau0,phi0){
   family_to_fit<-glm_fit0$family
@@ -701,79 +620,8 @@ simulate_tau_outer<-function(glm_fit0,GRM,n_tau,species_id=s_id,tau0,phi0){
   return(df_of_tau)
 }
 
-LRT_score<-function(obj.pop.strut,glm_fit0,GRM){
-  obj.noK = obj.pop.strut$obj.noK
-  family = glm_fit0$family
-  
-  eta = obj.pop.strut$linear.predictors
-  mu = obj.pop.strut$fitted.values
-  mu_mean=mean(obj.pop.strut$fitted.values)
-  y=obj.pop.strut$y
-  mu.eta = mean(family$mu.eta(eta))
-  sqrtW = mu.eta/sqrt(glm_fit0$family$variance(mu))
-  W = (mu*(1-mu))   ##(mu*(1-mu) for binary) theses are the same
-  N=length(W)
-  W_mat_a<-diag(N)
-  diag(W_mat_a)=1/(mu*(1-mu))
-  tauVecNew = obj.pop.strut$tau
-  X = obj.pop.strut$X
-  #Sigma=forceSymmetric(gen_sp_Sigma(W,tauVecNew,GRM))
-  Sigma=(tauVecNew[2]*GRM+W_mat_a)
-  det_sigma<-det(Sigma)
-  alpha=obj.pop.strut$coefficients
-  Y_hat<-eta + (y-mu)/W#
-  new_cov=t(X)%*%solve(Sigma)%*%X
-  Sigma_mat<-diag(N)
-  diag(Sigma_mat)=diag(Sigma)
-  
-  alpha_hat<-solve(new_cov)%*%(t(X)%*%solve(Sigma)%*%Y_hat)
-  Y_hat_X_alpha<-Y_hat-X%*%alpha_hat
-  Y_hat_X_alpha_cov<-t(Y_hat_X_alpha)%*%solve(Sigma)%*%Y_hat_X_alpha
-  if(tauVecNew[2]>.01){
-    log_det_tau=log(det(tauVecNew[2]*GRM+W_mat_a))
-    log_det_W=log(det(solve(W_mat_a)))
-  }else{
-    log_det_tau=log(det(tauVecNew[2]*GRM+W_mat_a))
-    log_det_W=0
-  }
-  liklyhood_tau_a=-(1/2)*(log_det_tau+Y_hat_X_alpha_cov+log(det(new_cov)))
-  mu_0 = glm_fit0$fitted.values
-  mu_0_mean=mean(mu_0)
-  eta_2 = glm_fit0$linear.predictors
-  mu.eta_2 = family$mu.eta(eta_2)
-  sqrtW_0 = mu.eta_2/sqrt(glm_fit0$family$variance(mu_0))
-  tau_0_W=(mu_0*(1-mu_0))
-  W_mat<-diag(N)
-  diag(W_mat)=1/(mu_0*(1-mu_0))
-  det_W<-det(W_mat)
-  res=glm_fit0$y-glm_fit0$fitted.values
-  y_hat_0=glm_fit0$linear.predictors+res/tau_0_W#1/tau_0_W#(y-glm_fit0$fitted.values)+#+res#
-
-  cov_0=t(X)%*%solve(W_mat)%*%X
-  alpha_hat_0=solve(cov_0)%*%(t(X)%*%solve(W_mat)%*%y_hat_0)
-  Y_hat_X_alpha_0<-y_hat_0-X%*%alpha_hat_0
-  cov_hat_0=t(Y_hat_X_alpha_0)%*%solve(W_mat)%*%Y_hat_X_alpha_0
-  liklyhood_tau_0=-(1/2)*(log(det(W_mat))+cov_hat_0+log(det(cov_0)))
-
-  T=2*(liklyhood_tau_a-liklyhood_tau_0)
-  t_2=mean(obj.pop.strut$b^2)
-  return(list("T"=T[1],"liklyhood_tau_a"=liklyhood_tau_a[1],"liklyhood_tau_0"=liklyhood_tau_0[1],
-              "det_w"=log(det(W_mat)),det_w_a=log(det(W_mat_a)),det_sigma=log_det_tau,
-              cov_det_0=log(det(cov_0)),cov_det_a=log(det(new_cov)),
-              YPY_0=cov_hat_0[1],YpY=Y_hat_X_alpha_cov[1],t_2=t_2,tau=tauVecNew[2]
-              #"cov_hat_0"=cov_hat_0[1],cov_hat=Y_hat_X_alpha_cov[1],
-              #,)
-         ))
-}
 
 
-simpleQQPlot = function (observedPValues,tau,alpha_value,n_CNV,obj.pop.strut,SPA) {
-  error_rate=sum(observedPValues<alpha_value)/n_CNV
-  expeded_pvalues=-log10(1:length(observedPValues)/length(observedPValues))
-  observed_pvalues_tranformed=-log10(sort(observedPValues))
-  pvalue_df<-data.frame(expeded_pvalues,observed_pvalues_tranformed)
-  print(ggplot(pvalue_df,aes(expeded_pvalues,observed_pvalues_tranformed))+geom_point(size=3)+geom_abline(color="red",size=3)+labs(title=paste("qqplot for species,",obj.pop.strut$species_id, "tau:",round(tau[2],2),"error_rate < ",alpha_value,":",error_rate,"SPA:",SPA),x="-log10(expected P values)",y="-log10(observed p values)"))
-}
 
 #### taken from SPA
 

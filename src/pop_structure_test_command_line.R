@@ -59,7 +59,6 @@ commad_message<-paste(unlist(command_arg_list),collapse = " ")
 put(paste("Rscript pop_structure_test_command_line.R",commad_message),console = verbose)
 
 validate_GRM_metadata(opt)
-print(metadata)
 glm_fit0 = glm(formula_to_fit, data = metadata, family = family_to_fit)
 glmm_fit=pop_structure_test(glm_fit0, GRM,species_id=s_id,tau=c(phi0,tau0),maxiter =maxiter, verbose = verbose,tol=tol,log_file=TRUE)
 b_df=data.frame(b=as.vector(glmm_fit$b),y=as.vector(glmm_fit$y),fitted.values=as.vector(glmm_fit$fitted.values))
@@ -99,7 +98,6 @@ ggplot(b_df, aes(d = y, m = fitted.values)) + geom_roc()+labs(caption =paste(glm
                                             plot.caption = element_text(hjust = 0,size=12))
 
 
-#ggsave(file.path(output_dir,paste0(s_id,".random_effect_output.pdf")),device="pdf")
 
 
 save(glmm_fit, glm_fit0,GRM,s_id, file = file.path(output_dir,paste0(s_id,".model_obj.Rdata")))
@@ -113,15 +111,9 @@ if(opt$n_tau>0){
                                              plot.caption = element_text(hjust = 0)
                                            )
   write.csv(data.frame(s_id=s_id,n_tau=opt$n_tau,tau=glmm_fit$tau[2],pvalue=num_more_ext/opt$n_tau,tvalue=glmm_fit$t),file.path(output_dir,paste0(s_id,".tau_file.csv")))
-  #ggsave(file.path(output_dir,paste0(s_id,".permutation_test.pdf")),device="pdf")
 }
 
-if(opt$n_CNV>0){
-  simulate_type1_error_df<-simulate_type1_error(glmm_fit,glm_fit0,GRM,opt$n_CNV,SPA=opt$SPA)
-  simulate_power_df<-simulate_power(glmm_fit,glm_fit0,GRM,opt$n_CNV,SPA=opt$SPA)
-  save(simulate_type1_error_df, simulate_power_df, file = file.path(output_dir,paste0(s_id,".simulation_obj.Rdata")))
-  #ggsave(file.path(output_dir,paste0(s_id,".permutation_test.pdf")),device="pdf")
-}
+
 dev.off()
 # Close log
 log_close()
