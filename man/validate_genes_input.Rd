@@ -6,6 +6,9 @@
 \usage{
 validate_genes_input(opt)
 }
+\arguments{
+\item{opt}{opt}
+}
 \description{
 helper function to validate gene input
 }

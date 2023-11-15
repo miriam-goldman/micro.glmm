@@ -1,7 +1,6 @@
 #' manhattanFuncPtr
 #' 
 #' helper function to calculate distance
-#' 
 #' @export
 manhattanFuncPtr <- cppXPtr(
   "double customDist(const arma::mat &A, const arma::mat &B) {
@@ -48,7 +47,7 @@ jaccardFuncPtr <- cppXPtr(
 #' 
 #' helper function to validate the input from command line for snps
 #' 
-#' @param opt
+#' @param opt opt
 #' @export
 validate_snps_input<-function(opt){
   s_id=opt$species_id
@@ -239,7 +238,7 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
   if(run_qp){
     info_for_qp <- snp_info %>% filter(site_type == "4D")
     depth_for_qp<-snp_depth %>% filter(site_id %in% unique(info_for_qp$site_id)) 
-    depth_for_qp %<>% pivot_longer(sample_name, site_depth, all_of(list_of_samples))
+    depth_for_qp %<>% pivot_longer(all_of(list_of_samples),names_to=sample_name, values_to=site_depth)
     depth_for_qp %<>% 
       left_join(D %>% select(sample_name, median_site_depth)) %>%
       mutate(min_bound =  l* median_site_depth, max_bound = u * median_site_depth)
@@ -265,7 +264,7 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
     
     
     freq_for_qp %<>%
-      pivot_longer(sample_name, allele_freq, all_of(samples_pass_depth)) %>%
+      pivot_longer(all_of(samples_pass_depth),names_to=sample_name, values_to=allele_freq) %>%
       filter(allele_freq != -1)
     df <- left_join(depth_for_qp, freq_for_qp, by=c("site_id", "sample_name"))
     df %<>% 
@@ -340,7 +339,7 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
   
   info_for_distance<-snp_info %>% filter(core==TRUE) %>% filter(snp_type=="bi")
   depth_for_distance<-snp_depth %>% filter(site_id %in% unique(info_for_distance$site_id)) 
-  depth_for_distance %<>% pivot_longer(sample_name, site_depth, all_of(list_of_samples))
+  depth_for_distance %<>% pivot_longer(all_of(list_of_samples), names_to=sample_name, values_to=site_depth)
   
   depth_for_distance %<>% 
     left_join(D %>% select(sample_name, median_site_depth))
@@ -378,7 +377,7 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
     select(site_id, all_of(samples_pass_depth))
   
   freq_for_distance %<>%
-    pivot_longer(sample_name, allele_freq, all_of(samples_pass_depth)) %>%
+    pivot_longer(all_of(samples_pass_depth),names_to=sample_name, values_to=allele_freq) %>%
     filter(allele_freq != -1)
   
   
