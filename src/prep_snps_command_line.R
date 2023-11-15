@@ -60,19 +60,7 @@ commad_message<-paste(unlist(command_arg_list),collapse = " ")
 
 put(paste("Rscript prep_snps_command_line.R",commad_message),console = verbose)
 validate_snps_output=validate_snps_input(opt)#parse_genes list
-manhattanFuncPtr <<- cppXPtr(
-  "double customDist(const arma::mat &A, const arma::mat &B) {
-    float dist_com=0;
-    int n_sites=0;
-    for (int i = 0; i < A.size(); i++){
-      if(A[i]>=0 & B[i] >=0){
-        dist_com += fabs(A[i]-B[i]);
-        n_sites++;
-      }
-	          }
-	          return dist_com/n_sites;
-  }", depends = c("RcppArmadillo"),rebuild = TRUE)
-print(manhattanFuncPtr)
+
 do.call(prep_snps_function_R,validate_snps_output)
 # Close log
 log_close()
