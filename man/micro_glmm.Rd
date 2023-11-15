@@ -4,15 +4,7 @@
 \alias{micro_glmm}
 \title{micro_glmm}
 \usage{
-micro_glmm(
-  obj.pop.strut,
-  glm_fit0,
-  GRM,
-  copy_number_df,
-  SPA = FALSE,
-  scale_g = TRUE,
-  log_g = TRUE
-)
+micro_glmm(obj.pop.strut, glm_fit0, GRM, copy_number_df, SPA = FALSE)
 }
 \arguments{
 \item{obj.pop.strut}{output of pop_structure_test; GLMM of species with GRM accounted for}

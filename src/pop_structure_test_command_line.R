@@ -10,7 +10,10 @@ suppressPackageStartupMessages(library(generics))
 suppressPackageStartupMessages(library(plotROC))
 suppressPackageStartupMessages(library(pheatmap))
 suppressPackageStartupMessages(library(micro.glmm))
-
+color_pal<<-c("#E69F00",
+              "#CC79A7","#56B4E9","#009E73",
+              "#F0E442","#0072B2","#D55E00",
+              "#E1BE6A","#0231A9")
 option_list = list(
   make_option(c("-s", "--species_id"), type="character", default="s_id", 
               help="species id for labeling output file names (optional)", metavar="character"),
@@ -100,7 +103,7 @@ ggplot(b_df, aes(d = y, m = fitted.values)) + geom_roc()+labs(caption =paste(glm
 
 save(glmm_fit, glm_fit0,GRM,s_id, file = file.path(output_dir,paste0(s_id,".model_obj.Rdata")))
 if(opt$n_tau>0){
-  simulate_tau<-simulate_tau_outer(glm_fit0,GRM,opt$n_tau,s_id,tau0,phi0)
+  simulate_tau<-run_tau_test(glm_fit0,GRM,opt$n_tau,s_id,tau0,phi0)
   num_more_ext=sum(simulate_tau$t>glmm_fit$t)
   ggplot(simulate_tau,aes(t))+geom_histogram()+geom_vline(xintercept=glmm_fit$t,color=color_pal[6])+
   labs(x="permuated t values",title=paste("Histogram of permuated t values for species",s_id,
