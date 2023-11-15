@@ -72,7 +72,7 @@ manhattanFuncPtr <<- cppXPtr(
 	          }
 	          return dist_com/n_sites;
   }", depends = c("RcppArmadillo"),rebuild = TRUE)
-
+print(manhattanFuncPtr)
 do.call(prep_snps_function_R,validate_snps_output)
 # Close log
 log_close()
