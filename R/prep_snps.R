@@ -238,7 +238,7 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
   if(run_qp){
     info_for_qp <- snp_info %>% filter(site_type == "4D")
     depth_for_qp<-snp_depth %>% filter(site_id %in% unique(info_for_qp$site_id)) 
-    depth_for_qp %<>% pivot_longer(matches(list_of_samples),names_to=sample_name, values_to=site_depth)
+    depth_for_qp %<>% pivot_longer(matches(list_of_samples),names_to="sample_name", values_to="site_depth")
     depth_for_qp %<>% 
       left_join(D %>% select(sample_name, median_site_depth)) %>%
       mutate(min_bound =  l* median_site_depth, max_bound = u * median_site_depth)
@@ -264,7 +264,7 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
     
     
     freq_for_qp %<>%
-      pivot_longer(matches(samples_pass_depth),names_to=sample_name, values_to=allele_freq) %>%
+      pivot_longer(matches(samples_pass_depth),names_to="sample_name", values_to="allele_freq") %>%
       filter(allele_freq != -1)
     df <- left_join(depth_for_qp, freq_for_qp, by=c("site_id", "sample_name"))
     df %<>% 
@@ -377,7 +377,7 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
     select(site_id, matches(samples_pass_depth))
   
   freq_for_distance %<>%
-    pivot_longer(matches(samples_pass_depth),names_to=sample_name, values_to=allele_freq) %>%
+    pivot_longer(matches(samples_pass_depth),names_to="sample_name", values_to="allele_freq") %>%
     filter(allele_freq != -1)
   
   
