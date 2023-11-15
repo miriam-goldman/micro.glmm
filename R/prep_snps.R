@@ -382,7 +382,7 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
   df_for_distance <- left_join(depth_for_distance, freq_for_distance, by=c("site_id", "sample_name"))
   site_df<-df_for_distance %>% select(site_id,sample_name,allele_freq) %>% pivot_wider(names_from = site_id,values_from=allele_freq)
     put(head(site_df),console = verbose)
-  return(checkXPtr(micro.glmm::manhattanFuncPtr,"double",c("const arma::mat&","const arma::mat&")))
+  checkXPtr(micro.glmm::manhattanFuncPtr,"double",c("const arma::mat&","const arma::mat&"))
   freq_mat_dist_man<-parDist(as.matrix(site_df[,-1]), method="custom", func = micro.glmm::manhattanFuncPtr)
   freq_mat_dist_man<-as.matrix(freq_mat_dist_man)
   
