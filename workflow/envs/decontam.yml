@@ -1,9 +1,0 @@
-name: decontam
-channels:
-  - conda-forge
-  - bioconda
-  - defaults
-dependencies:
-  - bowtie2=2.5.1
-  - samtools=1.17
-  - seqkit=2.5.0

@@ -1,7 +1,0 @@
-Building DAG of jobs...
-File path /pollard/data/midas2-db/midas2db-uhgg-v1.5/pangenomes//102478/genes.len contains double '/'. This is likely unintended. It can also lead to inconsistent results of the file-matching approach used by Snakemake.
-File path /pollard/data/midas2-db/midas2db-uhgg-v1.5/pangenomes//102478/gene_info.txt contains double '/'. This is likely unintended. It can also lead to inconsistent results of the file-matching approach used by Snakemake.
-File path /pollard/data/projects/mwas-projects//gene_labels/102478.centroid_75.centroid_to_repgenes.tsv contains double '/'. This is likely unintended. It can also lead to inconsistent results of the file-matching approach used by Snakemake.
-File path /pollard/data/projects/mwas-projects//gene_labels/102478.centroid_75.centroid_prevalence.tsv contains double '/'. This is likely unintended. It can also lead to inconsistent results of the file-matching approach used by Snakemake.
-Nothing to be done (all requested files are present and up to date).
-Complete log: .snakemake/log/2023-10-17T175358.680920.snakemake.log
