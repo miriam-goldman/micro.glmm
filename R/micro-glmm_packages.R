@@ -1,5 +1,6 @@
 #' @importFrom data.table fread
 #' @importFrom RcppXPtrUtils cppXPtr
+#' @import RcppArmadillo
 #' @importFrom logr put
 #' @importFrom magrittr %>%  %<>% 
 #' @importFrom dplyr filter left_join select group_by mutate count rename ungroup summarize inner_join

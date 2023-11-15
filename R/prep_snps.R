@@ -13,8 +13,7 @@ manhattanFuncPtr <- cppXPtr(
       }
 	          }
 	          return dist_com/n_sites;
-  }", depends = c("RcppArmadillo"))
-
+  }", depends = c("RcppArmadillo"),rebuild = TRUE)
 alleleFuncPtr <- cppXPtr(
   "double customDist(const arma::mat &A, const arma::mat &B) {
     double allele_match=0;
