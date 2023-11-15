@@ -209,11 +209,11 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
   per_sample_median_depth <- apply(snp_depth[,-1], 2, function(x) median(x, na.rm =T))
   samples_pass_depth <- names(per_sample_median_depth[per_sample_median_depth >= sample_median_depth_filter]) #<-----
   list_of_samples<-list_of_samples[which(list_of_samples %in% samples_pass_depth)]
-  snp_depth %<>% select(site_id, all_of(list_of_samples))
+  snp_depth %<>% select(site_id, matches(list_of_samples))
   if(genes_summary_used){
     list_of_samples_gs <- genes_summary %>% filter(species_id == s_id) %>% .$sample_name %>% unique()
     list_of_samples<-list_of_samples[which(list_of_samples %in% list_of_samples_gs)]
-    snp_depth %<>% select(site_id, all_of(list_of_samples))
+    snp_depth %<>% select(site_id, matches(list_of_samples))
   }
   nsamples2 = ncol(snp_depth)-1
   put(paste("number of samples after filter",nsamples2),console = verbose)
@@ -238,7 +238,7 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
   if(run_qp){
     info_for_qp <- snp_info %>% filter(site_type == "4D")
     depth_for_qp<-snp_depth %>% filter(site_id %in% unique(info_for_qp$site_id)) 
-    depth_for_qp %<>% pivot_longer(all_of(list_of_samples),names_to=sample_name, values_to=site_depth)
+    depth_for_qp %<>% pivot_longer(matches(list_of_samples),names_to="sample_name", values_to="site_depth")
     depth_for_qp %<>% 
       left_join(D %>% select(sample_name, median_site_depth)) %>%
       mutate(min_bound =  l* median_site_depth, max_bound = u * median_site_depth)
@@ -259,12 +259,12 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
     }
     freq_for_qp <- snp_freq%>%
       filter(site_id %in% unique(depth_for_qp$site_id)) %>%
-      select(site_id, all_of(samples_pass_depth))
+      select(site_id, matches(samples_pass_depth))
     ######### Read in population minor allele frequency
     
     
     freq_for_qp %<>%
-      pivot_longer(all_of(samples_pass_depth),names_to=sample_name, values_to=allele_freq) %>%
+      pivot_longer(matches(samples_pass_depth),names_to="sample_name", values_to="allele_freq") %>%
       filter(allele_freq != -1)
     df <- left_join(depth_for_qp, freq_for_qp, by=c("site_id", "sample_name"))
     df %<>% 
@@ -339,7 +339,7 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
   
   info_for_distance<-snp_info %>% filter(core==TRUE) %>% filter(snp_type=="bi")
   depth_for_distance<-snp_depth %>% filter(site_id %in% unique(info_for_distance$site_id)) 
-  depth_for_distance %<>% pivot_longer(all_of(list_of_samples), names_to=sample_name, values_to=site_depth)
+  depth_for_distance %<>% pivot_longer(matches(list_of_samples), names_to="sample_name", values_to="site_depth")
   
   depth_for_distance %<>% 
     left_join(D %>% select(sample_name, median_site_depth))
@@ -374,10 +374,10 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
   ######### Read in population minor allele frequency
   freq_for_distance <- snp_freq%>%
     filter(site_id %in% unique(depth_for_distance$site_id)) %>%
-    select(site_id, all_of(samples_pass_depth))
+    select(site_id, matches(samples_pass_depth))
   
   freq_for_distance %<>%
-    pivot_longer(all_of(samples_pass_depth),names_to=sample_name, values_to=allele_freq) %>%
+    pivot_longer(matches(samples_pass_depth),names_to="sample_name", values_to="allele_freq") %>%
     filter(allele_freq != -1)
   
   
