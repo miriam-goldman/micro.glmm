@@ -7,12 +7,12 @@ R Version: 4.2.3 (2023-03-15)
 Machine: Miriam x86_64 
 Operating System: Darwin 20.6.0 Darwin Kernel Version 20.6.0: Thu Jul 6 22:12:47 PDT 2023; root:xnu-7195.141.49.702.12~1/RELEASE_X86_64 
 Base Packages: stats graphics grDevices utils datasets methods base Other Packages: micro.glmm_0.0.1.0 ggExtra_0.10.1 data.table_1.14.8 logr_1.3.3 forcats_1.0.0 stringr_1.5.0 dplyr_1.1.3 purrr_1.0.2 readr_2.1.4 tidyr_1.3.0 tibble_3.2.1 ggplot2_3.4.3 tidyverse_1.3.2 optparse_1.7.3 
-Log Start Time: 2023-11-15 12:19:03 
+Log Start Time: 2023-11-15 13:08:12 
 ========================================================================= 
 
 running validate genes command is 
 
-Rscript marker_test_command_line.R --species_id exp_species -v FALSE -o ../example_output --Rdata ../example_output/exp_species.model_obj.Rdata --copy_number ../example_output/exp_species.copynumber_data.csv 
+Rscript marker_test_command_line.R --species_id exp_species -v FALSE -o ../example_output --Rdata ../example_output/exp_species.model_obj.Rdata --copy_number ../example_output/exp_species.copynumber_data.csv --SPA TRUE 
 
 Rdata loaded 
 
@@ -20,13 +20,59 @@ copy_number loaded
 
 data read in 
 
-Error in diag(new_kin) : long vectors not supported yet: array.c:2192 Calls: micro_glmm -> gen_sp_Sigma -> diag 
-Traceback: 
-[1] "3: diag(new_kin)"                                                     
-[2] "2: gen_sp_Sigma(W1, tauVecNew, GRM)"                                  
-[3] "1: micro_glmm(glmm_fit, glm_fit0, GRM, copy_number_df, SPA = spa_opt)"
+Warning messages:
+1: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+2: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+3: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+4: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+5: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+6: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+7: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+8: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+9: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+10: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+11: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+12: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+13: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+14: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+15: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+16: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+17: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+18: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+19: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+20: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+21: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+22: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+23: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+24: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+25: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+26: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+27: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+28: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+29: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+30: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+31: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+32: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+33: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+34: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+35: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+36: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+37: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+38: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+39: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+40: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+41: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+42: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+43: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+44: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+45: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+46: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+47: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+48: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+49: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+50: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
 
 ========================================================================= 
-Log End Time: 2023-11-15 12:19:04 
-Log Elapsed Time: 0 00:00:00 
+Log End Time: 2023-11-15 13:08:15 
+Log Elapsed Time: 0 00:00:03 
 ========================================================================= 

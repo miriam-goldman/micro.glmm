@@ -92,7 +92,7 @@ pheatmap(GRM,show_rownames=FALSE,show_colnames=FALSE,labels_row="samples",labels
          annotation_col=annotation_col,annotation_colors = ann_colors,color=myColor,breaks=myBreaks)
 
 
-ggplot(b_df,aes(b,fill=as.factor(y)))+geom_histogram()+ scale_fill_manual(values=c(color_pal[2],color_pal[9]),name="diagnosis")+
+ggplot(b_df,aes(b,fill=as.factor(y)))+geom_histogram(bins=30)+ scale_fill_manual(values=c(color_pal[2],color_pal[9]),name="diagnosis")+
   labs(x="values of random varible b",title=paste("Histogram of random varaible b for species",s_id,"\ncolored by diagnosis"),legend="diagnosis")
 
 ggplot(b_df, aes(d = y, m = fitted.values)) + geom_roc()+labs(caption =paste(glmm_fit$summary))+ theme(
@@ -105,7 +105,7 @@ save(glmm_fit, glm_fit0,GRM,s_id, file = file.path(output_dir,paste0(s_id,".mode
 if(opt$n_tau>0){
   simulate_tau<-run_tau_test(glm_fit0,GRM,opt$n_tau,s_id,tau0,phi0)
   num_more_ext=sum(simulate_tau$t>glmm_fit$t)
-  ggplot(simulate_tau,aes(t))+geom_histogram()+geom_vline(xintercept=glmm_fit$t,color=color_pal[6])+
+  ggplot(simulate_tau,aes(t))+geom_histogram(bins=30)+geom_vline(xintercept=glmm_fit$t,color=color_pal[6])+
   labs(x="permuated t values",title=paste("Histogram of permuated t values for species",s_id,
                                            "\n actual t value for a tau of",glmm_fit$tau[2],"in orange",
                                            "\n number of permutations",opt$n_tau),caption =paste(glmm_fit$summary,"\n pvalue for t is", num_more_ext/opt$n_tau))+ theme(
@@ -115,7 +115,7 @@ if(opt$n_tau>0){
 }
 
 
-dev.off()
+end<-dev.off()
 # Close log
 log_close()
 

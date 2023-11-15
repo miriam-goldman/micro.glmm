@@ -205,8 +205,8 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(1,1),maxiter =100, 
     
   }
   if(write_log){
-    put("begining time ")
-    put(t_begin)
+    put("begining time ",console=FALSE)
+    put(t_begin,console=FALSE)
   }
   y = glm_fit0$y
   n = length(y)
@@ -233,9 +233,9 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(1,1),maxiter =100, 
   }
 
   if(verbose) cat(" Fixed-effect coefficients: ", glm_fit0$coef,"\n")
-  if(write_log) put(paste(" Fixed-effect coefficients: ", glm_fit0$coef))
+  if(write_log) put(paste(" Fixed-effect coefficients: ", glm_fit0$coef),console=FALSE)
   if(verbose) cat(" inital tau is ", tau,"\n")
-  if(write_log) put(paste(" inital tau is ", tau))
+  if(write_log) put(paste(" inital tau is ", tau),console=FALSE)
   tau0=tau
   if(tau[1]<=0){
       stop("ERROR! The first variance component parameter estimate is 0\n")
@@ -260,7 +260,7 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(1,1),maxiter =100, 
       cat(paste("\ni",i))
     }
     if(verbose) cat("\nIteration ", i, "tau is ", tau, "\n")
-    if(write_log) put(paste(" Iteration ", i, "tau is: ", tau))
+    if(write_log) put(paste(" Iteration ", i, "tau is: ", tau),console=FALSE)
     alpha0 = re.coef$alpha
     tau0 = tau
     #cat("tau0_v1: ", tau0, "\n")
@@ -275,8 +275,8 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(1,1),maxiter =100, 
     cat(t_end_Get_Coef - t_begin_Get_Coef)
     }
     if(write_log) {
-      put("t_end_Get_Coef - t_begin_Get_Coef")
-      put(t_end_Get_Coef - t_begin_Get_Coef)
+      put("t_end_Get_Coef - t_begin_Get_Coef",console=FALSE)
+      put(t_end_Get_Coef - t_begin_Get_Coef,console=FALSE)
     }
     ##update tau
    
@@ -287,8 +287,8 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(1,1),maxiter =100, 
     cat(t_end_fitglmmaiRPCG - t_end_Get_Coef)
     }
     if(write_log) {
-      put("t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG")
-      put(t_end_fitglmmaiRPCG - t_end_Get_Coef)
+      put("t_end_fitglmmaiRPCG - t_begin_fitglmmaiRPCG",console=FALSE)
+      put(t_end_fitglmmaiRPCG - t_end_Get_Coef,console=FALSE)
     }
     tau = as.numeric(fit$tau)
     cov_var = re.coef$cov_var
@@ -303,9 +303,9 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(1,1),maxiter =100, 
     cat("\ntau0: ", tau0, "\n")
      }
     if(write_log) {
-      put(paste("change in tau",abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)))
-      put(paste("tau: ", tau))
-      put(paste("tau0: ", tau0))
+      put(paste("change in tau",abs(tau - tau0)/(abs(tau) + abs(tau0) + tol)),console=FALSE)
+      put(paste("tau: ", tau),console=FALSE)
+      put(paste("tau0: ", tau0),console=FALSE)
     }
     if(tau[1]<=0){
       stop("\nERROR! The first variance component parameter estimate is 0\n")
@@ -324,8 +324,8 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(1,1),maxiter =100, 
       cat(paste("\nrss change",rss_condition))
     }
     if(write_log){
-      put(paste("res",rss))
-      put(paste("rss change",rss_condition))
+      put(paste("res",rss),console=FALSE)
+      put(paste("rss change",rss_condition),console=FALSE)
     }
     
     abs_condition=sum(res^2)
@@ -338,12 +338,12 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(1,1),maxiter =100, 
   }
   if(verbose) cat("\niter break at ",i)
   if(verbose) cat("\nFinal " ,tau, ":\n")
-  if(write_log) put(paste("iter break at ",i))
-  if(write_log) put(paste("Final " ,tau, ":"))
+  if(write_log) put(paste("iter break at ",i),console=FALSE)
+  if(write_log) put(paste("Final " ,tau, ":"),console=FALSE)
   if(max(tau) > tol^(-2)){
     cat("Model not converged")
     if(write_log){
-      put("Model not converged")
+      put("Model not converged",console=FALSE)
     }
     return(glm_fit0)
   }
@@ -413,11 +413,12 @@ pop_structure_test = function(glm_fit0, GRM,species_id,tau=c(1,1),maxiter =100, 
   if(verbose) {
   cat("\nt_end_null - t_begin,  fitting the structure model took\n")
   cat(t_end_null - t_begin)
+  cat("\n")
   }
   
   if(write_log) {
-    put("t_end_null - t_begin, fitting the structure model took")
-    put(t_end_null - t_begin)
+    put("t_end_null - t_begin, fitting the structure model took",console=FALSE)
+    put(t_end_null - t_begin,console=FALSE)
   }
   
   return(glmmSNPResult)
@@ -578,7 +579,8 @@ micro_glmm = function(obj.pop.strut,
   }
   cat("total time past:")
   t_end = proc.time()
-  cat(t_end-t_begin)	
+  cat(t_end-t_begin)
+  cat("\n")
   return(list_vec)
 }
 

@@ -1,6 +1,52 @@
-Error in diag(new_kin) : long vectors not supported yet: array.c:2192 Calls: micro_glmm -> gen_sp_Sigma -> diag 
-Traceback: 
-[1] "3: diag(new_kin)"                                                     
-[2] "2: gen_sp_Sigma(W1, tauVecNew, GRM)"                                  
-[3] "1: micro_glmm(glmm_fit, glm_fit0, GRM, copy_number_df, SPA = spa_opt)"
+Warning messages:
+1: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+2: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+3: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+4: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+5: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+6: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+7: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+8: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+9: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+10: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+11: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+12: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+13: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+14: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+15: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+16: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+17: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+18: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+19: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+20: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+21: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+22: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+23: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+24: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+25: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+26: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+27: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+28: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+29: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+30: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+31: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+32: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+33: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+34: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+35: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+36: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+37: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+38: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+39: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+40: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+41: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+42: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+43: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+44: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+45: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+46: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+47: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+48: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+49: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
+50: In cor(G0, filtered_obj.pop.strut$y) : the standard deviation is zero
 
