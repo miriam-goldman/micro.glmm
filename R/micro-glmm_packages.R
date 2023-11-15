@@ -1,4 +1,4 @@
-#' @importFrom data.table fread
+#' @importFrom data.table fread setindexv
 #' @importFrom RcppXPtrUtils cppXPtr checkXPtr
 #' @import RcppArmadillo
 #' @importFrom logr put
