@@ -8,6 +8,7 @@
 #' @aliases micro.glmm-package micro.glmm
 #' @docType package
 NULL
+
 ## usethis namespace: start
 #' @importFrom data.table fread setindexv
 #' @importFrom RcppXPtrUtils cppXPtr checkXPtr
