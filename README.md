@@ -29,6 +29,10 @@ Rscript prep_snps_command_line.R  --species_id exp_species -v TRUE  -o "../examp
 -d "../example_data/exp_species.snps_depth.tsv"
 -a 3 -m 5  -n 5   
  ```
+For easier copy
+```
+Rscript prep_snps_command_line.R  --species_id exp_species -v TRUE  -o "../example_output" -i "../example_data/exp_species.snps_info.tsv" -f "../example_data/exp_species.snps_freqs.tsv" -d "../example_data/exp_species.snps_depth.tsv" -a 3 -m 5  -n 5   
+ ```
 ### run prep genes
 
 ```
@@ -36,6 +40,10 @@ Rscript prep_genes_command_line.R --species_id exp_species -v TRUE -o "../exampl
 -c "../example_data/exp_species.genes_copynum.tsv"
 -d "../example_data/exp_species.genes_depth.tsv"
 -m 5 -n 5 --GRM ../example_output/exp_species.GRM.tsv --write_csv TRUE
+ ```
+For easier copy
+```
+Rscript prep_genes_command_line.R --species_id exp_species -v TRUE -o "../example_output" -c "../example_data/exp_species.genes_copynum.tsv" -d "../example_data/exp_species.genes_depth.tsv" -m 5 -n 5 --GRM ../example_output/exp_species.GRM.tsv --write_csv TRUE
  ```
 ### run population structure test
 
@@ -45,7 +53,10 @@ Rscript pop_structure_test_command_line.R --species_id exp_species -v TRUE -o ..
 --metadata ../example_data/IBD_metadata.tsv
 --tau 1 --n_tau 10
 ```
-
+For easier copy
+```
+Rscript pop_structure_test_command_line.R --species_id exp_species -v TRUE -o ../example_output --GRM ../example_output/exp_species.GRM.tsv --metadata ../example_data/IBD_metadata.tsv --tau 1 --n_tau 10
+```
 ### Run Maker test
 
 ```
@@ -53,4 +64,8 @@ Rscript marker_test_command_line.R --species_id exp_species -v TRUE
 -o ../example_output
 --Rdata ../example_output/exp_species.model_obj.Rdata
 --copy_number ../example_output/exp_species.copynumber_data.csv
+```
+For easier copy
+```
+Rscript marker_test_command_line.R --species_id exp_species -v TRUE -o ../example_output --Rdata ../example_output/exp_species.model_obj.Rdata --copy_number ../example_output/exp_species.copynumber_data.csv
 ```
