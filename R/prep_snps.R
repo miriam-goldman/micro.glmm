@@ -1,7 +1,3 @@
-#' manhattanFuncPtr
-#' 
-#' helper function to calculate distance
-#' @export
 manhattanFuncPtr <- cppXPtr(
   "double customDist(const arma::mat &A, const arma::mat &B) {
     float dist_com=0;

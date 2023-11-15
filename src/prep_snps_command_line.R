@@ -60,7 +60,7 @@ commad_message<-paste(unlist(command_arg_list),collapse = " ")
 
 put(paste("Rscript prep_snps_command_line.R",commad_message),console = verbose)
 validate_snps_output=validate_snps_input(opt)#parse_genes list
-manhattanFuncPtr <- cppXPtr(
+manhattanFuncPtr <<- cppXPtr(
   "double customDist(const arma::mat &A, const arma::mat &B) {
     float dist_com=0;
     int n_sites=0;
