@@ -30,9 +30,11 @@ gen_sp_Sigma<-function(W,tau,kinship){
   ### update kinship with W and tau
   ## value vector is kin
   #kinship is an (nxn) symetric matrix
+  kinship<-as.matrix(kinship)
   dtkin=W^-1 * (tau[1]) # inverse W 
-  new_kin = kinship* tau[2]
-  diag(new_kin)=diag(new_kin)+dtkin
+  new_kin = kinship * tau[2]
+  diag_new_kin =diag(new_kin)+dtkin
+  diag(new_kin)<-diag_new_kin
   new_kin[new_kin<1e-4]=1e-4
   return(as.matrix(new_kin))
 }
@@ -476,7 +478,7 @@ Get_Coef = function(y, X, tau, GRM,family, alpha0, eta0,  offset, verbose=FALSE,
 #' @export
 micro_glmm = function(obj.pop.strut,
                     glm_fit0,GRM,
-                           copy_number_df,SPA=FALSE,scale_g=TRUE,log_g=TRUE){
+                           copy_number_df,SPA=FALSE){
   ## inputs: full null fitted model
   ## null model no random effect
   # GRM is kinship
