@@ -21,16 +21,10 @@ option_list = list(
               help=".tsv file with gene_id, sample_name, and copynumber for CNV data",metavar="character"),
   make_option(c("--SPA"), type="logical", default=FALSE,
               help="whether to use SPA for pvalues, will slow down output (optional)", metavar="logical"),
-  make_option(c("--scale_copynumber"), type="logical", default=FALSE,
-              help="whether to scale the copynumber data for each gene (optional)", metavar="logical"),
-  make_option(c("--log_copynumber"), type="logical", default=FALSE,
-              help="whether to log the copynumber data for each gene (optional)", metavar="logical"),
   make_option(c("--q_value"), type="numeric", default=.05,
               help="q value for marker test plot", metavar="numeric"),
   make_option(c("--alpha_value"), type="numeric", default=.05,
-              help="alpha value for marker test plot", metavar="numeric"),
-  make_option(c("--compare_to_glm"), type="logical", default=FALSE,
-              help="whether to compare to glm", metavar="logical")
+              help="alpha value for marker test plot", metavar="numeric")
   
 )
 
@@ -50,15 +44,6 @@ commad_message<-paste(unlist(command_arg_list),collapse = " ")
 put(paste("Rscript marker_test_command_line.R",commad_message),console = verbose)
 
 validate_marker_test(opt)
-
-if(log_copynumber_opt==TRUE){
-  copy_number_df$copy_number<-log(as.vector(copy_number_df$copy_number))
-}else{
-  copy_number_df$copy_number<-as.vector(copy_number_df$copy_number)
-}
-if(scale_copynumber_opt==TRUE){
-  copy_number_df$copy_number<-scale(copy_number_df$copy_number)
-}
 
 output_dir<-test_dir(opt$out_folder,verbose)
 marker_test_df<-micro_glmm(glmm_fit,glm_fit0,GRM,copy_number_df,SPA=spa_opt)

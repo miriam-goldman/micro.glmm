@@ -38,9 +38,7 @@ option_list = list(
   make_option(c("--formula_to_fit"), type="character", default="y~1",
               help="formula used to fit population structure; the phenotype and any covariates in the metadata file that are to be used",metavar="character" ),
   make_option(c("--n_tau"), type="numeric", default=0,
-              help="number of permuations to test for significance of tau, if 0 no test run",metavar="numeric" ),
-  make_option(c("--SPA"), type="logical", default=TRUE, 
-              help="SPA, TRUE or FALSE for simulations", metavar="logical")
+              help="number of permuations to test for significance of tau, if 0 no test run",metavar="numeric" )
  
 )
 

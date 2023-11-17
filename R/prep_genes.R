@@ -127,6 +127,16 @@ validate_genes_input<-function(opt){
   if(!is.numeric(depth_cutoff)){
     put("depth cutoff invlaid use number or 0",console = verbose)
   }
+  if(is.logical(opt$log_scale)){
+    log_scale=opt$log_scale
+  }else{
+    log_scale=FALSE
+  }
+  if(is.logical(opt$mean_center)){
+    mean_center=opt$mean_center
+  }else{
+    mean_center=FALSE
+  }
   start_genes<-ncol(gcopynumber)
     put("optional files read in",console = verbose)
     put(paste("for Species ID",s_id),console = verbose)
@@ -137,6 +147,8 @@ validate_genes_input<-function(opt){
     put(paste("metadata used:",metadata_used),console = verbose)
     put(paste( "genes summary used:",genes_summary_used),console = verbose)
     put(paste("metadata used:",metadata_used),console = verbose)
+    put(paste("log scale:",log_scale),console = verbose)
+    put(paste("mean center:",mean_center),console = verbose)
     put(paste("starting with:", start_genes,"samples and genes:", length(unique(gcopynumber$gene_id))),console = verbose)
     
   
@@ -145,7 +157,7 @@ validate_genes_input<-function(opt){
                        output_dir,s_id,pangenome_used,
                        centroid_prevalence_file,centroid_prevalence_cutoff,GRM_used,
                        GRM,genes_summary_used,genes_summary,
-                        metadata_used,metadata,min_num_control,min_num_case)
+                        metadata_used,metadata,min_num_control,min_num_case,log_scale,mean_center)
     
 
   
@@ -170,7 +182,7 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
                               pangenome_used=FALSE,centroid_prevalence_file=NULL,centroid_prevalence_cutoff=.7,
                               GRM_used=FALSE,GRM=NULL,
                               genes_summary_used=FALSE,genes_summary=NULL,
-                              metadata_used=FALSE,metadata=NULL,min_num_control=0,min_num_case=0){
+                              metadata_used=FALSE,metadata=NULL,min_num_control=0,min_num_case=0,log_scale=FALSE,mean_center=FALSE){
   
   list_of_samples <- colnames(gcopynumber)[-1]
   start_samples<-ncol(gcopynumber)
@@ -245,6 +257,14 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
       put(paste("number of genes length after metadata filter:",length(list_of_genes)),console = verbose)
   }
   copy_number_for_model<-df %>% filter(gene_id %in% list_of_genes)
+  if(log_scale){
+    copy_number_for_model <- copy_number_for_model %>% mutate(copy_number=log(copy_number))
+  }
+  if(mean_center){
+    copy_number_for_model <- copy_number_for_model %>% group_by(gene_id) %>% mutate(gene_mean=mean(copy_number)) %>% mutate(copy_number=copy_number-gene_mean) 
+  }
+  
+ 
     put("gene filtering complete",console = verbose)
     put(paste("for Species ID",s_id),console = verbose)
     put(paste("filtering with samples per copynumber",samples_per_copynumber),console = verbose)
@@ -255,6 +275,8 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
     put(paste( "genes summary used:",genes_summary_used),console = verbose)
     put(paste("metadata used:",metadata_used),console = verbose)
     put(paste("starting with:", start_genes,"genes and samples:",start_samples),console = verbose)
+    put(paste("log scale:",log_scale),console = verbose)
+    put(paste("mean center:",mean_center),console = verbose)
     put(paste("ending with:", length(unique(copy_number_for_model$sample_name)),"samples"),console = verbose)
     put(paste("and with:", length(unique(copy_number_for_model$gene_id)),"genes"),console = verbose)
           

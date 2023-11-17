@@ -169,12 +169,5 @@ validate_marker_test<-function(opt){
   if(is.logical(opt$SPA)){
     spa_opt<<-opt$SPA
   }
-  
-  if(is.logical(opt$scale_copynumber)){
-    scale_copynumber_opt<<-opt$scale_copynumber
-  }
-  if(is.logical(opt$log_copynumber)){
-    log_copynumber_opt<<-opt$log_copynumber
-  }
   put("data read in",console = verbose)
 }
