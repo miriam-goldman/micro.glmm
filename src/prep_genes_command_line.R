@@ -32,7 +32,11 @@ option_list = list(
   make_option(c("-n","--number_of_samples_for_copynumber"), type="integer", default=5,
               help="number of samples needed for gene to be considered",metavar="integer"),
   make_option(c("-m","--depth_cutoff"), type="integer", default=5,
-              help="depth needed for gene to be included",metavar="integer")
+              help="depth needed for gene to be included",metavar="integer"),
+  make_option(c("--log_scale"),type="logical",default = TRUE,
+              help="whether to log scale copynumber",metavar="logical"),
+  make_option(c("--mean_center"),type="logical",default = TRUE,
+              help="whether to mean scale copynumber",metavar="logical")
 )
 suppressPackageStartupMessages(library(micro.glmm))
 #' Rscript prep_genes.R 
