@@ -251,7 +251,7 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
     model_df_input<-df %>% left_join(metadata, by=c("sample_name"))
     keep_genes<-model_df_input %>% group_by(gene_id,y) %>% 
       summarize(num_samples=n(),.groups="drop") %>% 
-      pivot_wider(y,num_samples, fill=NA) %>% 
+      pivot_wider(names_from=y,values_from=num_samples, values_fill=NA)%>% 
       filter(`0`>min_num_control,`1`>min_num_case) #filter for enough samples in control and not control
     list_of_genes<-list_of_genes[which(list_of_genes %in% keep_genes$gene_id)]
       put(paste("number of genes length after metadata filter:",length(list_of_genes)),console = verbose)
