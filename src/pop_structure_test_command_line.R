@@ -66,7 +66,7 @@ b_df=data.frame(b=as.vector(glmm_fit$b),y=as.vector(glmm_fit$y),fitted.values=as
 pdf(file= file.path(output_dir,paste0(s_id,".random_effect_output.pdf")) ) 
 
 # create a 2X2 grid 
-par( mfrow= c(11,1) )
+par( mfrow= c(4,1) )
 
 annotation_col = data.frame(disease_status=paste0("group_",as.vector(glm_fit0$y)),"b"=as.vector(glmm_fit$b))
 rownames(annotation_col) =colnames(GRM)
@@ -103,12 +103,13 @@ save(glmm_fit, glm_fit0,GRM,s_id, file = file.path(output_dir,paste0(s_id,".mode
 if(opt$n_tau>0){
   simulate_tau<-run_tau_test(glm_fit0,GRM,opt$n_tau,s_id,tau0,phi0)
   num_more_ext=sum(simulate_tau$t>glmm_fit$t)
-  ggplot(simulate_tau,aes(t))+geom_histogram(bins=30)+geom_vline(xintercept=glmm_fit$t,color=color_pal[6])+
+  tau_plot<-ggplot(simulate_tau,aes(t))+geom_histogram(bins=30)+geom_vline(xintercept=glmm_fit$t,color=color_pal[6])+
   labs(x="permuated t values",title=paste("Histogram of permuated t values for species",s_id,
                                            "\n actual t value for a tau of",glmm_fit$tau[2],"in orange",
                                            "\n number of permutations",opt$n_tau),caption =paste(glmm_fit$summary,"\n pvalue for t is", num_more_ext/opt$n_tau))+ theme(
                                              plot.caption = element_text(hjust = 0)
                                            )
+  print(tau_plot)
   write.csv(data.frame(s_id=s_id,n_tau=opt$n_tau,tau=glmm_fit$tau[2],pvalue=num_more_ext/opt$n_tau,tvalue=glmm_fit$t),file.path(output_dir,paste0(s_id,".tau_file.csv")))
 }
 

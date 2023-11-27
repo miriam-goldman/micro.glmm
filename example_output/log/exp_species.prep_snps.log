@@ -7,7 +7,7 @@ R Version: 4.2.3 (2023-03-15)
 Machine: Miriam x86_64 
 Operating System: Darwin 20.6.0 Darwin Kernel Version 20.6.0: Thu Jul 6 22:12:47 PDT 2023; root:xnu-7195.141.49.702.12~1/RELEASE_X86_64 
 Base Packages: stats graphics grDevices utils datasets methods base Other Packages: data.table_1.14.8 logr_1.3.4 lubridate_1.9.2 forcats_1.0.0 stringr_1.5.0 dplyr_1.1.2 purrr_1.0.1 readr_2.1.4 tidyr_1.3.0 tibble_3.2.1 ggplot2_3.4.2 tidyverse_2.0.0 micro.glmm_0.0.1.0 devtools_2.4.5 usethis_2.2.2 optparse_1.7.3 
-Log Start Time: 2023-11-17 12:27:19 
+Log Start Time: 2023-11-17 14:16:29 
 ========================================================================= 
 
 running validate genes command is 
@@ -85,6 +85,6 @@ starting with: 33 samples and snps: 999
 ending with: 33 samples and snps: 862 
 
 ========================================================================= 
-Log End Time: 2023-11-17 12:27:26 
-Log Elapsed Time: 0 00:00:06 
+Log End Time: 2023-11-17 14:16:35 
+Log Elapsed Time: 0 00:00:05 
 ========================================================================= 

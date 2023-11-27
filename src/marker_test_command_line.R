@@ -24,7 +24,9 @@ option_list = list(
   make_option(c("--q_value"), type="numeric", default=.05,
               help="q value for marker test plot", metavar="numeric"),
   make_option(c("--alpha_value"), type="numeric", default=.05,
-              help="alpha value for marker test plot", metavar="numeric")
+              help="alpha value for marker test plot", metavar="numeric"),
+  make_option(c("--bonferroni"),type="logical",default = FALSE,
+              help="whether to add bonferroni cutoff",metavar="logical")
   
 )
 
@@ -81,6 +83,10 @@ write.table(marker_test_df,file.path(output_dir, paste0(s_id,".marker_test.tsv")
 
 plot1<-marker_test_df %>% ggplot(aes(x=pvalue)) +geom_histogram(bins=30)+ggtitle(paste("Pvalue histogram for species ",s_id))
 print(plot1)
+if(opt$bonferroni==FALSE){
+  bonferroni_cutoff=opt$alpha
+  bh_cutoff=opt$alpha
+}
 plot2<-marker_test_df %>% ggplot(aes(y=-log10(pvalue),x=beta))+geom_hline(color="green",yintercept =-log10(bh_cutoff))+geom_hline(color="red",yintercept =-log10(bonferroni_cutoff))+geom_point()+ggtitle(paste("volcano plot for species ",s_id,"tau value is",glmm_fit$tau[2]))
 print(plot2)
 if(spa_opt){
