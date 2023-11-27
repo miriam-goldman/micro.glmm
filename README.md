@@ -50,12 +50,12 @@ Rscript prep_genes_command_line.R --species_id exp_species -v TRUE -o "../exampl
 ```
 Rscript pop_structure_test_command_line.R --species_id exp_species -v TRUE -o ../example_output
 --GRM ../example_output/exp_species.GRM.tsv
---metadata ../example_data/IBD_metadata.tsv
+--metadata ../example_data/exp_metadata.tsv
 --tau 1 --n_tau 10
 ```
 For easier copy
 ```
-Rscript pop_structure_test_command_line.R --species_id exp_species -v TRUE -o ../example_output --GRM ../example_output/exp_species.GRM.tsv --metadata ../example_data/IBD_metadata.tsv --tau 1 --n_tau 10
+Rscript pop_structure_test_command_line.R --species_id exp_species -v TRUE -o ../example_output --GRM ../example_output/exp_species.GRM.tsv --metadata ../example_data/exp_metadata.tsv --tau 1 --n_tau 10
 ```
 ### Run Maker test
 
