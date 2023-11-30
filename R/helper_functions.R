@@ -126,13 +126,13 @@ validate_GRM_metadata<-function(opt){
   }
 }
 
-#' validate_marker_test
+#' validate_gene_test
 #' 
-#' helper function to validate marker test from command line
+#' helper function to validate gene test from command line
 #' 
-#' @param opt commandline arguments from marker test
+#' @param opt commandline arguments from gene test
 #' @export
-validate_marker_test<-function(opt){
+validate_gene_test<-function(opt){
   
   if(isTRUE(!is.na(opt$Rdata))){
     if(file_test("-f",opt$Rdata) & grepl(".Rdata",opt$Rdata)){
