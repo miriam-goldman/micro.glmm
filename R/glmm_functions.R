@@ -508,7 +508,7 @@ micro_glmm = function(obj.pop.strut,
   obj.pop.strut$Sigma_iY<-Sigma_iY
   sample_lookup<-data.frame(sampleID=obj.pop.strut$sampleID,index=seq(1,length(obj.pop.strut$sampleID)))
   sample_genes<-unique(copy_number_df$gene_id)
-  ##randomize the marker orders to be tested
+  ##randomize the gene orders to be tested
   
   for(k in sample_genes){
     iter=which(sample_genes==k)
