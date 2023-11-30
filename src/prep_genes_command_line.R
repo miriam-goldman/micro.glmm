@@ -36,7 +36,9 @@ option_list = list(
   make_option(c("--log_scale"),type="logical",default = TRUE,
               help="whether to log scale copynumber",metavar="logical"),
   make_option(c("--mean_center"),type="logical",default = TRUE,
-              help="whether to mean scale copynumber",metavar="logical")
+              help="whether to mean scale copynumber",metavar="logical"),
+  make_option(c("--var_filter"),type="numeric",default = 0,
+              help="whether to filter copynumbers on variability (optional)",metavar="numeric")
 )
 suppressPackageStartupMessages(library(micro.glmm))
 #' Rscript prep_genes.R 
