@@ -24,7 +24,11 @@ prep_genes_function_R(
   metadata_used = FALSE,
   metadata = NULL,
   min_num_control = 0,
-  min_num_case = 0
+  min_num_case = 0,
+  log_scale = FALSE,
+  mean_center = FALSE,
+  is_var_filter = FALSE,
+  var_filter = 0
 )
 }
 \arguments{
