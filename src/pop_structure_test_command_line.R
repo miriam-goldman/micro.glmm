@@ -2,6 +2,7 @@
 #after prep_snps
 
 library("optparse")
+setseed(1)
 suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(logr))
 suppressPackageStartupMessages(library(data.table))
