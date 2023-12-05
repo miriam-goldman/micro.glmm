@@ -59,7 +59,7 @@ bonferroni_cutoff<-opt$alpha_value/m
 q=opt$q_value
 if(spa_opt){
   gene_test_df<-gene_test_df %>% arrange(SPA_pvalue)
-  gene_test_df<-gene_test_df%>% mutate(rank=seq(1,m)) %>% mutate(bh_pvalue=(rank/m)*q)
+  gene_test_df<-gene_test_df%>% mutate(rank=seq(1,m)) %>% mutate(bh_pvalue=(rank/m)*q) %>% mutate(SPA_pvalue=ifelse(is.na(SPA_pvalue),1,SPA_pvalue))
   filtered_test_df<-gene_test_df %>% filter(SPA_pvalue<=bh_pvalue)
   if(any(gene_test_df$SPA_pvalue<=gene_test_df$bh_pvalue)){
     bh_cutoff<-max(filtered_test_df$SPA_pvalue)
@@ -68,7 +68,7 @@ if(spa_opt){
   }
  
 }else{
-  gene_test_df<-gene_test_df %>% arrange(pvalue)
+  gene_test_df<-gene_test_df %>% arrange(pvalue)%>% mutate(pvalue=ifelse(is.na(pvalue),1,pvalue))
   gene_test_df<-gene_test_df%>% mutate(rank=seq(1,m)) %>% mutate(bh_pvalue=(rank/m)*q)
   filtered_test_df<-gene_test_df %>% filter(pvalue<=bh_pvalue)
   if(any(gene_test_df$pvalue<=gene_test_df$bh_pvalue)){

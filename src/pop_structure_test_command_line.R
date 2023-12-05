@@ -2,7 +2,7 @@
 #after prep_snps
 
 library("optparse")
-setseed(1)
+set.seed(1)
 suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(logr))
 suppressPackageStartupMessages(library(data.table))
@@ -111,7 +111,7 @@ if(opt$n_tau>0){
                                              plot.caption = element_text(hjust = 0)
                                            )
   print(tau_plot)
-  write.csv(data.frame(s_id=s_id,n_tau=opt$n_tau,tau=glmm_fit$tau[2],pvalue=num_more_ext/opt$n_tau,tvalue=glmm_fit$t),file.path(output_dir,paste0(s_id,".tau_file.csv")))
+  write.csv(data.frame(s_id=s_id,n_tau=opt$n_tau,tau=glmm_fit$tau[2],pvalue=num_more_ext/opt$n_tau,tvalue=glmm_fit$t,n_samples=length(glmm_fit$sampleID)),file.path(output_dir,paste0(s_id,".tau_file.csv")))
 }
 
 
