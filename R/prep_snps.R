@@ -376,8 +376,10 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
     depth_for_distance %<>% filter(!site_id %in% sites_no)
   }
   print(head(sc_df_2))
-  site_list<-sc_df_2 %>% filter(sample_counts >= number_of_samples_for_sites) %>% .$site_id
-  depth_for_distance %<>% filter(site_id %in% site_list)
+  site_list<-sc_df_2 %>% filter(sample_counts >= number_of_samples_for_sites)
+  print(site_list)
+  depth_for_distance %<>% filter(site_id %in% site_list$site_id)
+  print(head(depth_for_distance))
   ######### Read in population minor allele frequency
   freq_for_distance <- snp_freq%>%
     filter(site_id %in% unique(depth_for_distance$site_id)) %>%
