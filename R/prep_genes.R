@@ -202,7 +202,7 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
     }
   }
   if(genes_summary_used){
-    list_of_samples_gs <- genes_summary %>% filter(species_id == s_id) %>% .$sample_name %>% unique()
+    list_of_samples_gs <- genes_summary %>% filter(marker_coverage > 0) %>% filter(species_id == s_id) %>% .$sample_name %>% unique()
     list_of_samples<-list_of_samples[which(list_of_samples %in% list_of_samples_gs)]
     if(verbose){
       put(paste("number of samples after genes summary filter:",length(list_of_samples)),console = verbose)
