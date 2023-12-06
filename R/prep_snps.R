@@ -370,16 +370,11 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
     
   }
  
-  sites_no <- unique(sc_df_2 %>% filter(sample_counts >= number_of_samples_for_sites) %>% .$site_id)
-  stopifnot(nrow(sites_no) == 0)
-  if (length(sites_no) > 0) {
-    depth_for_distance %<>% filter(!site_id %in% sites_no)
+  sites_pass <- unique(sc_df_2 %>% filter(sample_counts >= number_of_samples_for_sites) %>% .$site_id)
+  stopifnot(nrow(sites_pass) > 0)
+  if (length(sites_pass) > 0) {
+    depth_for_distance %<>% filter(site_id %in% sites_pass)
   }
-  print(head(sc_df_2))
-  site_list<-sc_df_2 %>% filter(sample_counts >= number_of_samples_for_sites)
-  print(site_list)
-  depth_for_distance %<>% filter(site_id %in% site_list$site_id)
-  print(head(depth_for_distance))
   ######### Read in population minor allele frequency
   freq_for_distance <- snp_freq%>%
     filter(site_id %in% unique(depth_for_distance$site_id)) %>%
@@ -391,7 +386,7 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
   
   df_for_distance <- left_join(depth_for_distance, freq_for_distance, by=c("site_id", "sample_name"))
   site_df<-df_for_distance %>% select(site_id,sample_name,allele_freq) %>% pivot_wider(names_from = site_id,values_from=allele_freq)
-    put(head(site_df),console = verbose)
+  put(head(site_df),console = verbose)
   
   freq_mat_dist_man<-parDist(as.matrix(site_df[,-1]), method="custom", func = manhattanFuncPtr)
   freq_mat_dist_man<-as.matrix(freq_mat_dist_man)
