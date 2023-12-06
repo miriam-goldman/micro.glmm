@@ -375,6 +375,7 @@ prep_snps_function_R<-function(snp_freq,snp_depth,snp_info,sample_median_depth_f
   if (length(sites_no) > 0) {
     depth_for_distance %<>% filter(!site_id %in% sites_no)
   }
+  print(head(sc_df_2))
   site_list<-sc_df_2 %>% filter(sample_counts >= number_of_samples_for_sites) %>% .$site_id
   depth_for_distance %<>% filter(site_id %in% site_list)
   ######### Read in population minor allele frequency
