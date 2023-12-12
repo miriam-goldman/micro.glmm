@@ -267,9 +267,11 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
   copy_number_for_model<-df %>% filter(gene_id %in% list_of_genes)
   
   if(log_scale){
-    copy_number_for_model <- copy_number_for_model %>% mutate(copy_number=log(copy_number))
+    put("log_scaling",console = verbose)
+    copy_number_for_model <- copy_number_for_model %>%mutate(base_copy_number=copy_number) %>%  mutate(copy_number=log(copy_number))
   }
   if(mean_center){
+    put("mean centering",console = verbose)
     copy_number_for_model <- copy_number_for_model %>% group_by(gene_id) %>% mutate(gene_mean=mean(copy_number)) %>% mutate(copy_number=copy_number-gene_mean) 
   }
   if(is_var_filter){
