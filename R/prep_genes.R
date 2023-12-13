@@ -275,11 +275,8 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
     copy_number_for_model <- copy_number_for_model %>% group_by(gene_id) %>% mutate(gene_mean=mean(copy_number)) %>% mutate(copy_number=copy_number-gene_mean) 
   }
   if(is_var_filter){
-    qt <- copy_number_for_model %>% group_by(gene_id) %>% reframe(iqr=IQR(copy_number))
-    qt<-qt %>% filter(iqr>var_filter)
-    list_of_genes<-list_of_genes[which(list_of_genes %in% qt$gene_id)]
-    copy_number_for_model<-copy_number_for_model %>% filter(gene_id %in% list_of_genes)
-    put(paste("number of genes left after var filter:",length(list_of_genes)),console = verbose)
+    copy_number_for_model <- copy_number_for_model %>% group_by(gene_id) %>% mutate(gene_var=var(copy_number)) %>% filter(gene_var>=var_filter) 
+    put(paste("number of genes left after var filter:",length(copy_number_for_model$gene_id)),console = verbose)
   }
  
     put("gene filtering complete",console = verbose)
