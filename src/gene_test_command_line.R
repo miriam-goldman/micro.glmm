@@ -60,8 +60,8 @@ q=opt$q_value
 if(spa_opt){
   gene_test_df<-gene_test_df %>% arrange(SPA_pvalue)
   gene_test_df<-gene_test_df%>% mutate(rank=seq(1,m)) %>% mutate(bh_pvalue=(rank/m)*q) %>% mutate(SPA_pvalue=ifelse(is.na(SPA_pvalue),1,SPA_pvalue))
-  filtered_test_df<-gene_test_df %>% filter(SPA_pvalue<=bh_pvalue)
-  if(any(gene_test_df$SPA_pvalue<=gene_test_df$bh_pvalue)){
+  filtered_test_df<-gene_test_df %>% filter(SPA_pvalue<=bh_pvalue & SPA_pvalue<=.01)
+  if(any(gene_test_df$SPA_pvalue<=gene_test_df$bh_pvalue & SPA_pvalue<=.01)){
     bh_cutoff<-max(filtered_test_df$SPA_pvalue)
   }else{
     bh_cutoff<-bonferroni_cutoff
