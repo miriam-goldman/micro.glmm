@@ -257,7 +257,7 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
     keep_genes<-model_df_input %>% group_by(gene_id,y) %>% 
       summarize(num_samples=n(),.groups="drop") %>% 
       pivot_wider(names_from=y,values_from=num_samples, values_fill=NA)%>% mutate(control_case_ratio=`0`/`1`)
-      filter(control_case_ratio=>1 & control_case_ratio<=max_control_case_ratio) #filter for enough samples in control and not control
+      filter(control_case_ratio>=1 & control_case_ratio<=max_control_case_ratio) #filter for enough samples in control and not control
     list_of_genes<-list_of_genes[which(list_of_genes %in% keep_genes$gene_id)]
       put(paste("number of genes length after metadata filter:",length(list_of_genes)),console = verbose)
   }
@@ -273,7 +273,7 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
   }
   if(is_var_filter){
     copy_number_for_model <- copy_number_for_model %>% group_by(gene_id) %>% mutate(gene_var=var(copy_number)) %>% filter(gene_var>=var_filter) 
-    put(paste("number of genes left after var filter:",length(unique(copy_number_for_model$gene_id)),console = verbose)
+    put(paste("number of genes left after var filter:",length(unique(copy_number_for_model$gene_id)),console = verbose))
   }
  
     put("gene filtering complete",console = verbose)
