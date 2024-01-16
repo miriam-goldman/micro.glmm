@@ -464,6 +464,52 @@ Get_Coef = function(y, X, tau, GRM,family, alpha0, eta0,  offset, verbose=FALSE,
   re = list(Y=Y, alpha=alpha, eta=eta, W=W, cov_var=re.coef$cov_var, sqrtW=sqrtW, Sigma_iY = re.coef$Sigma_iY, Sigma_iX = re.coef$Sigma_iX, mu=mu,eta_2=re.coef$eta_2,b=re.coef$b)
 }
 
+re_fit_glmm<-function(obj.pop.strut,glm_fit0,GRM){
+  tau=obj.pop.strut$tau
+  y=glm_fit0$y
+  X=obj.pop.strut$X
+  family = glm_fit0$family
+  eta = obj.pop.strut$linear.predictors
+  mu = obj.pop.strut$fitted.values
+  mu.eta = family$mu.eta(eta)
+  offset=rep(0,length(y))
+  Y = eta - offset + (y - mu)/mu.eta
+  alpha = obj.pop.strut$coefficients 
+  re.coef = Get_Coef(y, X, tau, GRM,family, alpha, eta,  offset=offset,verbose=FALSE, maxiter=30,tol.coef = .01,write_log=FALSE)
+  alpha = re.coef$alpha
+  eta = re.coef$eta
+  Y = re.coef$Y
+  mu = re.coef$mu
+  mu.eta = family$mu.eta(eta)
+  obj.noK=ScoreTest_NULL_Model(mu,y,X)
+  mu2=mu*(1-mu)
+  res = y - mu
+  converged=TRUE
+  cov_var = re.coef$cov_var
+  sample_ids=obj.pop.strut$sampleID
+  rss=sum(res^2)
+  ss=sum((y-mean(y))^2)
+  var_fixed=var(X%*%alpha)
+  var_random=var(as.vector(re.coef$b))
+  var_error=var(res)
+  #https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/j.2041-210x.2012.00261.x
+  model_metrics=list("S"=sd(res),"R-sq"=(1-rss/ss),"R-sq(marginal)"=var_fixed/(var_fixed+var_random+var_error),"r-sq(conditional)"=(var_fixed+var_random)/(var_fixed+var_random+var_error))
+  tau_script=paste("tau is:",tau[2],"t value is",sum(re.coef$b^2))
+  glmmSNPResult = list(summary_text=tau_script,tau=tau,
+                       coefficients=alpha, b=re.coef$b,t=sum(re.coef$b^2),
+                       linear.predictors=eta, linear_model=X%*%alpha+re.coef$b, 
+                       fitted.values=mu, var_mu=mu2,Y=Y, residuals=res, 
+                       cov_var=cov_var, converged=converged,
+                       sampleID = sample_ids, 
+                       obj.noK=obj.noK, 
+                       y = y, X = X, 
+                       traitType=glm_fit0$family,
+                       iter_finised=30,
+                       model_metrics=model_metrics,species_id=obj.pop.strut$species_id,GRM=GRM)
+  return(glmmSNPResult)
+
+}
+
 #' micro_glmm
 #' 
 #' Fit the CNV model with the random effects
@@ -506,7 +552,7 @@ micro_glmm = function(obj.pop.strut,
   obj.pop.strut$Sigma_iX<-Sigma_iX
   Sigma_iY<-solve(Sigma,obj.pop.strut$Y)
   obj.pop.strut$Sigma_iY<-Sigma_iY
-  sample_lookup<-data.frame(sampleID=obj.pop.strut$sampleID,index=seq(1,length(obj.pop.strut$sampleID)))
+  sample_lookup<-data.frame(sampleID=obj.pop.strut$sampleID,index=seq(1,length(obj.pop.strut$sampleID)),y=obj.pop.strut$y)
   sample_genes<-unique(copy_number_df$gene_id)
   ##randomize the gene orders to be tested
   
@@ -528,7 +574,7 @@ micro_glmm = function(obj.pop.strut,
     empty_mat<-matrix(0,nrow(one_gene),nrow(one_gene))
     # log and scale copy_number
    
-    G0<-as.vector(one_gene$copy_number)
+    G0<-as.vector(filtered_obj.pop.strut$copy_number)
     G_tilde = G0  -  filtered_obj.pop.strut$obj.noK$XXVX_inv %*%  (filtered_obj.pop.strut$obj.noK$XV %*% G0) # G1 is X adjusted
     res=filtered_obj.pop.strut$residuals
     eta = filtered_obj.pop.strut$linear.predictors
@@ -542,8 +588,7 @@ micro_glmm = function(obj.pop.strut,
     Y = eta  + (filtered_obj.pop.strut$y - mu)/mu.eta
     
     
-    t_score=t(PG_tilde)%*%(Y)/tauVecNew[1] #t_score_2=t(G_tilde)%*%(filtered_obj.pop.strut$y - mu)
-   
+    t_score=t(PG_tilde)%*%(Y)/tauVecNew[1] #t_score=t(G_tilde)%*%(filtered_obj.pop.strut$y - mu)
     m1 = t(G_tilde) %*% mu
     #qtilde=t(G_tilde)%*%filtered_obj.pop.strut$y
     var1 = t(G_tilde)%*%PG_tilde## same as  t(G)%*%Sigma_iG - t(G)%*%filtered_obj.pop.strut$Sigma_iX%*%(solve(t(filtered_obj.pop.strut$X)%*%filtered_obj.pop.strut$Sigma_iX))%*%t(filtered_obj.pop.strut$X)%*%Sigma_iG
@@ -553,7 +598,7 @@ micro_glmm = function(obj.pop.strut,
     pval=(pchisq(t_adj_2,lower.tail = FALSE,df=1,log.p=FALSE))
     z=(qnorm(pval/2, log.p=F, lower.tail = F))
     se_beta=abs(beta)/sqrt(abs(z))
-    new_eta=beta[1,1]*G0+filtered_obj.pop.strut$b+filtered_obj.pop.strut$X %*% filtered_obj.pop.strut$coe
+    new_eta=beta[1,1]*G0+filtered_obj.pop.strut$b+filtered_obj.pop.strut$X %*% filtered_obj.pop.strut$coefficients 
     new_mu=family$linkinv(new_eta)
     qtilde=t_score+m1
     if(SPA){
@@ -585,6 +630,7 @@ micro_glmm = function(obj.pop.strut,
 }
 
 filter_null_obj<-function(obj.pop.strut,sample_indexs){
+  obj.pop.strut$copy_number<-sample_indexs$copy_number
   obj.pop.strut$residuals<-obj.pop.strut$residuals[sample_indexs$index]
   obj.pop.strut$b<-obj.pop.strut$b[sample_indexs$index]
   obj.pop.strut$linear.predictors<-obj.pop.strut$linear.predictors[sample_indexs$index]
@@ -656,19 +702,6 @@ Saddle_Prob<-function(q, mu, g, var1,Cutoff=2,output="P",log.p=FALSE)
   pval.noadj<-pchisq(t_adj_sq, lower.tail = FALSE, df=1,log.p=FALSE)
   Is.converge=TRUE
   
-  if(Cutoff=="BE"){
-    rho<-sum(((abs(g))^3)*mu*(1-mu)*(mu^2+(1-mu)^2))
-    B<-0.56*rho*var1^(-3/2)
-    p<-B+alpha/2
-    Cutoff=ifelse(p>=0.496,0.01,qnorm(p,lower.tail=F))
-  } else if(Cutoff < 10^-1){
-    Cutoff=10^-1
-  } 			
-  #
-  if(output=="metaspline")
-  {
-    splfun<-Get_Saddle_Spline(mu,g,nodes)
-  }
   if(is.na(abs(q - m1)) || is.na(var1)){
     pval=pval.noadj	
   }

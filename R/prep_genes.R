@@ -79,19 +79,16 @@ validate_genes_input<-function(opt){
             in a colmun labeled sample_name and binary phenotypes in a column labeled disease_status",console = verbose)
       }else{
         metadata_used=TRUE
-        min_num_control=opt$min_num_control
-        min_num_case=opt$min_num_case
-        put(paste("using metadata to filter, filtering controls at",min_num_control,"per gene"),console = verbose)
+        max_control_case_ratio=opt$max_control_case_ratio
+        put(paste("using metadata to filter, filtering controls to case ratio at",max_control_case_ratio,"per gene"),console = verbose)
       }
     }else{
-      min_num_control=opt$min_num_control
-      min_num_case=opt$min_num_case
+      max_control_case_ratio=opt$max_control_case_ratio
       metadata=NULL
       metadata_used=FALSE
     }
   }else{
-    min_num_control=opt$min_num_control
-    min_num_case=opt$min_num_case
+    max_control_case_ratio=opt$max_control_case_ratio
     metadata=NULL
     metadata_used=FALSE
     if(verbose){
@@ -165,7 +162,7 @@ validate_genes_input<-function(opt){
                        output_dir,s_id,pangenome_used,
                        centroid_prevalence_file,centroid_prevalence_cutoff,GRM_used,
                        GRM,genes_summary_used,genes_summary,
-                        metadata_used,metadata,min_num_control,min_num_case,log_scale,mean_center,is_var_filter,var_filter)
+                        metadata_used,metadata,max_control_case_ratio,log_scale,mean_center,is_var_filter,var_filter)
     
 
   
@@ -190,7 +187,7 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
                               pangenome_used=FALSE,centroid_prevalence_file=NULL,centroid_prevalence_cutoff=.7,
                               GRM_used=FALSE,GRM=NULL,
                               genes_summary_used=FALSE,genes_summary=NULL,
-                              metadata_used=FALSE,metadata=NULL,min_num_control=0,min_num_case=0,log_scale=FALSE,mean_center=FALSE,is_var_filter=FALSE,var_filter=0){
+                              metadata_used=FALSE,metadata=NULL,max_control_case_ratio=10,log_scale=FALSE,mean_center=FALSE,is_var_filter=FALSE,var_filter=0){
   
   list_of_samples <- colnames(gcopynumber)[-1]
   start_samples<-ncol(gcopynumber)
@@ -259,8 +256,8 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
     model_df_input<-df %>% left_join(metadata, by=c("sample_name"))
     keep_genes<-model_df_input %>% group_by(gene_id,y) %>% 
       summarize(num_samples=n(),.groups="drop") %>% 
-      pivot_wider(names_from=y,values_from=num_samples, values_fill=NA)%>% 
-      filter(`0`>min_num_control,`1`>min_num_case) #filter for enough samples in control and not control
+      pivot_wider(names_from=y,values_from=num_samples, values_fill=NA)%>% mutate(control_case_ratio=`0`/`1`)
+      filter(control_case_ratio=>1 & control_case_ratio<=max_control_case_ratio) #filter for enough samples in control and not control
     list_of_genes<-list_of_genes[which(list_of_genes %in% keep_genes$gene_id)]
       put(paste("number of genes length after metadata filter:",length(list_of_genes)),console = verbose)
   }
