@@ -38,7 +38,9 @@ option_list = list(
   make_option(c("--mean_center"),type="logical",default = TRUE,
               help="whether to mean scale copynumber",metavar="logical"),
   make_option(c("--var_filter"),type="numeric",default = 0,
-              help="whether to filter copynumbers on variability (optional)",metavar="numeric")
+              help="whether to filter copynumbers on variability (optional)",metavar="numeric"),
+  make_option(c("--max_control_case_ratio"),type="numeric",default = 10,
+              help="whether to filter max control case ratio",metavar="numeric")
 )
 suppressPackageStartupMessages(library(micro.glmm))
 #' Rscript prep_genes.R 
