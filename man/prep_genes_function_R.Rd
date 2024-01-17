@@ -23,7 +23,7 @@ prep_genes_function_R(
   genes_summary = NULL,
   metadata_used = FALSE,
   metadata = NULL,
-  max_control_case_ratio = 10,
+  min_control_case_ratio = 0,
   log_scale = FALSE,
   mean_center = FALSE,
   is_var_filter = FALSE,
