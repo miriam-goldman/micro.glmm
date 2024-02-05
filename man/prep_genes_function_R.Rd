@@ -17,6 +17,7 @@ prep_genes_function_R(
   pangenome_used = FALSE,
   centroid_prevalence_file = NULL,
   centroid_prevalence_cutoff = 0.7,
+  genes_info = NULL,
   GRM_used = FALSE,
   GRM = NULL,
   genes_summary_used = FALSE,

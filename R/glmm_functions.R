@@ -725,6 +725,11 @@ Saddle_Prob<-function(q, mu, g, var1,Cutoff=2,output="P",log.p=FALSE)
       } else {
 
         pval = abs(p1)+abs(p2)
+        if(pval==0){
+          print(abs(p1))
+          print(abs(p2))
+          print(paste("mu",mu,"g",g,"q",q,"qinv",qinv))
+        }
       }
       Is.converge=TRUE
     } else {
@@ -813,7 +818,10 @@ Get_Saddle_Prob<-function(zeta, mu, g, q,log.p=FALSE)
 {
   k1<-Korg(zeta, mu, g)
   k2<-K2(zeta, mu, g)
-  
+  if(!is.finite(k1)){
+    k1<-K1_adj(zeta, mu, g,q)
+  }  
+
   if(is.finite(k1) && is.finite(k2))
   {
     temp1<-zeta * q - k1
