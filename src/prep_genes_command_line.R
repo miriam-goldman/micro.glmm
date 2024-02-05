@@ -21,6 +21,8 @@ option_list = list(
               help="centriod prevalence file (optional)",metavar="numeric"),
   make_option(c("--genes_summary"), type="character", default=NULL,
               help="genes summary from MIDAS2 output used to filter sample list (optional)",metavar="character" ),
+  make_option(c("--genes_info"), type="character", default=NULL,
+              help="genes centriod info for filtering out singletons (optional)",metavar="character" ),
   make_option(c("--metadata"), type="character", default=NULL,
               help="metadata for samples; controls coded as 0s if using to filter (optional)",metavar="character" ),
   make_option(c("--min_num_control"), type="numeric", default=5,
