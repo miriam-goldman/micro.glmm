@@ -606,13 +606,13 @@ micro_glmm = function(obj.pop.strut,
         list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene_id"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=NA,"se beta"=NA,"pvalue"=NA,
                                            "t_adj"=NA,"num_control"=sum(filtered_obj.pop.strut$y==0),
                                            "num_total"=length(G0),
-                                           SPA_pvalue=NA,spa_score=NA,pvalue_noadj=NA))
+                                           SPA_pvalue=NA,spa_score=NA,pvalue_noadj=NA,converged=FALSE))
       }else{
         out1 = Saddle_Prob(q=qtilde, mu = mu, g = G_tilde, var1,Cutoff = 2,log.p=FALSE)
         list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene_id"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=beta,"se beta"=se_beta,"pvalue"=pval,
                                            "t_adj"=t_adj,"num_control"=sum(filtered_obj.pop.strut$y==0),
                                            "num_total"=length(G0),
-                                           SPA_pvalue=out1$p.value,spa_score=out1$Score,pvalue_noadj=out1$p.value.NA))
+                                           SPA_pvalue=out1$p.value,spa_score=out1$Score,pvalue_noadj=out1$p.value.NA,converged=out1$Is.converge))
       }
    
     }else{
