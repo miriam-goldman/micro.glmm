@@ -736,13 +736,16 @@ Saddle_Prob<-function(q, mu, g, var1,Cutoff=2,output="P",log.p=FALSE)
     }				
   }
   
-  if(pval!=0 && pval.noadj/pval>10^3 || pval==0)
+  if(pval!=0 && pval.noadj/pval>10^3)
   {
     return(Saddle_Prob(q, mu, g,var1, Cutoff=Cutoff*2,output,log.p=log.p))
   } else if(output=="metaspline")
   {
     return(list(p.value=pval, p.value.NA=pval.noadj, Is.converge=Is.converge,Score=Score,splfun=splfun,var=var1))
-  } else {
+  }else if(pval==0){
+    return(list(p.value=pval, p.value.NA=pval.noadj, Is.converge=FALSE, Score=Score))
+  } 
+  else {
     return(list(p.value=pval, p.value.NA=pval.noadj, Is.converge=Is.converge, Score=Score))
   }
 }
