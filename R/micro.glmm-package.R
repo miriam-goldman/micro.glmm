@@ -15,7 +15,7 @@ NULL
 #' @import RcppArmadillo
 #' @importFrom logr put
 #' @importFrom magrittr %>%  %<>% 
-#' @importFrom dplyr filter left_join select group_by mutate count rename ungroup summarize inner_join n reframe add_count
+#' @importFrom dplyr filter left_join right_join select group_by mutate count rename ungroup summarize inner_join n reframe add_count
 #' @import ggplot2
 #' @importFrom tidyr pivot_longer pivot_wider
 #' @importFrom ggExtra ggMarginal
