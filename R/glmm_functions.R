@@ -691,6 +691,7 @@ run_tau_test<-function(glm_fit0,GRM,n_tau,species_id=s_id,tau0,phi0){
 Saddle_Prob<-function(q, mu, g, var1,Cutoff=2,output="P",log.p=FALSE)
 {
   m1<-sum(mu * g)
+  var1<-sum(mu * (1-mu) * g^2)
   p1=NULL
   p2=NULL
   
@@ -702,7 +703,8 @@ Saddle_Prob<-function(q, mu, g, var1,Cutoff=2,output="P",log.p=FALSE)
   pval.noadj<-pchisq(t_adj_sq, lower.tail = FALSE, df=1,log.p=FALSE)
   Is.converge=TRUE
   
-  if(is.na(abs(q - m1)) || is.na(var1)){
+  if(is.na(abs(q - m1)) || is.na(var1) || var1<0){
+    Is.converge=FALSE
     pval=pval.noadj	
   }
   if(isTRUE(abs(q - m1)/sqrt(var1) < Cutoff )){
@@ -725,11 +727,6 @@ Saddle_Prob<-function(q, mu, g, var1,Cutoff=2,output="P",log.p=FALSE)
       } else {
 
         pval = abs(p1)+abs(p2)
-        if(pval==0){
-          print(abs(p1))
-          print(abs(p2))
-          print(paste("mu",mu,"g",g,"q",q,"qinv",qinv))
-        }
       }
       Is.converge=TRUE
     } else {
@@ -739,7 +736,7 @@ Saddle_Prob<-function(q, mu, g, var1,Cutoff=2,output="P",log.p=FALSE)
     }				
   }
   
-  if(pval!=0 && pval.noadj/pval>10^3)
+  if(pval!=0 && pval.noadj/pval>10^3 || pval==0)
   {
     return(Saddle_Prob(q, mu, g,var1, Cutoff=Cutoff*2,output,log.p=log.p))
   } else if(output=="metaspline")
@@ -818,9 +815,6 @@ Get_Saddle_Prob<-function(zeta, mu, g, q,log.p=FALSE)
 {
   k1<-Korg(zeta, mu, g)
   k2<-K2(zeta, mu, g)
-  if(!is.finite(k1)){
-    k1<-K1_adj(zeta, mu, g,q)
-  }  
 
   if(is.finite(k1) && is.finite(k2))
   {
