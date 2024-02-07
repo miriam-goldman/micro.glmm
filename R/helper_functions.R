@@ -171,3 +171,37 @@ validate_gene_test<-function(opt){
   }
   put("data read in",console = verbose)
 }
+
+#' validate_gene_test_pres_abs
+#' 
+#' helper function to validate gene test from command line
+#' 
+#' @param opt commandline arguments from gene test
+#' @export
+validate_gene_test_pres_abs<-function(opt){
+  
+  if(isTRUE(!is.na(opt$pres_abs))){
+    if(file_test("-f",opt$pres_abs)){
+      pres_abs_matrix<<-fread(opt$pres_abs)
+      if(c("gene_id") %in% colnames(pres_abs_matrix)){
+        put("pres abs data loaded",console = verbose)
+      }else{
+        put("pres abs data invalid, check column names",console = verbose)
+        stop()
+      }
+      
+    }else{
+      put("pres abs data invalid",console = verbose)
+      stop()
+    }
+  }else{
+    put("pres abs data invalid",console = verbose)
+    stop()
+  }
+  
+  if(is.logical(opt$SPA)){
+    spa_opt<<-opt$SPA
+  }
+  put("data read in",console = verbose)
+}
+
