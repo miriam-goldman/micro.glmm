@@ -272,12 +272,12 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
       pivot_wider(names_from=y,values_from=num_samples, values_fill=NA)%>% mutate(control_case_ratio=`0`/`1`)
    keep_genes<-keep_genes %>% 
       filter(control_case_ratio>= min_control_case_ratio) #filter for enough samples in control and not control
-    #list_of_genes<-list_of_genes[which(list_of_genes %in% keep_genes$gene_id)]
+    list_of_genes<-list_of_genes[which(list_of_genes %in% keep_genes$gene_id)]
       put(paste("number of genes length after metadata filter:",length(list_of_genes)),console = verbose)
   }
   copy_number_for_model<-df %>% filter(gene_id %in% list_of_genes)
   n_0<-copy_number_for_model %>% group_by(gene_id) %>% summarize(n_0=sum(copy_number==0))
-  copy_number_for_model<-left_join(copy_number_for_model,n_0) %>% mutate(per_0=n_0/sample_counts) #%>% filter(per_0<.3)
+  copy_number_for_model<-left_join(copy_number_for_model,n_0) %>% mutate(per_0=n_0/sample_counts) %>% filter(per_0<.3)
   if(log_scale){
     put("log_scaling",console = verbose)
     copy_number_for_model <- copy_number_for_model %>%mutate(base_copy_number=copy_number) %>%  mutate(copy_number=log(copy_number+1))
