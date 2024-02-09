@@ -74,8 +74,8 @@ validate_genes_input<-function(opt){
      if(isTRUE(!is.na(opt$genes_info))){
        if(file_test("-f",opt$genes_info)){
          genes_info<-fread(opt$genes_info)
-         genes_info<-genes_info %>% group_by(centroid_90) %>% add_count() %>% mutate(singleton=ifelse(n==1 & centroid_99==centroid_75,TRUE,FALSE))
-         genes_info<-genes_info %>% right_join(centroid_prevalence_file,by=c("gene_id"="rep_gene_id"))       
+         genes_info<-genes_info %>% group_by(centroid_80) %>% add_count() %>% mutate(singleton=ifelse(n==1 & centroid_99==centroid_75,TRUE,FALSE))
+         genes_info<-genes_info %>% right_join(centroid_prevalence_file,by=c("centroid_99"="rep_gene_id"))       
          }
        }
      
@@ -237,7 +237,7 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
   
   byGene %<>% filter(sample_counts >= samples_per_copynumber)
   if(pangenome_used){
-    byGene<-left_join(byGene,genes_info)
+    byGene<-left_join(byGene,genes_info,by=c("gene_id"="centriod_80"))
     byGene %<>% mutate(isCore = ifelse(centroid_prevalence >= centroid_prevalence_cutoff, "core", "accessory"))
     if(make_plots){
       byGene %>% ggplot(aes(x=sample_freq,y=centroid_prevalence))+  stat_bin_hex(bins=50)+labs(title=paste("For Species",s_id,"sample_freq verse centriod prevalence"))
