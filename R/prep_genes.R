@@ -74,8 +74,8 @@ validate_genes_input<-function(opt){
      if(isTRUE(!is.na(opt$genes_info))){
        if(file_test("-f",opt$genes_info)){
          genes_info<-fread(opt$genes_info)
-         genes_info<-genes_info %>% group_by(centroid_80) %>% add_count() %>% mutate(singleton=ifelse(n==1 & centroid_99==centroid_75,TRUE,FALSE))
-         genes_info<-genes_info %>% right_join(centroid_prevalence_file,by=c("centroid_99"="rep_gene_id"))       
+         genes_info<-genes_info %>% group_by(centroid_80) %>% add_count() %>% summarize(n=n_distinct(centroid_99)) %>% mutate(singleton=ifelse(n==1,TRUE,FALSE))
+         genes_info<-genes_info %>% right_join(centroid_prevalence_file,by=c("centroid_80"="centroid_90"))       
          }
        }
      
