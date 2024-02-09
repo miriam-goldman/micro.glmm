@@ -287,7 +287,7 @@ prep_genes_function_R<-function(gcopynumber,gdepth,depth_cutoff,samples_per_copy
     copy_number_for_model <- copy_number_for_model %>% group_by(gene_id) %>% mutate(gene_mean=mean(copy_number)) %>% mutate(copy_number=copy_number-gene_mean) 
   }
   if(is_var_filter){
-    copy_number_for_model <- copy_number_for_model %>% group_by(gene_id) %>% mutate(gene_var=var(copy_number)) #%>% filter(gene_var>=var_filter) 
+    copy_number_for_model <- copy_number_for_model %>% group_by(gene_id) %>% mutate(gene_var=var(copy_number)) %>% filter(gene_var>=var_filter) 
     put(paste("number of genes left after var filter:",length(unique(copy_number_for_model$gene_id)),console = verbose))
   }
  
