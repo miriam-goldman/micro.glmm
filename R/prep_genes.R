@@ -75,7 +75,7 @@ validate_genes_input<-function(opt){
        if(file_test("-f",opt$genes_info)){
          genes_info<-fread(opt$genes_info)
          genes_info<-genes_info %>% group_by(centroid_80) %>% summarize(n=n()) %>% mutate(singleton=ifelse(n==1,TRUE,FALSE))
-         genes_info<-genes_info %>% right_join(centroid_prevalence_file,by=c("centroid_80"="centroid_90"))       
+         genes_info<-genes_info %>% right_join(centroid_prevalence_file,by=c("centroid_80"="rep_gene_id"))       
          }
        }
      
