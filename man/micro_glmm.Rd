@@ -4,7 +4,7 @@
 \alias{micro_glmm}
 \title{micro_glmm}
 \usage{
-micro_glmm(obj.pop.strut, glm_fit0, GRM, copy_number_df, SPA = FALSE)
+micro_glmm(obj.pop.strut, glm_fit0, GRM, gene_df, SPA = FALSE)
 }
 \arguments{
 \item{obj.pop.strut}{output of pop_structure_test; GLMM of species with GRM accounted for}
@@ -13,7 +13,7 @@ micro_glmm(obj.pop.strut, glm_fit0, GRM, copy_number_df, SPA = FALSE)
 
 \item{GRM}{Genetic Relatedness Matrix (from scripts or user) NxN matrix of sample relatedness}
 
-\item{copy_number_df}{data frame with, gene_id, sample_name, and copy_number}
+\item{gene_df}{data frame with, gene_id, sample_name, and gene_value}
 
 \item{SPA}{whether to run Saddle point approximation for pvalues (will slow down output)}
 

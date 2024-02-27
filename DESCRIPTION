@@ -3,7 +3,7 @@ Type: Package
 Title: Microbiome Generalized Linear Mixed Model
 Version: 0.0.1.0
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Encoding: UTF-8
 Imports:
 	utils,
@@ -20,4 +20,3 @@ Imports:
 	pheatmap,
 	RcppArmadillo,
 	Matrix
-
