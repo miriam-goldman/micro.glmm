@@ -582,6 +582,7 @@ micro_glmm = function(obj.pop.strut,
     mu.eta = family$mu.eta(eta)
     sqrtW = mu.eta/sqrt(glm_fit0$family$variance(mu))
     W=sqrtW^2#mu*(1-mu)
+    print(G_tilde)
     Sigma_iG = solve(filtered_obj.pop.strut$Sigma,G_tilde)
     PG_tilde<-Sigma_iG-filtered_obj.pop.strut$Sigma_iX%*%(solve(t(filtered_obj.pop.strut$X)%*%filtered_obj.pop.strut$Sigma_iX))%*%t(filtered_obj.pop.strut$X)%*%Sigma_iG
     Y = eta  + (filtered_obj.pop.strut$y - mu)/mu.eta
