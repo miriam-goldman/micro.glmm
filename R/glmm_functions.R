@@ -496,7 +496,7 @@ re_fit_glmm<-function(obj.pop.strut,glm_fit0,GRM){
   model_metrics=list("S"=sd(res),"R-sq"=(1-rss/ss),"R-sq(marginal)"=var_fixed/(var_fixed+var_random+var_error),"r-sq(conditional)"=(var_fixed+var_random)/(var_fixed+var_random+var_error))
   tau_script=paste("tau is:",tau[2],"t value is",sum(re.coef$b^2))
   glmmSNPResult = list(summary_text=tau_script,tau=tau,
-                       coefficients=alpha, b=re.coef$b,t=sum(re.coef$b^2),
+                       coefficients=alpha, b=as.vector(re.coef$b),t=sum(re.coef$b^2),
                        linear.predictors=eta, linear_model=X%*%alpha+re.coef$b, 
                        fitted.values=mu, var_mu=mu2,Y=Y, residuals=res, 
                        cov_var=cov_var, converged=converged,
@@ -517,7 +517,7 @@ re_fit_glmm<-function(obj.pop.strut,glm_fit0,GRM){
 #' @param obj.pop.strut output of pop_structure_test; GLMM of species with GRM accounted for
 #' @param glm_fit0 glm model. Model output with no sample relatedness accounted for
 #' @param GRM Genetic Relatedness Matrix (from scripts or user) NxN matrix of sample relatedness
-#' @param copy_number_df data frame with, gene_id, sample_name, and copy_number 
+#' @param gene_df data frame with, gene_id, sample_name, and gene_value 
 #' @param SPA whether to run Saddle point approximation for pvalues (will slow down output) 
 #' @param scale_g whether to scale CNVs after log transform if using
 #' @param log_g whether to log transform CNVs 
@@ -525,12 +525,12 @@ re_fit_glmm<-function(obj.pop.strut,glm_fit0,GRM){
 #' @export
 micro_glmm = function(obj.pop.strut,
                     glm_fit0,GRM,
-                           copy_number_df,SPA=FALSE){
+                    gene_df,SPA=FALSE){
   ## inputs: full null fitted model
   ## null model no random effect
   # GRM is kinship
-  # copy_number_df is the copy number by gene 
-  ## copy_number_df must have column for sample; column for gene_id; column for copy_number
+  # gene_df is the copy number by gene 
+  ## gene_df must have column for sample; column for gene_id; column for gene_value
   ## returns list of values for each gene examined
   list_vec<-NULL
   t_begin = proc.time()
@@ -553,7 +553,7 @@ micro_glmm = function(obj.pop.strut,
   Sigma_iY<-solve(Sigma,obj.pop.strut$Y)
   obj.pop.strut$Sigma_iY<-Sigma_iY
   sample_lookup<-data.frame(sampleID=obj.pop.strut$sampleID,index=seq(1,length(obj.pop.strut$sampleID)),y=obj.pop.strut$y)
-  sample_genes<-unique(copy_number_df$gene_id)
+  sample_genes<-unique(gene_df$gene_id)
   ##randomize the gene orders to be tested
   
   for(k in sample_genes){
@@ -565,16 +565,15 @@ micro_glmm = function(obj.pop.strut,
       cat(t_now-t_begin)	
       cat("\n")
     }
-    one_gene<-copy_number_df %>% ungroup %>% filter(gene_id==k)
+    one_gene<-gene_df %>% ungroup %>% filter(gene_id==k)
     #one_gene_indexs<-sample_lookup %>% inner_join(one_gene,by=c("sampleID"="sample_name")) %>% select(sampleID,index)
     
     one_gene<-one_gene %>% inner_join(sample_lookup,by=c("sample_name"="sampleID"))
     ## filter obj to samples present in gene copy number
     filtered_obj.pop.strut<-filter_null_obj(obj.pop.strut,one_gene)
     empty_mat<-matrix(0,nrow(one_gene),nrow(one_gene))
-    # log and scale copy_number
    
-    G0<-as.vector(filtered_obj.pop.strut$copy_number)
+    G0<-as.vector(filtered_obj.pop.strut$gene_value)
     G_tilde = G0  -  filtered_obj.pop.strut$obj.noK$XXVX_inv %*%  (filtered_obj.pop.strut$obj.noK$XV %*% G0) # G1 is X adjusted
     res=filtered_obj.pop.strut$residuals
     eta = filtered_obj.pop.strut$linear.predictors
@@ -603,20 +602,21 @@ micro_glmm = function(obj.pop.strut,
     qtilde=t_score+m1
     if(SPA){
       if(var1<0){
-        list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene_id"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=NA,"se beta"=NA,"pvalue"=NA,
+        list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene_id"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"cor_to_b"=cor(filtered_obj.pop.strut$b,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=NA,"se beta"=NA,"pvalue"=NA,
                                            "t_adj"=NA,"num_control"=sum(filtered_obj.pop.strut$y==0),
                                            "num_total"=length(G0),
-                                           SPA_pvalue=NA,spa_score=NA,pvalue_noadj=NA,converged=FALSE))
+                                           SPA_pvalue=NA,spa_score=NA,SPA_zvalue=NA,pvalue_noadj=NA,converged=FALSE))
       }else{
         out1 = Saddle_Prob(q=qtilde, mu = mu, g = G_tilde, var1,Cutoff = 2,log.p=FALSE)
-        list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene_id"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=beta,"se beta"=se_beta,"pvalue"=pval,
+        list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene_id"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"cor_to_b"=cor(filtered_obj.pop.strut$b,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=beta,"se beta"=se_beta,"pvalue"=pval,
                                            "t_adj"=t_adj,"num_control"=sum(filtered_obj.pop.strut$y==0),
                                            "num_total"=length(G0),
-                                           SPA_pvalue=out1$p.value,spa_score=out1$Score,pvalue_noadj=out1$p.value.NA,converged=out1$Is.converge))
+                                           SPA_pvalue=out1$p.value,spa_score=out1$Score,SPA_zvalue=out1$z_value,pvalue_noadj=out1$p.value.NA,converged=out1$Is.converge))
       }
    
     }else{
-      list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene_id"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=beta,"se beta"=se_beta,"pvalue"=pval,
+      #no SPA
+      list_vec=rbind(list_vec,data.frame("species_id"=obj.pop.strut$species_id,tau=obj.pop.strut$tau[2],"gene_id"=k,"cor"=cor(G0,filtered_obj.pop.strut$y),"cor_to_b"=cor(filtered_obj.pop.strut$b,filtered_obj.pop.strut$y),"z"=z,"var1"=var1,"beta"=beta,"se beta"=se_beta,"pvalue"=pval,
                                          "t_adj"=t_adj,"num_control"=sum(filtered_obj.pop.strut$y==0),
                                          "num_total"=length(G0)))
       
@@ -630,7 +630,7 @@ micro_glmm = function(obj.pop.strut,
 }
 
 filter_null_obj<-function(obj.pop.strut,sample_indexs){
-  obj.pop.strut$copy_number<-sample_indexs$copy_number
+  obj.pop.strut$gene_value<-sample_indexs$gene_value
   obj.pop.strut$residuals<-obj.pop.strut$residuals[sample_indexs$index]
   obj.pop.strut$b<-obj.pop.strut$b[sample_indexs$index]
   obj.pop.strut$linear.predictors<-obj.pop.strut$linear.predictors[sample_indexs$index]
@@ -735,18 +735,18 @@ Saddle_Prob<-function(q, mu, g, var1,Cutoff=2,output="P",log.p=FALSE)
       Is.converge=FALSE	
     }				
   }
-  
+  z_value=qnorm(pval/2,log.p=F, lower.tail = F)*sign(q-m1)
   if(pval!=0 && pval.noadj/pval>10^3)
   {
     return(Saddle_Prob(q, mu, g,var1, Cutoff=Cutoff*2,output,log.p=log.p))
   } else if(output=="metaspline")
   {
-    return(list(p.value=pval, p.value.NA=pval.noadj, Is.converge=Is.converge,Score=Score,splfun=splfun,var=var1))
+    return(list(p.value=pval, p.value.NA=pval.noadj,z_value=z_value, Is.converge=Is.converge,Score=Score,splfun=splfun,var=var1))
   }else if(pval==0){
-    return(list(p.value=pval, p.value.NA=pval.noadj, Is.converge=FALSE, Score=Score))
+    return(list(p.value=pval, p.value.NA=pval.noadj,z_value=z_value, Is.converge=FALSE, Score=Score))
   } 
   else {
-    return(list(p.value=pval, p.value.NA=pval.noadj, Is.converge=Is.converge, Score=Score))
+    return(list(p.value=pval, p.value.NA=pval.noadj, z_value=z_value,Is.converge=Is.converge, Score=Score))
   }
 }
 getroot_K1<-function(init,mu,g,q,m1,tol=.Machine$double.eps^0.25,maxiter=1000)

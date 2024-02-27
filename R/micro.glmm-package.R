@@ -6,7 +6,8 @@
 #' @name micro.glmm-package
 #' @keywords glmm
 #' @aliases micro.glmm-package micro.glmm
-#' @docType package
+#' @docType _PACKAGE
+#' @Description micro.glmm
 NULL
 
 ## usethis namespace: start
