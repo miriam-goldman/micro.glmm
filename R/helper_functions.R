@@ -182,8 +182,9 @@ validate_gene_test_pres_abs<-function(opt){
   
   if(isTRUE(!is.na(opt$pres_abs))){
     if(file_test("-f",opt$pres_abs)){
-      pres_abs_matrix<<-fread(opt$pres_abs)
-      if(c("gene_id") %in% colnames(pres_abs_matrix)){
+      pres_abs_matrix<-fread(opt$pres_abs)
+      if(c("cluster_80_id") %in% colnames(pres_abs_matrix)){
+        pres_abs_matrix<<-pres_abs_matrix %>% rename("gene_id"="cluster_80_id")
         put("pres abs data loaded",console = verbose)
       }else{
         put("pres abs data invalid, check column names",console = verbose)
